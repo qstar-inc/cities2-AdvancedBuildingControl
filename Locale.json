@@ -1,0 +1,23 @@
+{
+  "AdvancedBuildingControl.NAME": "Advanced Building Control",
+  "AdvancedBuildingControl.SIP[RandomizeTooltip]": "Randomize the building's seed to change billboard sizes/positions, trees, props and colors. Randomizing is irreversible. This does not change the company itself.",
+  "AdvancedBuildingControl.SIP[BrandChangerTooltip]": "Changing brand is completely visual only.\nIt does not affect simulation and does not change the company or the resources used/manufactured.",
+  "AdvancedBuildingControl.SIP[StorageChangerTooltip]": "Modify the building's Tradeable Resources.\nWhen a tradeable resource is disabled, any resource currently stored will be lost permanently.",
+  "AdvancedBuildingControl.BRAND[Header]": "Company Brand Changer",
+  "AdvancedBuildingControl.BRAND[CurrentBrand]": "Current Brand",
+  "AdvancedBuildingControl.BRAND[CurrentCompany]": "Current Company",
+  "AdvancedBuildingControl.BRAND[OtherBrands]": "Other Brands",
+  "AdvancedBuildingControl.BRAND[OtherBrandsTooltip]": "The following brands are from companies that's not the same as the current company.\nSelecting any of these will not have any effect on the business/simulation either.",
+  //"AdvancedBuildingControl.BRAND[SelectedEntity]": "Selected Entity",
+  "AdvancedBuildingControl.BRAND[SupportedBrands]": "Supported Brands",
+  "AdvancedBuildingControl.BRAND[SupportedBrandsTooltip]": "The following brands supports the current company.",
+  "AdvancedBuildingControl.BRAND[BrandGroupHover]": "[?]",
+  "AdvancedBuildingControl.ZONING[Header]": "Zoning & Level",
+  "AdvancedBuildingControl.ZONING[Description]": "Properties changed will apply to all building of this exact model and zone. If you want to change the properties for each instance of the building individually, select 'Create Variants'.",
+  "AdvancedBuildingControl.ZONING[ChangeLevel]": "Change Level",
+  "AdvancedBuildingControl.ZONING[CurrentUpkeep]": "Current Upkeep",
+  "AdvancedBuildingControl.ZONING[CreateVariants]": "Create Variants",
+  "AdvancedBuildingControl.STORAGE[Header]": "Storage Resource Changer",
+  "AdvancedBuildingControl.STORAGE[Information]": "Toggle the resource to change the Stored Resources.\n\nAny exisiting resource will be removed if a resource is deselected.",
+  "AdvancedBuildingControl.STORAGE[ResetTooltip]": "Reset to this building's default tradeable resources. The process is irreversible and any removed resources will not be returned."
+}

@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36414.22 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedBuildingControl", "AdvancedBuildingControl.csproj", "{29B48B73-B06B-435F-9350-392375F28C86}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "StarQ.Shared", "..\StarQ.Shared\StarQ.Shared.shproj", "{01189E6E-61CB-4C5D-ACF7-1BA0A2C819AB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{29B48B73-B06B-435F-9350-392375F28C86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29B48B73-B06B-435F-9350-392375F28C86}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29B48B73-B06B-435F-9350-392375F28C86}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29B48B73-B06B-435F-9350-392375F28C86}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {063922E7-97F8-4091-A589-5FC4225EC146}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\StarQ.Shared\StarQ.Shared.projitems*{01189e6e-61cb-4c5d-acf7-1ba0a2c819ab}*SharedItemsImports = 13
+		..\StarQ.Shared\StarQ.Shared.projitems*{29b48b73-b06b-435f-9350-392375f28c86}*SharedItemsImports = 5
+	EndGlobalSection
+EndGlobal
