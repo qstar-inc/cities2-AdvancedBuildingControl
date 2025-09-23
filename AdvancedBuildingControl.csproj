@@ -4,16 +4,22 @@
     <AssemblyName>AdvancedBuildingControl</AssemblyName>
     <AssemblyTitle>Advanced Building Control</AssemblyTitle>
     <Authors>StarQ</Authors>
-    <Version>1.9.900</Version>
+    <Version>1.9.901</Version>
     <!--The file where mod information which is required for publishing mod on PDX mods are stored-->
     <PublishConfigurationPath>Properties\PublishConfiguration.xml</PublishConfigurationPath>
   </PropertyGroup>
   <!--Imports must be after PropertyGroup block-->
-  <Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.props" />
   <Import Project="..\StarQ.Shared\StarQ.Shared.projitems" Label="Shared" />
+  <Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.props" />
   <Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.targets" />
   <ItemGroup>
     <Reference Include="Game">
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Colossal.AssetPipeline">
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Colossal.Collections">
       <Private>false</Private>
     </Reference>
     <Reference Include="Colossal.Core">

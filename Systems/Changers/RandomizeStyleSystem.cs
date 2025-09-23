@@ -3,7 +3,7 @@ using Colossal.Entities;
 using Game.Common;
 using Unity.Entities;
 
-namespace AdvancedBuildingControl.Systems
+namespace AdvancedBuildingControl.Systems.Changers
 {
     public class RandomizeStyleSystem
     {
@@ -13,7 +13,7 @@ namespace AdvancedBuildingControl.Systems
             {
                 if (entityManager.TryGetComponent(entity, out PseudoRandomSeed pseudoRandomSeed))
                 {
-                    System.Random random = new();
+                    Random random = new();
                     ushort randomUShort = (ushort)random.Next(0, 65536);
                     pseudoRandomSeed.m_Seed = randomUShort;
 

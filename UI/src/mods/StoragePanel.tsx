@@ -13,16 +13,17 @@ import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import {
     infoRowModule, infoSectionModule, resourceBox, storageBox, uilStandard
 } from "styleBindings";
-import { BrandDataInfo, LocaleKeys, ResourceDataInfo, ResourceGroup } from "types";
+import { BldgStorageInfo, BrandDataInfo, LocaleKeys, ResourceDataInfo, ResourceGroup } from "types";
 
-import styles from "./BrandPanel.module.scss";
 import { PanelBase } from "./PanelBase";
+import styles from "./style.module.scss";
 
 interface StoragePanelProps {
-  h_storage: boolean;
-  w_resources: ResourceDataInfo[];
-  w_resourceslist: ResourceDataInfo[];
-  w_entity: Entity;
+  bldgStorageInfo: BldgStorageInfo;
+  // h_storage: boolean;
+  // w_resources: ResourceDataInfo[];
+  // w_resourceslist: ResourceDataInfo[];
+  // w_entity: Entity;
 }
 
 const ResourcesSection = ({
@@ -119,7 +120,6 @@ export const RenderRow = ({
   const brandRowClass = `${isCurrent ? styles.BrandCurrentRow : ""} ${
     styles.BrandRow
   }`;
-  console.log(currentResource);
 
   return (
     <div
@@ -155,6 +155,8 @@ export const StoragePanel: FC<StoragePanelProps> = (
   const { translate } = useLocalization();
   const visibleBindingValue = useValue(storagePanelVisibleBinding);
   const sE = useValue(selectedEntity);
+
+  let bldgStorageInfo = props.bldgStorageInfo;
 
   // const [heightFull, setHeightFull] = useState(0);
   // const [panelLeft, setPanelLeft] = useState(0);
@@ -199,7 +201,7 @@ export const StoragePanel: FC<StoragePanelProps> = (
   // );
 
   const visible = useMemo(
-    () => visibleBindingValue && props.h_storage,
+    () => visibleBindingValue && bldgStorageInfo.HasStorage,
     [visibleBindingValue]
   );
 
@@ -261,31 +263,31 @@ export const StoragePanel: FC<StoragePanelProps> = (
             <PanelSection>
               <>
                 <ResourcesSection
-                  w_resources={props.w_resources}
+                  w_resources={bldgStorageInfo.BuildingResources}
                   title={translate(LocaleKeys.RESOURCE_RAW)!}
-                  w_resourceslist={props.w_resourceslist
-                    .filter((r) => r.Group === ResourceGroup.Raw)
-                    .sort((a, b) => (a.Id > b.Id ? 1 : -1))}
+                  w_resourceslist={bldgStorageInfo.BuildingResourcesAll.filter(
+                    (r) => r.Group === ResourceGroup.Raw
+                  ).sort((a, b) => (a.Id > b.Id ? 1 : -1))}
                   // Entity={props.w_entity}
                   // SizeProvider={sizeProviderSupported}
                   // MaxHeight={750}
                 />
                 <ResourcesSection
-                  w_resources={props.w_resources}
+                  w_resources={bldgStorageInfo.BuildingResources}
                   title={translate(LocaleKeys.RESOURCE_PROCESSED)!}
-                  w_resourceslist={props.w_resourceslist
-                    .filter((r) => r.Group === ResourceGroup.Processed)
-                    .sort((a, b) => (a.Id > b.Id ? 1 : -1))}
+                  w_resourceslist={bldgStorageInfo.BuildingResourcesAll.filter(
+                    (r) => r.Group === ResourceGroup.Processed
+                  ).sort((a, b) => (a.Id > b.Id ? 1 : -1))}
                   // Entity={props.w_entity}
                   // SizeProvider={sizeProviderSupported}
                   // MaxHeight={750}
                 />
                 <ResourcesSection
-                  w_resources={props.w_resources}
+                  w_resources={bldgStorageInfo.BuildingResources}
                   title={translate(LocaleKeys.RESOURCE_MAIL)!}
-                  w_resourceslist={props.w_resourceslist
-                    .filter((r) => r.Group === ResourceGroup.Mail)
-                    .sort((a, b) => (a.Id > b.Id ? 1 : -1))}
+                  w_resourceslist={bldgStorageInfo.BuildingResourcesAll.filter(
+                    (r) => r.Group === ResourceGroup.Mail
+                  ).sort((a, b) => (a.Id > b.Id ? 1 : -1))}
                   // Entity={props.w_entity}
                   // SizeProvider={sizeProviderSupported}
                   // MaxHeight={750}

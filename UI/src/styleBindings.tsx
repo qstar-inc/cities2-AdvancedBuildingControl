@@ -10,8 +10,18 @@ export const styleDefault = getModule(
   "classes"
 );
 
+export const styleSIPTheme = getModule(
+  "game-ui/game/themes/selected-info-panel.module.scss",
+  "classes"
+);
+
 export const styleSIP = getModule(
   "game-ui/game/components/selected-info-panel/selected-info-panel.module.scss",
+  "classes"
+);
+
+export const styleScrollable = getModule(
+  "game-ui/common/scrolling/scrollable.module.scss",
   "classes"
 );
 
@@ -62,6 +72,21 @@ export const resourceBox = getModule(
 
 export const storageBox = getModule(
   "game-ui/game/components/selected-info-panel/selected-info-sections/building-sections/storage-section/storage-section.module.scss",
+  "classes"
+);
+
+export const textElipsisInputThemeModule = getModule(
+  "game-ui/common/input/text/ellipsis-text-input/themes/default.module.scss",
+  "classes"
+);
+
+export const textElipsisInputModule = getModule(
+  "game-ui/common/input/text/ellipsis-text-input/ellipsis-text-input.module.scss",
+  "classes"
+);
+
+export const sipTextInputModule = getModule(
+  "game-ui/game/components/selected-info-panel/shared-components/text-input/text-input.module.scss",
   "classes"
 );
 

@@ -12,17 +12,18 @@ import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import {
     closeButtonClass, closeButtonImageClass, styleDefault, stylePanel, wrapperClass
 } from "styleBindings";
-import { BrandDataInfo, LocaleKeys } from "types";
+import { BldgBrandInfo, BrandDataInfo, LocaleKeys } from "types";
 
-import styles from "./BrandPanel.module.scss";
 import { PanelBase } from "./PanelBase";
+import styles from "./style.module.scss";
 
 interface BrandPanelProps {
-  h_brand: boolean;
-  w_brand: string;
-  w_brandlist: BrandDataInfo[];
-  w_company: string;
-  w_entity: Entity;
+  // h_brand: boolean;
+  // w_brand: string;
+  // w_brandlist: BrandDataInfo[];
+  // w_company: string;
+  // w_entity: Entity;
+  bldgBrandInfo: BldgBrandInfo;
 }
 
 const BrandSection = ({
@@ -31,7 +32,6 @@ const BrandSection = ({
   BrandsArrayX,
   BrandGroupHoverText,
   SelectedBrand,
-  Entity,
   MaxHeight,
   SizeProvider,
 }: {
@@ -40,7 +40,6 @@ const BrandSection = ({
   BrandsArrayX: BrandDataInfo[];
   BrandGroupHoverText: string;
   SelectedBrand: string;
-  Entity: Entity;
   MaxHeight: number;
   SizeProvider: SizeProvider;
 }) => {
@@ -55,13 +54,12 @@ const BrandSection = ({
       return (
         <RenderRow
           brand={brand}
-          entity={Entity}
           isCurrent={isCurrent}
           brandRowClass={brandRowClass}
         />
       );
     },
-    [SelectedBrand, Entity, BrandsArrayX]
+    [SelectedBrand, BrandsArrayX]
   );
 
   return (
@@ -89,12 +87,10 @@ const BrandSection = ({
 };
 
 export const RenderRow = ({
-  entity,
   isCurrent,
   brand,
   brandRowClass,
 }: {
-  entity: Entity;
   brand: BrandDataInfo;
   isCurrent: boolean;
   brandRowClass: string;
@@ -140,6 +136,8 @@ export const BrandPanel: FC<BrandPanelProps> = (props: BrandPanelProps) => {
   const visibleBindingValue = useValue(brandPanelVisibleBinding);
   const sE = useValue(selectedEntity);
 
+  let bldgBrandInfo = props.bldgBrandInfo;
+
   // const [heightFull, setHeightFull] = useState(0);
   // const [panelLeft, setPanelLeft] = useState(0);
 
@@ -158,10 +156,10 @@ export const BrandPanel: FC<BrandPanelProps> = (props: BrandPanelProps) => {
     const supported: BrandDataInfo[] = [];
     const other: BrandDataInfo[] = [];
 
-    for (const brand of props.w_brandlist ?? []) {
+    for (const brand of bldgBrandInfo.BrandList ?? []) {
       if (
         Array.isArray(brand.Companies) &&
-        brand.Companies.includes(props.w_company)
+        brand.Companies.includes(bldgBrandInfo.CompanyName)
       ) {
         supported.push(brand);
       } else {
@@ -170,7 +168,7 @@ export const BrandPanel: FC<BrandPanelProps> = (props: BrandPanelProps) => {
     }
 
     return [supported, other];
-  }, [props.w_brandlist, props.w_company]);
+  }, [bldgBrandInfo.BrandList, bldgBrandInfo.CompanyName]);
 
   // const wrapperStyle = useMemo(
   //   () => ({
@@ -181,7 +179,7 @@ export const BrandPanel: FC<BrandPanelProps> = (props: BrandPanelProps) => {
   // );
 
   const visible = useMemo(
-    () => visibleBindingValue && props.h_brand,
+    () => visibleBindingValue && bldgBrandInfo.HasBrand,
     [visibleBindingValue]
   );
 
@@ -240,12 +238,14 @@ export const BrandPanel: FC<BrandPanelProps> = (props: BrandPanelProps) => {
           <>
             <PanelSection>
               <PanelSectionRow
+                uppercase={true}
                 left={CurrentBrandTitleText}
-                right={props.w_brand}
+                right={bldgBrandInfo.BrandName}
               />
               <PanelSectionRow
+                uppercase={true}
                 left={CurrentCompanyTitleText}
-                right={props.w_company}
+                right={bldgBrandInfo.CompanyName}
               />
             </PanelSection>
             <PanelSection>
@@ -254,8 +254,7 @@ export const BrandPanel: FC<BrandPanelProps> = (props: BrandPanelProps) => {
                 BrandsTooltip={SupportedBrandsTooltip!}
                 BrandsArrayX={SupportedBrandsArray}
                 BrandGroupHoverText={BrandGroupHoverText!}
-                SelectedBrand={props.w_brand}
-                Entity={props.w_entity}
+                SelectedBrand={bldgBrandInfo.BrandName}
                 MaxHeight={210}
                 SizeProvider={sizeProviderSupported}
               />
@@ -264,8 +263,7 @@ export const BrandPanel: FC<BrandPanelProps> = (props: BrandPanelProps) => {
                 BrandsTooltip={OtherBrandsTooltip!}
                 BrandsArrayX={OtherBrandsArray}
                 BrandGroupHoverText={BrandGroupHoverText!}
-                SelectedBrand={props.w_brand}
-                Entity={props.w_entity}
+                SelectedBrand={bldgBrandInfo.BrandName}
                 MaxHeight={650 - Math.min(SupportedBrandsArray.length, 7) * 30}
                 SizeProvider={sizeProviderOther}
               />

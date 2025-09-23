@@ -2,8 +2,7 @@ $boxSize: 15rem;
 
 .BrandChangerPanel {
   position: absolute;
-  top: calc(16rem + var(--floatingToggleSize));
-  bottom: 6rem;
+  top: calc(var(--screenPadding) * 2 + var(--floatingToggleSize));
   z-index: calc(var(--tooltipIndex) - 1);
   overflow: hidden;
   transform: scale(0.9);
@@ -84,6 +83,13 @@ $boxSize: 15rem;
 .NoMargin {
   margin: 0 !important;
   padding: 0 !important;
+}
+
+.NoMarginSide {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
 
 .DisabledToolButton {

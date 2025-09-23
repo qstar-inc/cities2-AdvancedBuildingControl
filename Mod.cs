@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 using AdvancedBuildingControl.Systems;
+using AdvancedBuildingControl.Systems.Serialization;
+using Colossal.IO.AssetDatabase;
 using Colossal.Logging;
 using Game;
 using Game.Modding;
@@ -23,10 +25,11 @@ namespace AdvancedBuildingControl
             .GetLogger($"{nameof(AdvancedBuildingControl)}")
             .SetShowsErrorsInUI(true);
 
-        //public static string SessionGuid = string.Empty;
+#nullable disable
+        public static Setting Setting;
+        public static World world;
 
-        //private Setting m_Setting;
-
+#nullable enable
         public void OnLoad(UpdateSystem updateSystem)
         {
             LogHelper.Init(Id, log);
@@ -39,40 +42,44 @@ namespace AdvancedBuildingControl
             GameManager.instance.localizationManager.onActiveDictionaryChanged +=
                 LocaleHelper.OnActiveDictionaryChanged;
 
-            //log.Info(nameof(OnLoad));
+            Setting = new Setting(this);
+            //Setting.RegisterInOptionsUI();
 
-            //if (GameManager.instance.modManager.TryGetExecutableAsset(this, out var asset))
-            //    log.Info($"Current mod asset at {asset.path}");
+            AssetDatabase.global.LoadSettings(
+                nameof(AdvancedBuildingControl),
+                Setting,
+                new Setting(this)
+            );
 
-            //m_Setting = new Setting(this);
-            //m_Setting.RegisterInOptionsUI();
-            //GameManager.instance.localizationManager.AddSource("en-US", new LocaleEN(m_Setting));
+            world = World.DefaultGameObjectInjectionWorld;
 
-            //AssetDatabase.global.LoadSettings(nameof(AdvancedBuildingControl), m_Setting, new Setting(this));
-            World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<DataRetriever>();
-            //World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<SessionDataSystem>();
+            world.GetOrCreateSystemManaged<DataRetriever>();
+            world.GetOrCreateSystemManaged<PlopTheGrowableSystem>();
 
-            World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<StorageChangerSystem>();
-            World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<LevelChangerSystem>();
+            //world.GetOrCreateSystemManaged<StorageChangerSystem>();
+            //world.GetOrCreateSystemManaged<LevelChangerSystem>();
+            //world.GetOrCreateSystemManaged<HouseholdChangerSystem>();
+            world.GetOrCreateSystemManaged<RefChangerSystem>();
 
-            updateSystem.UpdateBefore<CreatedEntitiesManagementSystem>(SystemUpdatePhase.Serialize);
+            world.GetOrCreateSystemManaged<CreatedEntitiesManagementSystem>();
+
+            updateSystem.UpdateAfter<SIP_ABC>(SystemUpdatePhase.UIUpdate);
+
             updateSystem.UpdateBefore<PreSerializationSystem>(SystemUpdatePhase.Serialize);
-            //updateSystem.UpdateBefore<PreSerializationSystem>(SystemUpdatePhase.Serialize);
             updateSystem.UpdateAfter<PreDeserializationSystem>(SystemUpdatePhase.Serialize);
             updateSystem.UpdateAfter<PreDeserializationSystem>(SystemUpdatePhase.Deserialize);
-            updateSystem.UpdateAfter<SIPAdvancedBuildingControl>(SystemUpdatePhase.UIUpdate);
+
             updateSystem.UpdateAt<UpdateNextFrameSystem>(SystemUpdatePhase.Modification1);
-            updateSystem.UpdateAt<UpdateNextFrameClearSystem>(SystemUpdatePhase.ModificationEnd);
+            //updateSystem.UpdateAt<UpdateNextFrameClearSystem>(SystemUpdatePhase.ModificationEnd);
         }
 
         public void OnDispose()
         {
-            //log.Info(nameof(OnDispose));
-            //if (m_Setting != null)
-            //{
-            //    m_Setting.UnregisterInOptionsUI();
-            //    m_Setting = null;
-            //}
+            if (Setting != null)
+            {
+                //Setting.UnregisterInOptionsUI();
+                Setting = null;
+            }
         }
 
         public static Dictionary<string, string> GetReplacements()

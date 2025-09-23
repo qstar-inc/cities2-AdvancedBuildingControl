@@ -3,48 +3,41 @@ import { useValue } from "cs2/api";
 import { Portal } from "cs2/ui";
 import { FC, ReactElement, useEffect, useMemo, useState } from "react";
 import {
-    closeButtonClass, closeButtonImageClass, styleDefault, stylePanel, wrapperClass
+    closeButtonClass, closeButtonImageClass, styleDefault, stylePanel, styleScrollable, styleSIP,
+    styleSIPTheme, wrapperClass
 } from "styleBindings";
 
-import styles from "./BrandPanel.module.scss";
+import styles from "./style.module.scss";
 
 interface PanelBase {
   header: string;
   visible: boolean;
   content: ReactElement;
+  height?: number;
 }
 
 export const PanelBase: FC<PanelBase> = (props: PanelBase) => {
   const sE = useValue(selectedEntity);
 
-  const [heightFull, setHeightFull] = useState(0);
   const [panelLeft, setPanelLeft] = useState(0);
 
   const wrapperStyle = useMemo(
     () => ({
-      maxHeight: `${heightFull}px`,
       left: `calc(${panelLeft}px + 20rem)`,
     }),
-    [panelLeft, heightFull]
+    [panelLeft]
   );
 
   const calculateHeights = () => {
-    const wrapperElement = document.querySelector(
-      ".info-layout_BVk"
-    ) as HTMLElement | null;
     const sipElement = document.querySelector(
-      ".selected-info-panel_gG8"
+      ".selected-info-panel_iIe"
     ) as HTMLElement | null;
 
-    const newHeightFull = wrapperElement?.offsetHeight ?? 1600;
-    if (sipElement?.offsetWidth == 0) {
-      return;
-    } else {
-      const newPanelLeft =
-        (sipElement?.offsetLeft ?? 6) + (sipElement?.offsetWidth ?? 300);
+    const newPanelLeft =
+      (sipElement?.offsetLeft ?? 6) + (sipElement?.offsetWidth ?? 300);
+    if (newPanelLeft != 306) {
       setPanelLeft(newPanelLeft);
     }
-    setHeightFull(newHeightFull);
   };
 
   useEffect(() => {
@@ -63,23 +56,21 @@ export const PanelBase: FC<PanelBase> = (props: PanelBase) => {
 
   if (sE.index === 0 || !props.visible) return null;
 
-  const animateClass = props.visible ? `${styles.BrandChangerAnimate}` : ``;
-
   return (
     <>
       <Portal>
         <div
           id="starq-abc-panel"
-          className={`${wrapperClass} ${styles.BrandChangerPanel} ${animateClass}`}
+          className={`${wrapperClass} ${styles.BrandChangerPanel} ${styles.BrandChangerAnimate}`}
           style={wrapperStyle}
         >
-          <div className={styleDefault.header}>
+          <div id={"starq-abc-panel-header"} className={styleSIPTheme.header}>
             <div className={stylePanel.titleBar}>
               <img
                 className={stylePanel.icon}
                 src="Media/Tools/Net Tool/Replace.svg"
               />
-              <div className={styleDefault.title}>{props.header}</div>
+              <div className={styleSIPTheme.title}>{props.header}</div>
               <button className={closeButtonClass} onClick={() => ClosePanel()}>
                 <div
                   className={closeButtonImageClass}
@@ -90,8 +81,15 @@ export const PanelBase: FC<PanelBase> = (props: PanelBase) => {
               </button>
             </div>
           </div>
-          <div className={styleDefault.content}>
-            <>{props.content}</>
+          <div id={"starq-abc-panel-content"} className={styleSIPTheme.content}>
+            <div
+              className={`${styleScrollable.scrollable} ${styleScrollable.y} ${styleSIP.scrollable}`}
+            >
+              <div className={styleScrollable.content}>
+                {props.content}
+                <div className="bottom-padding_JS3"></div>
+              </div>
+            </div>
           </div>
         </div>
       </Portal>

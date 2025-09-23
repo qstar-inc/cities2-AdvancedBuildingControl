@@ -6,7 +6,7 @@ using Game.Common;
 using Game.Companies;
 using Unity.Entities;
 
-namespace AdvancedBuildingControl.Systems
+namespace AdvancedBuildingControl.Systems.Changers
 {
     public class BrandChangerSystem
     {

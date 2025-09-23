@@ -6,7 +6,7 @@ import { ButtonProps, ScrollController } from "cs2/ui";
 import mod from "mod.json";
 import { ReactElement } from "react";
 
-import styles from "./mods/BrandPanel.module.scss";
+import styles from "./mods/style.module.scss";
 
 export const selectedEntity = bindValue<Entity>(
   "selectedInfo",
@@ -24,15 +24,21 @@ export const RandomizeStyle = () => {
 
 export const ChangeLevel = (level: number) => {
   trigger(mod.id, "ChangeLevel", level);
-  // console.log(`Changing to Level ${level}`);
 };
 
-export const CreateVariants = () => {
-  trigger(mod.id, "CreateVariants");
+export const ResetLevel = () => {
+  trigger(mod.id, "ResetLevel");
+};
+
+export const ChangeHousehold = (household: number) => {
+  trigger(mod.id, "ChangeHousehold", household);
+};
+
+export const ResetHousehold = () => {
+  trigger(mod.id, "ResetHousehold");
 };
 
 export const ToggleResource = (resId: string) => {
-  console.log(resId);
   trigger(mod.id, "ToggleResource", resId);
   engine.trigger("audio.playSound", "select-toggle", 1);
 };
@@ -94,16 +100,6 @@ export const togglePanel = (indexToToggle: number) => {
   });
 };
 
-// export const brandPanelTrigger = (state: boolean) => {
-//   brandPanelVisibleBinding.update(state);
-//   levelPanelVisibleBinding.update(!state);
-// };
-
-// export const levelPanelTrigger = (state: boolean) => {
-//   levelPanelVisibleBinding.update(state);
-//   brandPanelVisibleBinding.update(!state);
-// };
-
 interface InfoButtonProps extends ButtonProps {
   label: string;
   // tooltip?: string;
@@ -114,12 +110,12 @@ export const InfoButton = getModule(
   "InfoButton"
 ) as React.FC<InfoButtonProps>;
 
-export const A = getModule(
-  "game-ui/common/localization/loc.generated.ts",
-  "Loc"
-);
+// export const A = getModule(
+//   "game-ui/common/localization/loc.generated.ts",
+//   "Loc"
+// );
 
-console.log(A.SelectedInfoPanel.RAW_MATERIALS);
+// console.log(A.SelectedInfoPanel.RAW_MATERIALS);
 
 interface ToolButtonProps extends ButtonProps {
   src: string;

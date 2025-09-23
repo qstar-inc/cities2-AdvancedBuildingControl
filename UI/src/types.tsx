@@ -18,10 +18,15 @@ export class LocaleKeys {
   public static BRAND_GROUP_HOVER: string = `${mod.id}.BRAND[BrandGroupHover]`;
 
   public static ZONING_HEADER: string = `${mod.id}.ZONING[Header]`;
-  public static ZONING_DESCRIPTION: string = `${mod.id}.ZONING[Description]`;
+  public static ZONING_INFORMATION: string = `${mod.id}.ZONING[Information]`;
   public static ZONING_CHANGE_LEVEL: string = `${mod.id}.ZONING[ChangeLevel]`;
   public static ZONING_CURRENT_UPKEEP: string = `${mod.id}.ZONING[CurrentUpkeep]`;
-  public static ZONING_CREATE_VARIANTS: string = `${mod.id}.ZONING[CreateVariants]`;
+  public static ZONING_RESET_LEVEL_TOOLTIP: string = `${mod.id}.ZONING[ResetLevelTooltip]`;
+  public static ZONING_CHANGE_HOUSEHOLD: string = `${mod.id}.ZONING[ChangeHousehold]`;
+  public static ZONING_MAX_HOUSEHOLD: string = `${mod.id}.ZONING[MaxHousehold]`;
+  public static ZONING_MAX_HOUSEHOLD_TOOLTIP: string = `${mod.id}.ZONING[MaxHouseholdTooltip]`;
+  public static ZONING_CURRENT_RENT: string = `${mod.id}.ZONING[CurrentRent]`;
+  public static ZONING_RESET_HOUSEHOLD_TOOLTIP: string = `${mod.id}.ZONING[ResetHouseholdTooltip]`;
 
   public static STORAGE_HEADER: string = `${mod.id}.STORAGE[Header]`;
   public static STORAGE_INFORMATION: string = `${mod.id}.STORAGE[Information]`;
@@ -68,4 +73,39 @@ export interface ResourceDataInfo {
   Name: string;
   Icon: string;
   DisplayName: string;
+}
+
+export interface BldgZoningInfo {
+  HasLevel: boolean;
+  Level: number;
+  Upkeep: number;
+  HasHousehold: boolean;
+  Household: number;
+  MaxHousehold: number;
+  Rent: number;
+  AreaType: string;
+  SpaceMultiplier: number;
+  ZoneTypeBase: number;
+  TotalRent: number;
+  PropertiesCount: number;
+  MixedPercent: number;
+  LandValueBase: number;
+  LandValueModifier: number;
+  IgnoreLandValue: boolean;
+  LotSize: number;
+  IsMixed: boolean;
+}
+
+export interface BldgBrandInfo {
+  HasBrand: boolean;
+  BrandName: string;
+  BrandIcon: string;
+  CompanyName: string;
+  BrandList: BrandDataInfo[];
+}
+
+export interface BldgStorageInfo {
+  HasStorage: boolean;
+  BuildingResources: ResourceDataInfo[];
+  BuildingResourcesAll: ResourceDataInfo[];
 }

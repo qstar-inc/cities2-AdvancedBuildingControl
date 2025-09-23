@@ -1,23 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using AdvancedBuildingControl.Components;
-using AdvancedBuildingControl.Extensions;
-using CliWrap;
 using Colossal.Entities;
 using Colossal.Serialization.Entities;
-using Colossal.UI.Binding;
 using Game;
 using Game.Economy;
 using Game.Prefabs;
 using Game.SceneFlow;
-using Game.Settings;
 using Game.UI;
 using Game.UI.InGame;
 using Game.Zones;
-using StarQ.Shared.Extensions;
 using Unity.Collections;
 using Unity.Entities;
-using static Game.UI.InGame.UIResource;
 
 namespace AdvancedBuildingControl.Systems
 {
@@ -62,8 +55,6 @@ namespace AdvancedBuildingControl.Systems
         public ResourceGroup Group { get; set; } = ResourceGroup.None;
         public ulong Id { get; set; } = 0;
         public string Name { get; set; } = "UnknownName";
-        //public string Icon { get; set; } = "";
-        //public string DisplayName { get; set; } = "";
     }
 
     public partial class DataRetriever : GameSystemBase
@@ -73,9 +64,8 @@ namespace AdvancedBuildingControl.Systems
         public PrefabUISystem prefabUISystem;
         public NameSystem nameSystem;
         public ImageSystem imageSystem;
-        public StorageChangerSystem storageChangerSystem;
 
-        //public ResourcePrefabs resourcePrefabs;
+        public CreatedEntitiesManagementSystem createdEntitiesManagementSystem;
 
 #nullable enable
         public static GameMode gameMode;
@@ -98,16 +88,13 @@ namespace AdvancedBuildingControl.Systems
         {
             base.OnCreate();
 
-            prefabSystem =
-                World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<PrefabSystem>();
-            prefabUISystem =
-                World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<PrefabUISystem>();
-            nameSystem =
-                World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<NameSystem>();
-            imageSystem =
-                World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<ImageSystem>();
-            storageChangerSystem = World.GetOrCreateSystemManaged<StorageChangerSystem>();
-            //resourcePrefabs = World.GetOrCreateSystemManaged<ResourceSystem>().GetPrefabs();
+            prefabSystem = Mod.world.GetOrCreateSystemManaged<PrefabSystem>();
+            prefabUISystem = Mod.world.GetOrCreateSystemManaged<PrefabUISystem>();
+            nameSystem = Mod.world.GetOrCreateSystemManaged<NameSystem>();
+            imageSystem = Mod.world.GetOrCreateSystemManaged<ImageSystem>();
+
+            createdEntitiesManagementSystem =
+                Mod.world.GetOrCreateSystemManaged<CreatedEntitiesManagementSystem>();
 
             GameManager.instance.localizationManager.onActiveDictionaryChanged += CleanAndGetData;
             gameMode = GameMode.None;
@@ -115,53 +102,11 @@ namespace AdvancedBuildingControl.Systems
 
         protected override void OnUpdate() { }
 
-        //protected override void OnSaveGameLoaded(Purpose purpose, GameMode mode)
-        //{
-        //    base.OnGamePreload(purpose, mode);
-
-        //    EntityQuery entityQuery = SystemAPI.QueryBuilder().WithAll<AlteredStorage>().Build();
-        //    NativeArray<Entity> entities = entityQuery.ToEntityArray(Allocator.Temp);
-        //    Mod.log.Info($"Found {entities.Length} Altered Storage");
-
-        //    foreach (var item in entities)
-        //    {
-        //        Mod.log.Info(item);
-        //    }
-        //}
-
-        //protected override void OnGamePreload(Purpose purpose, GameMode mode)
-        //{
-        //    base.OnGamePreload(purpose, mode);
-        //    gameMode = mode;
-
-        //    if (GameModeExtensions.IsGame(gameMode))
-        //    {
-        //        base.OnGameLoadingComplete(purpose, mode);
-        //        LogHelper.SendLog($"Starting InitOnGameStart on OnGamePreload");
-        //        storageChangerSystem.InitOnGameStart();
-        //    }
-        //    else
-        //    {
-        //        LogHelper.SendLog($"Game mode is {gameMode} for OnGameLoadingComplete");
-        //    }
-        //}
-
         protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
         {
             base.OnGameLoadingComplete(purpose, mode);
 
             gameMode = mode;
-
-            if (GameModeExtensions.IsGame(gameMode))
-            {
-                base.OnGameLoadingComplete(purpose, mode);
-                LogHelper.SendLog($"Starting InitOnGameStart on OnGamePreload");
-                storageChangerSystem.InitOnGameStart();
-            }
-            else
-            {
-                LogHelper.SendLog($"Game mode is {gameMode} for OnGameLoadingComplete");
-            }
 
             if (GameModeExtensions.IsGame(mode))
                 return;
@@ -405,8 +350,6 @@ namespace AdvancedBuildingControl.Systems
                     Allocator.Temp
                 );
 
-                //Resource allResource = EconomyUtils.GetAllResources();
-
                 int rCount = resourceEntitiesFromQuery.Length;
                 hasNewResourceData = false;
                 if (resourceDataInfos.Count == 0 || prevResourceEntityCount != rCount)
@@ -414,11 +357,7 @@ namespace AdvancedBuildingControl.Systems
                     prevResourceEntityCount = rCount;
                     resourceDataInfos.Clear();
                     foreach (Entity entity in resourceEntitiesFromQuery)
-                    //foreach (Resource res in Enum.GetValues(typeof(Resource)))
                     {
-                        //Entity prefab = resourceSystem.GetPrefab(res);
-                        //EntityManager.TryGetComponent(entity, out PrefabData prefabData);
-                        //prefabSystem.TryGetPrefab(prefabData, out PrefabBase resourcePrefab);
                         prefabSystem.TryGetPrefab(entity, out ResourcePrefab resourcePrefab);
 
                         if (resourcePrefab == null)
@@ -431,41 +370,7 @@ namespace AdvancedBuildingControl.Systems
                         }
 
                         string resourceSuffix = resourcePrefab.name.Replace("Resource", "");
-                        //ResourcePrefab resourcePrefabX = (ResourcePrefab)resourcePrefab;
                         var res = EconomyUtils.GetResource(resourcePrefab.m_Resource);
-                        //if (
-                        //    res == Resource.NoResource
-                        //    || res == Resource.All
-                        //    || res == Resource.Money
-                        //    || res == Resource.Last
-                        //)
-                        //    continue;
-
-                        //ResourceGroup resourceGroup = ;
-
-                        //string name = res.ToString();
-
-                        //string icon = $"Media/Game/Resources/{resourceSuffix}.svg";
-
-                        //if (resourcePrefab.name == "ResourceMoney") continue;
-
-                        //string icon = "";
-                        //if (resourcePrefab.TryGetExactly(out UIObject uiObject))
-                        //{
-                        //    icon = uiObject.m_Icon;
-                        //}
-                        //else
-                        //{
-                        //    icon =
-                        //        $"thumbnail://ThumbnailCamera/BrandPrefab/{resourcePrefab.name}?width=32&height=32";
-                        //}
-
-                        //string displayName =
-                        //    LocaleHelper.Translate($"Resources.TITLE[{resourceSuffix}]") ?? name;
-
-                        //Mod.log.Info(
-                        //    $"New Resource: {resourcePrefab.name} ({displayName}), ID: {(ulong)res}, Icon: {icon}"
-                        //);
 
                         resourceDataInfos.Add(
                             new ResourceDataInfo
@@ -474,8 +379,6 @@ namespace AdvancedBuildingControl.Systems
                                 Group = GetResourceGroup(res, resourcePrefab),
                                 Id = (ulong)res,
                                 Name = res.ToString(),
-                                //Icon = icon,
-                                //DisplayName = displayName,
                             }
                         );
                     }

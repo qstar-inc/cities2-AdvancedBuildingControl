@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AdvancedBuildingControl.Components;
-using Colossal.Logging;
+﻿using AdvancedBuildingControl.Components;
 using Game;
 using Game.Common;
 using Unity.Collections;
@@ -15,31 +9,32 @@ namespace AdvancedBuildingControl.Systems
     public partial class UpdateNextFrameClearSystem : GameSystemBase
     {
         private EntityQuery ClearUpdateNextFrameQuery;
-        private ModificationEndBarrier Barrier;
+#nullable disable
+        private ModificationEndBarrier barrier;
 
         public UpdateNextFrameClearSystem() { }
 
+#nullable enable
         protected override void OnCreate()
         {
-            Barrier = World.GetOrCreateSystemManaged<ModificationEndBarrier>();
+            barrier = Mod.world.GetOrCreateSystemManaged<ModificationEndBarrier>();
             ClearUpdateNextFrameQuery = SystemAPI
                 .QueryBuilder()
-                .WithAll<UpdateNextFrame, ClearUpdateNextFrame>()
-                .WithNone<Deleted, Updated>()
+                .WithAny<UpdateNextFrame>()
+                .WithNone<Deleted>()
                 .Build();
 
             RequireForUpdate(ClearUpdateNextFrameQuery);
             base.OnCreate();
         }
 
-        /// <inheritdoc/>
         protected override void OnUpdate()
         {
-            EntityCommandBuffer buffer = Barrier.CreateCommandBuffer();
+            EntityCommandBuffer buffer = barrier.CreateCommandBuffer();
             NativeArray<Entity> clearUpdateNextFrameEntities =
                 ClearUpdateNextFrameQuery.ToEntityArray(Allocator.Temp);
-            buffer.RemoveComponent<ClearUpdateNextFrame>(clearUpdateNextFrameEntities);
             buffer.RemoveComponent<UpdateNextFrame>(clearUpdateNextFrameEntities);
+            buffer.Dispose();
         }
     }
 }
