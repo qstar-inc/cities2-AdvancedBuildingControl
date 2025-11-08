@@ -20,22 +20,30 @@ namespace AdvancedBuildingControl.Systems
             if (!firstTime)
                 return;
 
-            ExecutableAsset ptgAsset = AssetDatabase.global.GetAsset(
-                SearchFilter<ExecutableAsset>.ByCondition(asset =>
-                    asset.isEnabled && asset.isLoaded && asset.name.Equals("PlopTheGrowables")
+            if (
+                AssetDatabase.global.TryGetAsset(
+                    SearchFilter<ExecutableAsset>.ByCondition(asset =>
+                        asset.isEnabled && asset.isLoaded && asset.name.Equals("PlopTheGrowables")
+                    ),
+                    out ExecutableAsset ptgAsset
                 )
-            );
-            ptgLockType = ptgAsset?.assembly.GetType("PlopTheGrowables.LevelLocked", false);
-
-            if (ptgLockType == null)
+            )
             {
-                Enabled = false;
-                return;
-            }
+                ptgLockType = ptgAsset?.assembly.GetType("PlopTheGrowables.LevelLocked", false);
 
-            Mod.Setting.IsPTGInGame = true;
-            _ptgLockedComponent = new ComponentType(ptgLockType, ComponentType.AccessMode.ReadOnly);
-            LogHelper.SendLog("PTG found");
+                if (ptgLockType == null)
+                {
+                    Enabled = false;
+                    return;
+                }
+
+                Mod.Setting.IsPTGInGame = true;
+                _ptgLockedComponent = new ComponentType(
+                    ptgLockType,
+                    ComponentType.AccessMode.ReadOnly
+                );
+                LogHelper.SendLog("PTG found");
+            }
             firstTime = false;
         }
 

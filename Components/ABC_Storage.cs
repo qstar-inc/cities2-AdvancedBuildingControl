@@ -3,31 +3,31 @@ using Unity.Entities;
 
 namespace AdvancedBuildingControl.Components
 {
-    public struct AltHousehold : IComponentData, IQueryTypeParameter, ISerializable
+    public struct ABC_Storage : IComponentData, IQueryTypeParameter, ISerializable
     {
         public void Serialize<TWriter>(TWriter writer)
             where TWriter : IWriter
         {
-            writer.Write(Household);
             writer.Write(Enabled);
+            writer.Write(Resource);
         }
 
         public void Deserialize<TReader>(TReader reader)
             where TReader : IReader
         {
-            reader.Read(out int household);
             reader.Read(out bool enabled);
+            reader.Read(out ulong newRes);
 
-            Household = household;
             Enabled = enabled;
+            Resource = newRes;
         }
 
         public readonly bool IsDefault()
         {
-            return Enabled == false && Household == 0;
+            return Enabled == false && Resource == 0;
         }
 
-        public int Household;
         public bool Enabled;
+        public ulong Resource;
     }
 }

@@ -3,8 +3,13 @@ import { useValue } from "cs2/api";
 import { Portal } from "cs2/ui";
 import { FC, ReactElement, useEffect, useMemo, useState } from "react";
 import {
-    closeButtonClass, closeButtonImageClass, styleDefault, stylePanel, styleScrollable, styleSIP,
-    styleSIPTheme, wrapperClass
+  closeButtonClass,
+  closeButtonImageClass,
+  stylePanel,
+  styleScrollable,
+  styleSIP,
+  styleSIPTheme,
+  wrapperClass,
 } from "styleBindings";
 
 import styles from "./style.module.scss";
@@ -61,7 +66,7 @@ export const PanelBase: FC<PanelBase> = (props: PanelBase) => {
       <Portal>
         <div
           id="starq-abc-panel"
-          className={`${wrapperClass} ${styles.BrandChangerPanel} ${styles.BrandChangerAnimate}`}
+          className={`starq-abc-panel ${wrapperClass} ${styles.ABCPanel} ${styles.ABCAnimateIn}`}
           style={wrapperStyle}
         >
           <div id={"starq-abc-panel-header"} className={styleSIPTheme.header}>

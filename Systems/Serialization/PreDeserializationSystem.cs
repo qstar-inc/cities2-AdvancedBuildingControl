@@ -1,5 +1,6 @@
-﻿using Game;
+using Game;
 using StarQ.Shared.Extensions;
+using Unity.Entities;
 
 namespace AdvancedBuildingControl.Systems.Serialization
 {
@@ -8,9 +9,6 @@ namespace AdvancedBuildingControl.Systems.Serialization
 #nullable disable
         public CreatedEntitiesManagementSystem createdEntitiesManagementSystem;
 
-        //private StorageChangerSystem storageChangerSystem;
-        //private LevelChangerSystem levelChangerSystem;
-        //private HouseholdChangerSystem householdChangerSystem;
         private RefChangerSystem refChangerSystem;
 
 #nullable enable
@@ -18,24 +16,21 @@ namespace AdvancedBuildingControl.Systems.Serialization
         protected override void OnCreate()
         {
             createdEntitiesManagementSystem =
-                Mod.world.GetOrCreateSystemManaged<CreatedEntitiesManagementSystem>();
-            //storageChangerSystem = Mod.world.GetOrCreateSystemManaged<StorageChangerSystem>();
-            //levelChangerSystem = Mod.world.GetOrCreateSystemManaged<LevelChangerSystem>();
-            //householdChangerSystem = Mod.world.GetOrCreateSystemManaged<HouseholdChangerSystem>();
-            refChangerSystem = Mod.world.GetOrCreateSystemManaged<RefChangerSystem>();
+                World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<CreatedEntitiesManagementSystem>();
+            refChangerSystem =
+                World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<RefChangerSystem>();
         }
 
         protected override void OnUpdate()
         {
-            LogHelper.SendLog(
-                $"Starting InitOnGameStart on PreDeserializationSystem OnUpdate",
-                LogLevel.DEV
-            );
+            LogHelper.SendLog("Starting loading", LogLevel.DEV);
+            //LogHelper.SendLog(
+            //    $"Starting InitOnGameStart on PreDeserializationSystem OnUpdate",
+            //    LogLevel.DEV
+            //);
             createdEntitiesManagementSystem.DoUpdate();
-            //storageChangerSystem.InitOnGameStart();
-            //levelChangerSystem.InitOnGameStart();
-            //householdChangerSystem.InitOnGameStart();
             refChangerSystem.InitOnGameStart();
+            LogHelper.SendLog("Ending loading", LogLevel.DEV);
         }
     }
 }

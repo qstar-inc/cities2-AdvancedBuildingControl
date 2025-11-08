@@ -1,29 +1,39 @@
 import {
-    ClosePanel, InfoButton, ResetStorage, selectedEntity, SetBrand, SizeProvider,
-    storagePanelVisibleBinding, ToggleResource, ToolButton, useUniformSizeProvider,
-    VanillaVirtualList
+  ResetStorage,
+  selectedEntity,
+  storagePanelVisibleBinding,
+  ToggleResource,
+  ToolButton,
 } from "bindings";
 import { useValue } from "cs2/api";
-import { Entity, Resource } from "cs2/bindings";
-import { AutoNavigationScope, FocusActivation, FocusDisabled } from "cs2/input";
+import { FocusDisabled } from "cs2/input";
 import { useLocalization } from "cs2/l10n";
-import { FOCUS_AUTO, FOCUS_DISABLED, PanelSection, PanelSectionRow, Portal } from "cs2/ui";
-import { useCssLength } from "cs2/utils";
-import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import {
-    infoRowModule, infoSectionModule, resourceBox, storageBox, uilStandard
+  FOCUS_AUTO,
+  FOCUS_DISABLED,
+  PanelSection,
+  PanelSectionRow,
+} from "cs2/ui";
+import { FC, useMemo } from "react";
+import {
+  infoRowModule,
+  infoSectionModule,
+  resourceBox,
+  storageBox,
+  uilStandard,
 } from "styleBindings";
-import { BldgStorageInfo, BrandDataInfo, LocaleKeys, ResourceDataInfo, ResourceGroup } from "types";
+import {
+  BldgStorageInfo,
+  LocaleKeys,
+  ResourceDataInfo,
+  ResourceGroup,
+} from "types";
 
 import { PanelBase } from "./PanelBase";
 import styles from "./style.module.scss";
 
 interface StoragePanelProps {
   bldgStorageInfo: BldgStorageInfo;
-  // h_storage: boolean;
-  // w_resources: ResourceDataInfo[];
-  // w_resourceslist: ResourceDataInfo[];
-  // w_entity: Entity;
 }
 
 const ResourcesSection = ({
@@ -70,50 +80,13 @@ const ResourcesSection = ({
         })}
       </div>
     </>
-    // <>
-    // <RenderRow
-    // w_resources={w_resources}
-    // entity={Entity}
-    // isCurrent={isCurrent}
-    // currentResource={resource}
-    // />
-    // {/* {RenderItem}
-    // <PanelSection> */}
-    //   {/* <PanelSectionRow
-    //     left={`${BrandsText} (${BrandsArrayX.length})`}
-    //     right={BrandGroupHoverText}
-    //     tooltip={BrandsTooltip}
-    //   /> */}
-    //   {/* <AutoNavigationScope activation={FocusActivation.AnyChildren}>
-    //     <>
-    //       {title}
-    //       <VanillaVirtualList
-    //         direction="vertical"
-    //         sizeProvider={SizeProvider}
-    //         renderItem={RenderItem}
-    //         style={{
-    //           maxHeight: `${Math.min(
-    //             30 * w_resourceslist.length,
-    //             MaxHeight
-    //           )}rem`,
-    //         }}
-    //         smooth
-    //       />
-    //     </>
-    //   </AutoNavigationScope> */}
-    // {/* </PanelSection> */}
-    // </>
   );
 };
 
 export const RenderRow = ({
-  // w_resources,
-  // entity,
   isCurrent,
   currentResource,
 }: {
-  // w_resources: ResourceDataInfo[];
-  // entity: Entity;
   isCurrent: boolean;
   currentResource: ResourceDataInfo;
 }) => {
@@ -158,91 +131,14 @@ export const StoragePanel: FC<StoragePanelProps> = (
 
   let bldgStorageInfo = props.bldgStorageInfo;
 
-  // const [heightFull, setHeightFull] = useState(0);
-  // const [panelLeft, setPanelLeft] = useState(0);
-
   const headerText = translate(LocaleKeys.STORAGE_HEADER);
   const resetTooltip = translate(LocaleKeys.STORAGE_RESET_TOOLTIP);
   const infoText = translate(LocaleKeys.STORAGE_INFORMATION);
-  // const CurrentBrandTitleText = translate(LocaleKeys.BRAND_CURRENT_BRAND);
-  // const CurrentCompanyTitleText = translate(LocaleKeys.BRAND_CURRENT_COMPANY);
-  // const SupportedBrandsText = translate(
-  //   LocaleKeys.BRAND_SUPPORTED_LIST
-  // )?.toUpperCase();
-  // const SupportedBrandsTooltip = translate(LocaleKeys.BRAND_SUPPORTED_TOOLTIP);
-  // const OtherBrandsText = translate(LocaleKeys.BRAND_OTHER_LIST)?.toUpperCase();
-  // const OtherBrandsTooltip = translate(LocaleKeys.BRAND_OTHER_TOOLTIP);
-  // const BrandGroupHoverText = translate(LocaleKeys.BRAND_GROUP_HOVER);
-
-  // const [SupportedBrandsArray, OtherBrandsArray] = useMemo(() => {
-  //   const supported: BrandDataInfo[] = [];
-  //   const other: BrandDataInfo[] = [];
-
-  //   for (const brand of props.w_brandlist ?? []) {
-  //     if (
-  //       Array.isArray(brand.Companies) &&
-  //       brand.Companies.includes(props.w_company)
-  //     ) {
-  //       supported.push(brand);
-  //     } else {
-  //       other.push(brand);
-  //     }
-  //   }
-
-  //   return [supported, other];
-  // }, [props.w_brandlist, props.w_company]);
-
-  // const wrapperStyle = useMemo(
-  //   () => ({
-  //     maxHeight: `${heightFull}px`,
-  //     left: `calc(${panelLeft}px + 20rem)`,
-  //   }),
-  //   [panelLeft, heightFull]
-  // );
 
   const visible = useMemo(
     () => visibleBindingValue && bldgStorageInfo.HasStorage,
     [visibleBindingValue]
   );
-
-  // const calculateHeights = () => {
-  //   const wrapperElement = document.querySelector(
-  //     ".info-layout_BVk"
-  //   ) as HTMLElement | null;
-  //   const sipElement = document.querySelector(
-  //     ".selected-info-panel_gG8"
-  //   ) as HTMLElement | null;
-
-  //   const newHeightFull = wrapperElement?.offsetHeight ?? 1600;
-  //   if (sipElement?.offsetWidth == 0) {
-  //     return;
-  //   } else {
-  //     const newPanelLeft =
-  //       (sipElement?.offsetLeft ?? 6) + (sipElement?.offsetWidth ?? 300);
-  //     setPanelLeft(newPanelLeft);
-  //   }
-  //   setHeightFull(newHeightFull);
-  // };
-
-  // useEffect(() => {
-  //   calculateHeights();
-  //   const observer = new MutationObserver(() => {
-  //     calculateHeights();
-  //   });
-
-  //   observer.observe(document.body, {
-  //     childList: true,
-  //     subtree: true,
-  //   });
-
-  //   return () => observer.disconnect();
-  // }, []);
-
-  // const sizeProviderSupported = useUniformSizeProvider(
-  //   useCssLength("30rem"),
-  //   props.w_resourceslist.length,
-  //   5
-  // );
 
   if (sE.index === 0 || !visible) return null;
 
@@ -264,33 +160,24 @@ export const StoragePanel: FC<StoragePanelProps> = (
               <>
                 <ResourcesSection
                   w_resources={bldgStorageInfo.BuildingResources}
-                  title={translate(LocaleKeys.RESOURCE_RAW)!}
+                  title={translate("SelectedInfoPanel.RAW_MATERIALS")!}
                   w_resourceslist={bldgStorageInfo.BuildingResourcesAll.filter(
                     (r) => r.Group === ResourceGroup.Raw
                   ).sort((a, b) => (a.Id > b.Id ? 1 : -1))}
-                  // Entity={props.w_entity}
-                  // SizeProvider={sizeProviderSupported}
-                  // MaxHeight={750}
                 />
                 <ResourcesSection
                   w_resources={bldgStorageInfo.BuildingResources}
-                  title={translate(LocaleKeys.RESOURCE_PROCESSED)!}
+                  title={translate("SelectedInfoPanel.PROCESSED_GOODS")!}
                   w_resourceslist={bldgStorageInfo.BuildingResourcesAll.filter(
                     (r) => r.Group === ResourceGroup.Processed
                   ).sort((a, b) => (a.Id > b.Id ? 1 : -1))}
-                  // Entity={props.w_entity}
-                  // SizeProvider={sizeProviderSupported}
-                  // MaxHeight={750}
                 />
                 <ResourcesSection
                   w_resources={bldgStorageInfo.BuildingResources}
-                  title={translate(LocaleKeys.RESOURCE_MAIL)!}
+                  title={translate("SelectedInfoPanel.MAIL")!}
                   w_resourceslist={bldgStorageInfo.BuildingResourcesAll.filter(
                     (r) => r.Group === ResourceGroup.Mail
                   ).sort((a, b) => (a.Id > b.Id ? 1 : -1))}
-                  // Entity={props.w_entity}
-                  // SizeProvider={sizeProviderSupported}
-                  // MaxHeight={750}
                 />
               </>
             </PanelSection>
@@ -305,8 +192,6 @@ export const StoragePanel: FC<StoragePanelProps> = (
                         id="starq-abc-storage-reset"
                         focusKey={FOCUS_DISABLED}
                         tooltip={resetTooltip!}
-                        // selected={false}
-                        // disabled={true}
                         src={uilStandard + "Reset.svg"}
                         onSelect={() => {
                           ResetStorage();
@@ -314,49 +199,49 @@ export const StoragePanel: FC<StoragePanelProps> = (
                       />
                     </FocusDisabled>
                   }
-                  right={
-                    <FocusDisabled>
-                      <ToolButton
-                        id="starq-abc-storage-copy"
-                        className={styles.DisabledToolButton}
-                        focusKey={FOCUS_AUTO}
-                        tooltip={"Disabled"}
-                        // selected={false}
-                        disabled={true}
-                        // className={styles.ToolWhite}
-                        src={uilStandard + "RectangleCopy.svg"}
-                        onSelect={() => {
-                          // RandomizeStyle();
-                        }}
-                      />
-                      <ToolButton
-                        id="starq-abc-storage-paste"
-                        className={styles.DisabledToolButton}
-                        focusKey={FOCUS_AUTO}
-                        tooltip={"Disabled"}
-                        // selected={false}
-                        disabled={true}
-                        // className={styles.ToolWhite}
-                        src={uilStandard + "RectanglePaste.svg"}
-                        onSelect={() => {
-                          // RandomizeStyle();
-                        }}
-                      />
-                      <ToolButton
-                        id="starq-abc-storage-copyclear"
-                        className={styles.DisabledToolButton}
-                        focusKey={FOCUS_AUTO}
-                        tooltip={"Disabled"}
-                        // selected={false}
-                        disabled={true}
-                        // className={styles.ToolWhite}
-                        src={uilStandard + "XClose.svg"}
-                        onSelect={() => {
-                          // RandomizeStyle();
-                        }}
-                      />
-                    </FocusDisabled>
-                  }
+                  // right={
+                  //   <FocusDisabled>
+                  //     <ToolButton
+                  //       id="starq-abc-storage-copy"
+                  //       className={styles.DisabledToolButton}
+                  //       focusKey={FOCUS_AUTO}
+                  //       tooltip={"Disabled"}
+                  //       // selected={false}
+                  //       disabled={true}
+                  //       // className={styles.ToolWhite}
+                  //       src={uilStandard + "RectangleCopy.svg"}
+                  //       onSelect={() => {
+                  //         // RandomizeStyle();
+                  //       }}
+                  //     />
+                  //     <ToolButton
+                  //       id="starq-abc-storage-paste"
+                  //       className={styles.DisabledToolButton}
+                  //       focusKey={FOCUS_AUTO}
+                  //       tooltip={"Disabled"}
+                  //       // selected={false}
+                  //       disabled={true}
+                  //       // className={styles.ToolWhite}
+                  //       src={uilStandard + "RectanglePaste.svg"}
+                  //       onSelect={() => {
+                  //         // RandomizeStyle();
+                  //       }}
+                  //     />
+                  //     <ToolButton
+                  //       id="starq-abc-storage-copyclear"
+                  //       className={styles.DisabledToolButton}
+                  //       focusKey={FOCUS_AUTO}
+                  //       tooltip={"Disabled"}
+                  //       // selected={false}
+                  //       disabled={true}
+                  //       // className={styles.ToolWhite}
+                  //       src={uilStandard + "XClose.svg"}
+                  //       onSelect={() => {
+                  //         // RandomizeStyle();
+                  //       }}
+                  //     />
+                  //   </FocusDisabled>
+                  // }
                 />
               </>
             </PanelSection>

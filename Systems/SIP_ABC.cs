@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using AdvancedBuildingControl.Components;
@@ -9,12 +9,14 @@ using Colossal.Entities;
 using Colossal.UI.Binding;
 using Game;
 using Game.Buildings;
+using Game.Common;
 using Game.Companies;
 using Game.Economy;
 using Game.Net;
 using Game.Prefabs;
 using Game.UI;
 using Game.UI.InGame;
+using StarQ.Shared.Extensions;
 using Unity.Entities;
 using UnityEngine;
 using static Game.Prefabs.TriggerPrefabData;
@@ -30,74 +32,37 @@ namespace AdvancedBuildingControl.Systems
         }
 
 #nullable disable
-
+        public static BldgGeneralInfo bldgGeneralInfo = new();
         public static BldgBrandInfo bldgBrandInfo = new();
         public static BldgZoningInfo bldgZoningInfo = new();
         public static BldgStorageInfo bldgStorageInfo = new();
-
-        //public static string CurrentBrandName { get; set; } = string.Empty;
-        //public static string CurrentBrandIcon { get; set; } = string.Empty;
-        //public static string CurrentCompanyName { get; set; } = string.Empty;
-
-        //public static int CurrentLevel { get; set; } = 0;
-        //public static int CurrentUpkeep { get; set; } = 0;
-
-        //public static int CurrentHousehold { get; set; } = 0;
-        //public static int CurrentRent { get; set; } = 0;
-
-        //public static int MaxHousehold { get; set; } = 0;
-        //public static string CurrentAreaType { get; set; } = string.Empty;
-        //public static float CurrentSpaceMultiplier { get; set; } = 0;
-        //public static float ZoneTypeBase { get; set; } = 0;
-        //public static float TotalRent { get; set; } = 0;
-        //public static float PropertiesCount { get; set; } = 0;
-        //public static float MixedPercent { get; set; } = 0;
-        //public static float LandValueBase { get; set; } = 0;
-        //public static float LandValueModifier { get; set; } = 0;
-        //public static bool IgnoreLandValue { get; set; } = false;
-        //public static int LotSize { get; set; } = 0;
-        //public static bool IsMixed { get; set; } = false;
-
-        //public static string CurrentZoneName { get; set; } = string.Empty;
-
-        //public static string CurrentVariant { get; set; } = string.Empty;
-
-        //public static ResourceDataInfo[] BuildingResources { get; set; } = new ResourceDataInfo[0];
-        //public static ResourceDataInfo[] BuildingResourcesAll { get; set; } =
-        //    new ResourceDataInfo[0];
+        public static BldgUtilityInfo bldgUtilityInfo = new();
+        public static BldgVehicleInfo bldgVehicleInfo = new();
 
         private NameSystem nameSystem;
         private PrefabSystem prefabSystem;
 
-        //private StorageChangerSystem storageChangerSystem;
-        //private LevelChangerSystem levelChangerSystem;
-        //private HouseholdChangerSystem householdChangerSystem;
         private RefChangerSystem refChangerSystem;
+        private EntityComponentChanger entityComponentChangerSystem;
         private Utils utils;
 
 #nullable enable
 
         private Entity companyEntity = Entity.Null;
 
-        //private bool hasBrand = false;
-
-        //private bool hasLevel = false;
-        //private bool hasHousehold = false;
-        //private bool hasStorage = false;
-
         protected override void OnCreate()
         {
             base.OnCreate();
             m_InfoUISystem.AddMiddleSection(this);
 
-            nameSystem = Mod.world.GetOrCreateSystemManaged<NameSystem>();
-            prefabSystem = Mod.world.GetOrCreateSystemManaged<PrefabSystem>();
+            nameSystem = WorldHelper.NameSystem;
+            prefabSystem = WorldHelper.PrefabSystem;
 
-            //storageChangerSystem = Mod.world.GetOrCreateSystemManaged<StorageChangerSystem>();
-            //levelChangerSystem = Mod.world.GetOrCreateSystemManaged<LevelChangerSystem>();
-            //householdChangerSystem = Mod.world.GetOrCreateSystemManaged<HouseholdChangerSystem>();
-            refChangerSystem = Mod.world.GetOrCreateSystemManaged<RefChangerSystem>();
-            utils = Mod.world.GetOrCreateSystemManaged<Utils>();
+            refChangerSystem =
+                World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<RefChangerSystem>();
+            entityComponentChangerSystem =
+                World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<EntityComponentChanger>();
+            utils = World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<Utils>();
 
             CreateTrigger("RandomizeStyle", RandomizeStyle);
             CreateTrigger<string>("SetBrand", SetBrand);
@@ -107,6 +72,21 @@ namespace AdvancedBuildingControl.Systems
             CreateTrigger("ResetLevel", ResetLevel);
             CreateTrigger<int>("ChangeHousehold", ChangeHousehold);
             CreateTrigger("ResetHousehold", ResetHousehold);
+            CreateTrigger<int>("ChangeMaxWorkplace", ChangeMaxWorkplace);
+            CreateTrigger("ResetMaxWorkplace", ResetMaxWorkplace);
+            CreateTrigger<int>("ChangeWaterPumpCapacity", ChangeWaterPumpCapacity);
+            CreateTrigger("ResetWaterPumpCapacity", ResetWaterPumpCapacity);
+            CreateTrigger<int>("ChangeSewageDumpCapacity", ChangeSewageDumpCapacity);
+            CreateTrigger("ResetSewageDumpCapacity", ResetSewageDumpCapacity);
+            CreateTrigger<int>("ChangeSewageDumpPurification", ChangeSewageDumpPurification);
+            CreateTrigger("ResetSewageDumpPurification", ResetSewageDumpPurification);
+            CreateTrigger<int>("ChangePowerProdCapacity", ChangePowerProdCapacity);
+            CreateTrigger("ResetPowerProdCapacity", ResetPowerProdCapacity);
+            CreateTrigger<int, RefChangerSystem.ValueType>(
+                "ChangeVehicleCapacity",
+                ChangeVehicleCapacity
+            );
+            CreateTrigger<RefChangerSystem.ValueType>("ResetVehicleCapacity", ResetVehicleCapacity);
 
             Enabled = false;
         }
@@ -114,187 +94,56 @@ namespace AdvancedBuildingControl.Systems
         protected override void OnUpdate()
         {
             base.OnUpdate();
-
             visible = Visible();
         }
 
         public override void OnWriteProperties(IJsonWriter writer)
         {
-            //if (bldgZoningInfo.HasLevel || bldgZoningInfo.HasHousehold)
-            //{
+            writer.PropertyName("bldgGeneralInfo");
+            BldgInfoJsonWriterExtensions.Write(writer, bldgGeneralInfo);
+
             writer.PropertyName("bldgZoningInfo");
             BldgInfoJsonWriterExtensions.Write(writer, bldgZoningInfo);
-            //}
-            //if (bldgBrandInfo.HasBrand)
-            //{
+
             writer.PropertyName("bldgBrandInfo");
             BldgInfoJsonWriterExtensions.Write(writer, bldgBrandInfo);
-            //}
-            //if (bldgStorageInfo.HasStorage)
-            //{
+
             writer.PropertyName("bldgStorageInfo");
             BldgInfoJsonWriterExtensions.Write(writer, bldgStorageInfo);
-            //}
 
-            //Mod.log.Info("start");
-            //Mod.log.Info(hasLevel);
-            //Mod.log.Info(CurrentLevel);
-            //Mod.log.Info(CurrentUpkeep);
-            //Mod.log.Info(CurrentZoneName);
-            //Mod.log.Info(DataRetriever.zoneDataInfos.Count);
-            //Mod.log.Info(CurrentVariant);
-            //Mod.log.Info(hasBrand);
-            //Mod.log.Info(CurrentBrandName);
-            //Mod.log.Info(CurrentBrandIcon);
-            //Mod.log.Info(CurrentCompanyName);
-            //Mod.log.Info(DataRetriever.brandDataInfos.Count);
-            //Mod.log.Info(hasStorage);
-            //Mod.log.Info(BuildingResources.Length);
-            //Mod.log.Info(DataRetriever.resourceDataInfos.Count);
-            //Mod.log.Info("end");
+            writer.PropertyName("bldgUtilityInfo");
+            BldgInfoJsonWriterExtensions.Write(writer, bldgUtilityInfo);
 
-            //writer.PropertyName("h_level");
-            //writer.Write(hasLevel);
-
-            //writer.PropertyName("w_level");
-            //writer.Write(CurrentLevel);
-
-            //writer.PropertyName("w_upkeep");
-            //writer.Write(CurrentUpkeep);
-
-            //writer.PropertyName("h_household");
-            //writer.Write(hasHousehold);
-
-            //writer.PropertyName("w_household");
-            //writer.Write(CurrentHousehold);
-
-            //writer.PropertyName("w_rent");
-            //writer.Write(CurrentRent);
-
-            //writer.PropertyName("w_maxhousehold");
-            //writer.Write(MaxHousehold);
-
-            //writer.PropertyName("w_areatype");
-            //writer.Write(CurrentAreaType);
-
-            //writer.PropertyName("w_spacemult");
-            //writer.Write(CurrentSpaceMultiplier);
-
-            //writer.PropertyName("w_zonetypebase");
-            //writer.Write(ZoneTypeBase);
-
-            //writer.PropertyName("w_landvaluemodifier");
-            //writer.Write(LandValueModifier);
-
-            //writer.PropertyName("w_ignorelandvalue");
-            //writer.Write(IgnoreLandValue);
-
-            //writer.PropertyName("w_lotsize");
-            //writer.Write(LotSize);
-
-            //writer.PropertyName("w_landvaluebase");
-            //writer.Write(LandValueBase);
-
-            //writer.PropertyName("w_totalrent");
-            //writer.Write(TotalRent);
-
-            //writer.PropertyName("w_propertiescount");
-            //writer.Write(PropertiesCount);
-
-            //writer.PropertyName("w_mixedpercent");
-            //writer.Write(MixedPercent);
-
-            //writer.PropertyName("w_ismixed");
-            //writer.Write(IsMixed);
-
-            ////writer.PropertyName("w_zone");
-            ////writer.Write(CurrentZoneName);
-
-            ////writer.PropertyName("w_zonelist");
-            ////ZoneDataInfoJsonWriterExtensions.Write(writer, DataRetriever.zoneDataInfos.ToArray());
-
-            ////writer.PropertyName("w_variant");
-            ////writer.Write(CurrentVariant);
-
-            //writer.PropertyName("h_brand");
-            //writer.Write(hasBrand);
-
-            //writer.PropertyName("w_brand");
-            //writer.Write(CurrentBrandName);
-
-            //writer.PropertyName("w_brandicon");
-            //writer.Write(CurrentBrandIcon);
-
-            //writer.PropertyName("w_company");
-            //writer.Write(CurrentCompanyName);
-
-            //writer.PropertyName("w_brandlist");
-            //BrandDataInfoJsonWriterExtensions.Write(writer, DataRetriever.brandDataInfos.ToArray());
-
-            //writer.PropertyName("h_storage");
-            //writer.Write(hasStorage);
-
-            //writer.PropertyName("w_resources");
-            //writer.Write(BuildingResources);
-
-            //writer.PropertyName("w_resourceslist");
-            //writer.Write(BuildingResourcesAll);
+            writer.PropertyName("bldgVehicleInfo");
+            BldgInfoJsonWriterExtensions.Write(writer, bldgVehicleInfo);
         }
 
         protected override void Reset()
         {
+            bldgGeneralInfo = new();
             bldgZoningInfo = new();
             bldgStorageInfo = new();
             bldgBrandInfo = new();
+            bldgUtilityInfo = new();
+            bldgVehicleInfo = new();
 
-            //CurrentBrandName = string.Empty;
-            //CurrentBrandIcon = string.Empty;
-            //CurrentCompanyName = string.Empty;
-
-            ////CurrentLevel = 0;
-            ////CurrentUpkeep = 0;
-            ////CurrentHousehold = 0;
-            ////CurrentRent = 0;
-            ////MaxHousehold = 0;
-            //CurrentSpaceMultiplier = 0;
-            //CurrentAreaType = string.Empty;
-
-            //ZoneTypeBase = 0;
-            //LandValueModifier = 0;
-            //IgnoreLandValue = false;
-            //LotSize = 0;
-            //LandValueBase = 0;
-            //TotalRent = 0;
-            //PropertiesCount = 0;
-            //MixedPercent = 0;
-            //IsMixed = false;
-            ////CurrentZoneName = string.Empty;
-
-            ////CurrentVariant = string.Empty;
-
-            //BuildingResources = new ResourceDataInfo[0];
-            //BuildingResourcesAll = new ResourceDataInfo[0];
-
-            //hasBrand = false;
-            ////hasLevel = false;
-            ////hasHousehold = false;
-            //hasStorage = false;
             companyEntity = Entity.Null;
         }
 
         private bool Visible()
         {
             bool isVisible = false;
-            if (EntityManager.TryGetComponent(selectedEntity, out PrefabRef _))
+            if (EntityManager.TryGetComponent(selectedEntity, out PrefabRef prefabRef))
             {
-                if (!prefabSystem.TryGetPrefab(selectedPrefab, out PrefabBase _))
+                if (!prefabSystem.TryGetPrefab(prefabRef.m_Prefab, out PrefabBase _))
                     return false;
 
-                if (EntityManager.TryGetComponent(selectedPrefab, out BuildingData _))
+                if (EntityManager.HasComponent<BuildingData>(prefabRef.m_Prefab))
                     isVisible = true;
 
                 if (!isVisible)
                     return false;
+
                 return true;
             }
             return false;
@@ -302,20 +151,32 @@ namespace AdvancedBuildingControl.Systems
 
         protected override void OnProcess()
         {
+            if (
+                EntityManager.HasComponent<Abandoned>(selectedEntity)
+                || EntityManager.HasComponent<Destroyed>(selectedEntity)
+            )
+                return;
+
             CheckLevel();
             CheckHousehold();
             CheckBrand();
             CheckStorage();
+            CheckWorkplace();
+            CheckUtility();
+            CheckVehicle();
+            CheckGeneral();
         }
 
         public void CheckLevel()
         {
+            if (!EntityManager.TryGetComponent(selectedEntity, out PrefabRef prefabRef))
+                return;
             bldgZoningInfo.HasLevel = false;
             if (
-                !EntityManager.HasComponent<SignatureBuildingData>(selectedPrefab)
-                && !EntityManager.HasComponent<Abandoned>(selectedEntity)
-                && EntityManager.HasComponent<BuildingData>(selectedPrefab)
-                && EntityManager.HasComponent<SpawnableBuildingData>(selectedPrefab)
+                !EntityManager.HasComponent<SignatureBuildingData>(prefabRef.m_Prefab)
+                //&& !EntityManager.HasComponent<Abandoned>(selectedEntity)
+                && EntityManager.HasComponent<BuildingData>(prefabRef.m_Prefab)
+                && EntityManager.HasComponent<SpawnableBuildingData>(prefabRef.m_Prefab)
             )
             {
                 bldgZoningInfo.HasLevel = true;
@@ -325,15 +186,21 @@ namespace AdvancedBuildingControl.Systems
 
         public void CheckHousehold()
         {
+            if (!EntityManager.TryGetComponent(selectedEntity, out PrefabRef prefabRef))
+                return;
             bldgZoningInfo.HasHousehold = false;
             if (
-                !EntityManager.HasComponent<Abandoned>(selectedEntity)
-                && EntityManager.HasComponent<BuildingData>(selectedPrefab)
+                //!EntityManager.HasComponent<Abandoned>(selectedEntity)
+                //&&
+                EntityManager.HasComponent<BuildingData>(prefabRef.m_Prefab)
             )
             {
                 if (
-                    EntityManager.TryGetComponent(selectedPrefab, out BuildingPropertyData bpd)
-                    && bpd.m_ResidentialProperties > 0
+                    EntityManager.TryGetComponent(
+                        prefabRef.m_Prefab,
+                        out BuildingPropertyData buildingPropertyData
+                    )
+                    && buildingPropertyData.m_ResidentialProperties > 0
                 )
                 {
                     bldgZoningInfo.HasHousehold = true;
@@ -344,12 +211,14 @@ namespace AdvancedBuildingControl.Systems
 
         public void CheckBrand()
         {
+            if (!EntityManager.TryGetComponent(selectedEntity, out PrefabRef prefabRef))
+                return;
             bldgBrandInfo.HasBrand = false;
             if (
                 CompanyUIUtils.HasCompany(
                     EntityManager,
                     selectedEntity,
-                    selectedPrefab,
+                    prefabRef.m_Prefab,
                     out companyEntity
                 )
             )
@@ -368,8 +237,8 @@ namespace AdvancedBuildingControl.Systems
                         bldgBrandInfo.HasBrand = true;
                         var brandInData = DataRetriever
                             .brandDataInfos.Where(v => v.Entity == brand)
-                            .First();
-                        bldgBrandInfo.BrandIcon = brandInData.Icon;
+                            ?.First();
+                        bldgBrandInfo.BrandIcon = brandInData?.Icon ?? "";
                     }
                 }
             }
@@ -377,10 +246,19 @@ namespace AdvancedBuildingControl.Systems
 
         public void CheckStorage()
         {
+            if (!EntityManager.TryGetComponent(selectedEntity, out PrefabRef prefabRef))
+                return;
             bldgStorageInfo.HasStorage = false;
             if (
-                EntityManager.TryGetComponent(selectedEntity, out PrefabRef prefabRef)
-                && EntityManager.TryGetComponent(prefabRef.m_Prefab, out StorageLimitData _)
+                //EntityManager.HasComponent<Building>(selectedEntity)
+                //&&
+                EntityManager.HasComponent<StorageLimitData>(prefabRef.m_Prefab)
+                && TryGetComponentWithUpgrades(
+                    selectedEntity,
+                    prefabRef.m_Prefab,
+                    out StorageLimitData storageLimitData
+                )
+                && storageLimitData.m_Limit > 0
                 && EntityManager.TryGetComponent(
                     prefabRef.m_Prefab,
                     out StorageCompanyData storageCompanyData
@@ -396,11 +274,164 @@ namespace AdvancedBuildingControl.Systems
             }
         }
 
+        public void CheckWorkplace()
+        {
+            bldgZoningInfo.HasWorkplace = false;
+            if (
+                //EntityManager.HasComponent<Building>(selectedEntity)
+                //&&
+                EntityManager.HasComponent<WorkProvider>(selectedEntity)
+            )
+            {
+                bldgZoningInfo.HasWorkplace = true;
+                UpdateUIWorkplaceBinding();
+            }
+        }
+
+        public void CheckUtility()
+        {
+            if (!EntityManager.TryGetComponent(selectedEntity, out PrefabRef prefabRef))
+                return;
+            bldgUtilityInfo.IsWaterPump = false;
+            if (
+                //EntityManager.HasComponent<Building>(selectedEntity)
+                //&&
+                EntityManager.HasComponent<Game.Buildings.WaterPumpingStation>(selectedEntity)
+                && EntityManager.HasComponent<WaterPumpingStationData>(prefabRef.m_Prefab)
+            )
+            {
+                bldgUtilityInfo.IsWaterPump = true;
+            }
+
+            bldgUtilityInfo.IsSewageOutlet = false;
+            if (
+                //EntityManager.HasComponent<Building>(selectedEntity)
+                //&&
+                EntityManager.HasComponent<Game.Buildings.SewageOutlet>(selectedEntity)
+                && EntityManager.HasComponent<SewageOutletData>(prefabRef.m_Prefab)
+            )
+            {
+                bldgUtilityInfo.IsSewageOutlet = true;
+            }
+
+            bldgUtilityInfo.IsPowerPlant = false;
+            if (
+                //EntityManager.HasComponent<Building>(selectedEntity)
+                //&&
+                EntityManager.HasComponent<ElectricityProducer>(selectedEntity)
+                && EntityManager.HasComponent<PowerPlantData>(prefabRef.m_Prefab)
+            )
+            {
+                bldgUtilityInfo.IsPowerPlant = true;
+            }
+            if (
+                bldgUtilityInfo.IsWaterPump
+                || bldgUtilityInfo.IsSewageOutlet
+                || bldgUtilityInfo.IsPowerPlant
+            )
+                UpdateUIUtilityBinding();
+        }
+
+        public void CheckVehicle()
+        {
+            if (!EntityManager.TryGetComponent(selectedEntity, out PrefabRef prefabRef))
+                return;
+            bldgVehicleInfo.IsDepot = false;
+            if (EntityManager.HasComponent<TransportDepotData>(prefabRef.m_Prefab))
+                bldgVehicleInfo.IsDepot = true;
+
+            bldgVehicleInfo.IsGarbageFacility = false;
+            if (EntityManager.HasComponent<GarbageFacilityData>(prefabRef.m_Prefab))
+                bldgVehicleInfo.IsGarbageFacility = true;
+
+            bldgVehicleInfo.IsHospital = false;
+            if (EntityManager.HasComponent<HospitalData>(prefabRef.m_Prefab))
+                bldgVehicleInfo.IsHospital = true;
+
+            bldgVehicleInfo.IsDeathcare = false;
+            if (EntityManager.HasComponent<DeathcareFacilityData>(prefabRef.m_Prefab))
+                bldgVehicleInfo.IsDeathcare = true;
+
+            if (
+                bldgVehicleInfo.IsDepot
+                || bldgVehicleInfo.IsGarbageFacility
+                || bldgVehicleInfo.IsHospital
+                || bldgVehicleInfo.IsDeathcare
+            )
+                UpdateUIVehicleBinding();
+        }
+
+        public void CheckGeneral()
+        {
+            if (!EntityManager.TryGetComponent(selectedEntity, out PrefabRef prefabRef))
+                return;
+            if (
+                (
+                    bldgUtilityInfo.IsWaterPump
+                    || bldgUtilityInfo.IsSewageOutlet
+                    || bldgUtilityInfo.IsPowerPlant
+                )
+                && EntityManager.HasComponent<Building>(selectedEntity)
+                && EntityManager.HasComponent<Efficiency>(selectedEntity)
+                //&& !EntityManager.HasComponent<Abandoned>(selectedEntity)
+                //&& !EntityManager.HasComponent<Destroyed>(selectedEntity)
+                && (
+                    !CompanyUIUtils.HasCompany(
+                        EntityManager,
+                        selectedEntity,
+                        prefabRef.m_Prefab,
+                        out Entity entity
+                    )
+                    || entity != Entity.Null
+                )
+            )
+            {
+                if (
+                    EntityManager.TryGetBuffer(
+                        selectedEntity,
+                        true,
+                        out DynamicBuffer<Efficiency> efficiencyBuffer
+                    )
+                )
+                    bldgGeneralInfo.Efficiency = (int)
+                        Unity.Mathematics.math.round(
+                            100f * BuildingUtils.GetEfficiency(efficiencyBuffer)
+                        );
+            }
+
+            if (
+                EntityManager.TryGetBuffer(
+                    selectedEntity,
+                    true,
+                    out DynamicBuffer<SpawnLocationElement> spawnLocationElement
+                )
+            )
+            {
+                for (int i = 0; i < spawnLocationElement.Length; i++)
+                {
+                    var sl = spawnLocationElement[i];
+                    if (
+                        sl.m_Type == SpawnLocationType.SpawnLocation
+                        && EntityManager.TryGetComponent(
+                            sl.m_SpawnLocation,
+                            out PrefabRef prefabData
+                        )
+                        && prefabData.m_Prefab == DataRetriever.integratedHelipad
+                    )
+                    {
+                        bldgGeneralInfo.HasHeli = true;
+                        break;
+                    }
+                }
+            }
+        }
+
         private void UpdateUILevelBinding()
         {
+            if (!EntityManager.TryGetComponent(selectedEntity, out PrefabRef prefabRef))
+                return;
             if (
-                EntityManager.TryGetComponent(selectedEntity, out PrefabRef prefabRef)
-                && EntityManager.TryGetComponent(
+                EntityManager.TryGetComponent(
                     prefabRef.m_Prefab,
                     out SpawnableBuildingData spawnableBuildingData
                 )
@@ -418,13 +449,15 @@ namespace AdvancedBuildingControl.Systems
 
         private void UpdateUIHouseholdBinding(int futureRent = -1)
         {
+            if (!EntityManager.TryGetComponent(selectedEntity, out PrefabRef prefabRef))
+                return;
             if (
-                EntityManager.TryGetComponent(selectedEntity, out PrefabRef prefabRef)
-                && EntityManager.TryGetComponent(prefabRef.m_Prefab, out BuildingPropertyData bpd)
+                EntityManager.TryGetComponent(
+                    prefabRef.m_Prefab,
+                    out BuildingPropertyData buildingPropertyData
+                )
             )
-            {
                 bldgZoningInfo.HasHousehold = true;
-            }
             else
             {
                 bldgZoningInfo.HasHousehold = false;
@@ -432,9 +465,7 @@ namespace AdvancedBuildingControl.Systems
             }
 
             if (futureRent != -1)
-            {
                 bldgZoningInfo.Rent = futureRent;
-            }
             else
             {
                 if (
@@ -462,8 +493,9 @@ namespace AdvancedBuildingControl.Systems
                     var landValue = EntityManager
                         .GetComponentData<LandValue>(building.m_RoadEdge)
                         .m_LandValue;
-                    bldgZoningInfo.Rent = PropertyUtils.GetRentPricePerRenter(
-                        bpd,
+                    bldgZoningInfo.Household = buildingPropertyData.m_ResidentialProperties;
+                    (float totalRent, float props) = utils.CheckMaxRent(
+                        buildingPropertyData,
                         bldgZoningInfo.Level,
                         buildingData.m_LotSize.x * buildingData.m_LotSize.y,
                         landValue,
@@ -471,95 +503,13 @@ namespace AdvancedBuildingControl.Systems
                         ref economyParameterData,
                         zonePropData.m_IgnoreLandValue
                     );
-                    bldgZoningInfo.Household = bpd.m_ResidentialProperties;
-                    bldgZoningInfo.SpaceMultiplier = bpd.m_SpaceMultiplier;
-                    switch (zoneData.m_AreaType)
-                    {
-                        case Game.Zones.AreaType.Residential:
-                            bldgZoningInfo.ZoneTypeBase = economyParameterData
-                                .m_RentPriceBuildingZoneTypeBase
-                                .x;
-                            bldgZoningInfo.LandValueModifier = economyParameterData
-                                .m_LandValueModifier
-                                .x;
-                            break;
-                        case Game.Zones.AreaType.Commercial:
-                            bldgZoningInfo.ZoneTypeBase = economyParameterData
-                                .m_RentPriceBuildingZoneTypeBase
-                                .y;
-                            bldgZoningInfo.LandValueModifier = economyParameterData
-                                .m_LandValueModifier
-                                .y;
-                            break;
-                        case Game.Zones.AreaType.Industrial:
-                            bldgZoningInfo.ZoneTypeBase = economyParameterData
-                                .m_RentPriceBuildingZoneTypeBase
-                                .z;
-                            bldgZoningInfo.LandValueModifier = economyParameterData
-                                .m_LandValueModifier
-                                .z;
-                            break;
-                    }
-                    bldgZoningInfo.IgnoreLandValue = zonePropData.m_IgnoreLandValue;
-                    (float a, float b) = utils.CheckMaxRent(
-                        bpd,
-                        bldgZoningInfo.Level,
-                        buildingData.m_LotSize.x * buildingData.m_LotSize.y,
-                        landValue,
-                        zoneData.m_AreaType,
-                        ref economyParameterData,
-                        zonePropData.m_IgnoreLandValue
-                    );
-                    bldgZoningInfo.LandValueBase = landValue;
-                    bldgZoningInfo.LotSize = buildingData.m_LotSize.x * buildingData.m_LotSize.y;
-                    bldgZoningInfo.TotalRent = a;
-                    bldgZoningInfo.PropertiesCount = b;
-                    bldgZoningInfo.MixedPercent =
-                        economyParameterData.m_MixedBuildingCompanyRentPercentage;
-                    bldgZoningInfo.IsMixed = PropertyUtils.IsMixedBuilding(bpd);
+                    bldgZoningInfo.Rent = Mathf.RoundToInt(totalRent / props);
 
-                    //BuildingPropertyData bpdX;
-                    //if (
-                    //    EntityManager.TryGetComponent(
-                    //        selectedEntity,
-                    //        out OriginalEntity originalEntity
-                    //    )
-                    //    && prefabSystem.TryGetPrefab(
-                    //        new PrefabID("BuildingPrefab", originalEntity.OGEntity.ToString()),
-                    //        out PrefabBase prefabBase
-                    //    )
-                    //    && prefabSystem.TryGetEntity(prefabBase, out Entity ogEntity)
-                    //    && EntityManager.TryGetComponent(ogEntity, out BuildingPropertyData bpd2)
-                    //)
-                    //{
-                    //    bpdX = bpd2;
-                    //}
-                    //else if (
-                    //    EntityManager.TryGetComponent(selectedPrefab, out PrefabData prefaData)
-                    //    && prefabSystem.TryGetPrefab(prefaData, out PrefabBase prefabBase2)
-                    //    && prefabSystem.TryGetEntity(prefabBase2, out Entity ogEntity2)
-                    //    && EntityManager.TryGetComponent(ogEntity2, out BuildingPropertyData bpd3)
-                    //)
-                    //{
-                    //    bpdX = bpd3;
-                    //}
-                    //else
-                    //{
-                    //    return;
-                    //}
-                    //(float rent, float propertiesCount) = utils.CheckMaxRent(
-                    //    bpdX,
-                    //    CurrentLevel,
-                    //    buildingData.m_LotSize.x * buildingData.m_LotSize.y,
-                    //    landValue,
-                    //    zoneData.m_AreaType,
-                    //    ref economyParameterData,
-                    //    zonePropData.m_IgnoreLandValue
-                    //);
-                    //HouseholdText = $"Total Rent ${rent} for {propertiesCount} properties";
-                    var maxTextValue = bldgZoningInfo.IsMixed
-                        ? bldgZoningInfo.TotalRent * (1 - bldgZoningInfo.MixedPercent)
-                        : bldgZoningInfo.TotalRent;
+                    var isMixed = PropertyUtils.IsMixedBuilding(buildingPropertyData);
+                    var maxTextValue = isMixed
+                        ? totalRent
+                            * (1 - economyParameterData.m_MixedBuildingCompanyRentPercentage)
+                        : totalRent;
                     bldgZoningInfo.MaxHousehold = (int)Math.Floor(Math.Min(999, maxTextValue));
                 }
             }
@@ -582,57 +532,233 @@ namespace AdvancedBuildingControl.Systems
             List<ResourceDataInfo> list2 = new();
             foreach (var item in DataRetriever.resourceDataInfos)
             {
-                //Mod.log.Info($"Now testing {item.DisplayName} ({item.Id}), type {item.Group}");
                 if (item.Group == ResourceGroup.None || item.Group == ResourceGroup.Money)
                     continue;
                 Resource flag = item.Resource;
 
                 if ((rs & flag) == flag)
-                {
                     list.Add(new() { Id = (ulong)flag });
-                }
+
                 list2.Add(item);
             }
             bldgStorageInfo.BuildingResources = list.ToArray();
             bldgStorageInfo.BuildingResourcesAll = list2.ToArray();
         }
 
-        public void SetDirty()
+        private void UpdateUIWorkplaceBinding()
         {
-            m_Dirty = true;
+            if (EntityManager.TryGetComponent(selectedEntity, out WorkProvider workProvider))
+            {
+                bldgZoningInfo.CurrentMaxWorkplaceCount = workProvider.m_MaxWorkers;
+                if (
+                    EntityManager.TryGetComponent(selectedEntity, out ABC_Workplace ABC_Workplace)
+                    && !ABC_Workplace.IsDefault()
+                )
+                    bldgZoningInfo.OriginalMaxWorkplaceCount = ABC_Workplace.Workplace;
+            }
+        }
+
+        private void UpdateUIUtilityBinding()
+        {
+            if (!EntityManager.TryGetComponent(selectedEntity, out PrefabRef prefabRef))
+                return;
+            if (
+                EntityManager.TryGetComponent(
+                    prefabRef.m_Prefab,
+                    out WaterPumpingStationData waterPumpingStationData
+                )
+                && waterPumpingStationData.m_Capacity > 0
+            )
+            {
+                bldgUtilityInfo.CurrentWaterPumpCap = waterPumpingStationData.m_Capacity;
+
+                if (
+                    EntityManager.TryGetComponent(selectedEntity, out ABC_WaterPump ABC_WaterPump)
+                    && !ABC_WaterPump.IsDefault()
+                )
+                    bldgUtilityInfo.OriginalWaterPumpCap = ABC_WaterPump.Original;
+            }
+            else
+            {
+                bldgUtilityInfo.IsWaterPump = false;
+            }
+
+            if (
+                EntityManager.TryGetComponent(
+                    prefabRef.m_Prefab,
+                    out SewageOutletData sewageOutletData
+                )
+                && sewageOutletData.m_Capacity > 0
+            )
+            {
+                bldgUtilityInfo.CurrentSewageDumpCap = sewageOutletData.m_Capacity;
+                bldgUtilityInfo.CurrentSewagePurification = sewageOutletData.m_Purification;
+
+                if (
+                    EntityManager.TryGetComponent(selectedEntity, out ABC_SewageDump ABC_SewageDump)
+                    && !ABC_SewageDump.IsDefault()
+                )
+                {
+                    bldgUtilityInfo.OriginalSewageDumpCap = ABC_SewageDump.OriginalCap;
+                    bldgUtilityInfo.OriginalSewagePurification =
+                        ABC_SewageDump.OriginalPurification;
+                }
+            }
+            else
+                bldgUtilityInfo.IsSewageOutlet = false;
+
+            if (
+                EntityManager.TryGetComponent(prefabRef.m_Prefab, out PowerPlantData powerPlantData)
+                && powerPlantData.m_ElectricityProduction > 0
+            )
+            {
+                bldgUtilityInfo.CurrentPowerProdCap = powerPlantData.m_ElectricityProduction;
+
+                if (
+                    EntityManager.TryGetComponent(selectedEntity, out ABC_PowerPlant ABC_PowerPlant)
+                    && !ABC_PowerPlant.IsDefault()
+                )
+                    bldgUtilityInfo.OriginalPowerProdCap = ABC_PowerPlant.Original;
+            }
+            else
+                bldgUtilityInfo.IsPowerPlant = false;
+        }
+
+        private void UpdateUIVehicleBinding()
+        {
+            if (!EntityManager.TryGetComponent(selectedEntity, out PrefabRef prefabRef))
+                return;
+
+            if (
+                EntityManager.TryGetComponent(
+                    prefabRef.m_Prefab,
+                    out TransportDepotData transportDepotData
+                )
+            )
+            {
+                TryGetComponentWithUpgrades(
+                    selectedEntity,
+                    prefabRef.m_Prefab,
+                    out TransportDepotData transportDepotDataComb
+                );
+
+                bldgVehicleInfo.TransportType = transportDepotData.m_TransportType.ToString();
+                bldgVehicleInfo.DepotVehicle.Current = transportDepotData.m_VehicleCapacity;
+                bldgVehicleInfo.DepotVehicle.Combined = transportDepotDataComb.m_VehicleCapacity;
+
+                if (
+                    EntityManager.TryGetComponent(
+                        selectedEntity,
+                        out ABC_TransportDepot ABC_TransportDepot
+                    ) && !ABC_TransportDepot.IsDefault()
+                )
+                    bldgVehicleInfo.DepotVehicle.Original = ABC_TransportDepot.Original;
+            }
+            else
+                bldgVehicleInfo.IsDepot = false;
+
+            if (
+                EntityManager.TryGetComponent(
+                    prefabRef.m_Prefab,
+                    out GarbageFacilityData garbageFacilityData
+                )
+            )
+            {
+                TryGetComponentWithUpgrades(
+                    selectedEntity,
+                    prefabRef.m_Prefab,
+                    out GarbageFacilityData garbageFacilityDataComb
+                );
+
+                bldgVehicleInfo.GarbageTruck.Current = garbageFacilityData.m_VehicleCapacity;
+                bldgVehicleInfo.GarbageTruck.Combined = garbageFacilityDataComb.m_VehicleCapacity;
+                if (
+                    EntityManager.TryGetComponent(
+                        selectedEntity,
+                        out ABC_GarbageTruck ABC_GarbageTruck
+                    ) && !ABC_GarbageTruck.IsDefault()
+                )
+                    bldgVehicleInfo.GarbageTruck.Original = ABC_GarbageTruck.Original;
+            }
+            else
+                bldgVehicleInfo.IsGarbageFacility = false;
+
+            if (EntityManager.TryGetComponent(prefabRef.m_Prefab, out HospitalData hospitalData))
+            {
+                TryGetComponentWithUpgrades(
+                    selectedEntity,
+                    prefabRef.m_Prefab,
+                    out HospitalData hospitalDataComb
+                );
+
+                bldgVehicleInfo.Ambulance.Current = hospitalData.m_AmbulanceCapacity;
+                bldgVehicleInfo.Ambulance.Combined = hospitalDataComb.m_AmbulanceCapacity;
+
+                bldgVehicleInfo.MediHeli.Current = hospitalData.m_MedicalHelicopterCapacity;
+                bldgVehicleInfo.MediHeli.Combined = hospitalDataComb.m_MedicalHelicopterCapacity;
+
+                if (
+                    EntityManager.TryGetComponent(selectedEntity, out ABC_Ambulance ABC_Ambulance)
+                    && !ABC_Ambulance.IsDefault()
+                )
+                    bldgVehicleInfo.Ambulance.Original = ABC_Ambulance.Original;
+                if (
+                    EntityManager.TryGetComponent(selectedEntity, out ABC_MediHeli ABC_MediHeli)
+                    && !ABC_MediHeli.IsDefault()
+                )
+                    bldgVehicleInfo.MediHeli.Original = ABC_MediHeli.Original;
+            }
+            else
+                bldgVehicleInfo.IsHospital = false;
+
+            if (
+                EntityManager.TryGetComponent(
+                    prefabRef.m_Prefab,
+                    out DeathcareFacilityData deathcareFacilityData
+                )
+            )
+            {
+                TryGetComponentWithUpgrades(
+                    selectedEntity,
+                    prefabRef.m_Prefab,
+                    out DeathcareFacilityData deathcareFacilityDataComb
+                );
+
+                bldgVehicleInfo.Hearse.Current = deathcareFacilityData.m_HearseCapacity;
+                bldgVehicleInfo.Hearse.Combined = deathcareFacilityDataComb.m_HearseCapacity;
+
+                if (
+                    EntityManager.TryGetComponent(selectedEntity, out ABC_Hearse ABC_Hearse)
+                    && !ABC_Hearse.IsDefault()
+                )
+                    bldgVehicleInfo.Hearse.Original = ABC_Hearse.Original;
+            }
+            else
+                bldgVehicleInfo.IsDeathcare = false;
         }
 
         public void RandomizeStyle()
         {
-            RandomizeStyleSystem.RandomizeStyle(EntityManager, selectedEntity);
-            SetDirty();
+            entityComponentChangerSystem.RandomizeStyle(selectedEntity);
+            RequestUpdate();
         }
 
         public void SetBrand(string replaceBrand)
         {
-            BrandChangerSystem.ChangeBrand(EntityManager, selectedEntity, replaceBrand);
-            SetDirty();
+            entityComponentChangerSystem.ChangeBrand(selectedEntity, replaceBrand);
+            RequestUpdate();
         }
 
         public void ToggleResource(string resId)
         {
-            // ----
-            //ulong resIdX = ulong.Parse(resId);
-
             refChangerSystem.ReplaceEntity(
                 selectedEntity,
                 resId,
-                ProcessMode.Update,
+                ProcessType.Update,
                 RefChangerSystem.ValueType.Storage
             );
             UpdateUIResourceBinding();
-            //Resource resTempX = storageChangerSystem.ReplaceEntity(
-            //    selectedEntity,
-            //    ProcessMode.Update,
-            //    (Resource)resIdX
-            //);
-            //UpdateUIResourceBinding(resTempX);
-            SetDirty();
+            RequestUpdate();
         }
 
         public void ResetStorage()
@@ -640,16 +766,11 @@ namespace AdvancedBuildingControl.Systems
             refChangerSystem.ReplaceEntity(
                 selectedEntity,
                 string.Empty,
-                ProcessMode.Reset,
+                ProcessType.Reset,
                 RefChangerSystem.ValueType.Storage
             );
             UpdateUIResourceBinding();
-            //Resource resTempX = storageChangerSystem.ReplaceEntity(
-            //    selectedEntity,
-            //    ProcessMode.Reset
-            //);
-            //UpdateUIResourceBinding(resTempX);
-            SetDirty();
+            RequestUpdate();
         }
 
         public void ChangeLevel(int level)
@@ -657,11 +778,11 @@ namespace AdvancedBuildingControl.Systems
             refChangerSystem.ReplaceEntity(
                 selectedEntity,
                 level.ToString(),
-                ProcessMode.Update,
+                ProcessType.Update,
                 RefChangerSystem.ValueType.Level
             );
             UpdateUILevelBinding();
-            SetDirty();
+            RequestUpdate();
         }
 
         public void ResetLevel()
@@ -669,11 +790,11 @@ namespace AdvancedBuildingControl.Systems
             refChangerSystem.ReplaceEntity(
                 selectedEntity,
                 string.Empty,
-                ProcessMode.Reset,
+                ProcessType.Reset,
                 RefChangerSystem.ValueType.Level
             );
             UpdateUILevelBinding();
-            SetDirty();
+            RequestUpdate();
         }
 
         public void ChangeHousehold(int household)
@@ -682,11 +803,11 @@ namespace AdvancedBuildingControl.Systems
             refChangerSystem.ReplaceEntity(
                 selectedEntity,
                 householdX.ToString(),
-                ProcessMode.Update,
+                ProcessType.Update,
                 RefChangerSystem.ValueType.Household
             );
             UpdateUIHouseholdBinding();
-            SetDirty();
+            RequestUpdate();
         }
 
         public void ResetHousehold()
@@ -694,11 +815,242 @@ namespace AdvancedBuildingControl.Systems
             refChangerSystem.ReplaceEntity(
                 selectedEntity,
                 string.Empty,
-                ProcessMode.Reset,
+                ProcessType.Reset,
                 RefChangerSystem.ValueType.Household
             );
             UpdateUIHouseholdBinding();
-            SetDirty();
+            RequestUpdate();
         }
+
+        public void ChangeMaxWorkplace(int newMaxWorkplace)
+        {
+            entityComponentChangerSystem.ChangeMaxWorkplace(selectedEntity, newMaxWorkplace);
+            RequestUpdate();
+        }
+
+        public void ResetMaxWorkplace()
+        {
+            entityComponentChangerSystem.ResetMaxWorkplace(selectedEntity);
+            RequestUpdate();
+        }
+
+        public void ChangeWaterPumpCapacity(int newCapacity)
+        {
+            refChangerSystem.ReplaceEntity(
+                selectedEntity,
+                newCapacity.ToString(),
+                ProcessType.Update,
+                RefChangerSystem.ValueType.WaterPump
+            );
+            UpdateUIUtilityBinding();
+            RequestUpdate();
+        }
+
+        public void ResetWaterPumpCapacity()
+        {
+            refChangerSystem.ReplaceEntity(
+                selectedEntity,
+                string.Empty,
+                ProcessType.Reset,
+                RefChangerSystem.ValueType.WaterPump
+            );
+            UpdateUIUtilityBinding();
+            RequestUpdate();
+        }
+
+        public void ChangeSewageDumpCapacity(int newCapacity)
+        {
+            refChangerSystem.ReplaceEntity(
+                selectedEntity,
+                newCapacity.ToString(),
+                ProcessType.Update,
+                RefChangerSystem.ValueType.SewageCap
+            );
+            UpdateUIUtilityBinding();
+            RequestUpdate();
+        }
+
+        public void ResetSewageDumpCapacity()
+        {
+            refChangerSystem.ReplaceEntity(
+                selectedEntity,
+                string.Empty,
+                ProcessType.Reset,
+                RefChangerSystem.ValueType.SewageCap
+            );
+            UpdateUIUtilityBinding();
+            RequestUpdate();
+        }
+
+        public void ChangeSewageDumpPurification(int newCapacity)
+        {
+            refChangerSystem.ReplaceEntity(
+                selectedEntity,
+                newCapacity.ToString(),
+                ProcessType.Update,
+                RefChangerSystem.ValueType.SewagePurification
+            );
+            UpdateUIUtilityBinding();
+            RequestUpdate();
+        }
+
+        public void ResetSewageDumpPurification()
+        {
+            refChangerSystem.ReplaceEntity(
+                selectedEntity,
+                string.Empty,
+                ProcessType.Reset,
+                RefChangerSystem.ValueType.SewagePurification
+            );
+            UpdateUIUtilityBinding();
+            RequestUpdate();
+        }
+
+        public void ChangePowerProdCapacity(int newCapacity)
+        {
+            refChangerSystem.ReplaceEntity(
+                selectedEntity,
+                (newCapacity * 10000).ToString(),
+                ProcessType.Update,
+                RefChangerSystem.ValueType.PowerPlant
+            );
+            UpdateUIUtilityBinding();
+            RequestUpdate();
+        }
+
+        public void ResetPowerProdCapacity()
+        {
+            refChangerSystem.ReplaceEntity(
+                selectedEntity,
+                string.Empty,
+                ProcessType.Reset,
+                RefChangerSystem.ValueType.PowerPlant
+            );
+            UpdateUIUtilityBinding();
+            RequestUpdate();
+        }
+
+        public void ChangeVehicleCapacity(
+            int newCapacity,
+            RefChangerSystem.ValueType vehicleChangeType
+        )
+        {
+            refChangerSystem.ReplaceEntity(
+                selectedEntity,
+                newCapacity.ToString(),
+                ProcessType.Update,
+                vehicleChangeType
+            );
+            UpdateUIVehicleBinding();
+            RequestUpdate();
+        }
+
+        public void ResetVehicleCapacity(RefChangerSystem.ValueType vehicleChangeType)
+        {
+            refChangerSystem.ReplaceEntity(
+                selectedEntity,
+                string.Empty,
+                ProcessType.Reset,
+                vehicleChangeType
+            );
+            UpdateUIVehicleBinding();
+            RequestUpdate();
+        }
+
+        //public void ChangeTransportDepotCapacity(int newCapacity)
+        //{
+        //    refChangerSystem.ReplaceEntity(
+        //        selectedEntity,
+        //        newCapacity.ToString(),
+        //        ProcessType.Update,
+        //        RefChangerSystem.ValueType.Depot
+        //    );
+        //    UpdateUIVehicleBinding();
+        //    RequestUpdate();
+        //}
+
+        //public void ResetTransportDepotCapacity()
+        //{
+        //    refChangerSystem.ReplaceEntity(
+        //        selectedEntity,
+        //        string.Empty,
+        //        ProcessType.Reset,
+        //        RefChangerSystem.ValueType.Depot
+        //    );
+        //    UpdateUIVehicleBinding();
+        //    RequestUpdate();
+        //}
+
+        //public void ChangeGarbageTruckCapacity(int newCapacity)
+        //{
+        //    refChangerSystem.ReplaceEntity(
+        //        selectedEntity,
+        //        newCapacity.ToString(),
+        //        ProcessType.Update,
+        //        RefChangerSystem.ValueType.GarbageTruck
+        //    );
+        //    UpdateUIVehicleBinding();
+        //    RequestUpdate();
+        //}
+
+        //public void ResetGarbageTruckCapacity()
+        //{
+        //    refChangerSystem.ReplaceEntity(
+        //        selectedEntity,
+        //        string.Empty,
+        //        ProcessType.Reset,
+        //        RefChangerSystem.ValueType.GarbageTruck
+        //    );
+        //    UpdateUIVehicleBinding();
+        //    RequestUpdate();
+        //}
+
+        //public void ChangeAmbulanceCapacity(int newCapacity)
+        //{
+        //    refChangerSystem.ReplaceEntity(
+        //        selectedEntity,
+        //        newCapacity.ToString(),
+        //        ProcessType.Update,
+        //        RefChangerSystem.ValueType.Ambulance
+        //    );
+        //    UpdateUIVehicleBinding();
+        //    RequestUpdate();
+        //}
+
+        //public void ResetAmbulanceCapacity()
+        //{
+        //    refChangerSystem.ReplaceEntity(
+        //        selectedEntity,
+        //        string.Empty,
+        //        ProcessType.Reset,
+        //        RefChangerSystem.ValueType.Ambulance
+        //    );
+        //    UpdateUIVehicleBinding();
+        //    RequestUpdate();
+        //}
+
+        //public void ChangeMediHeliCapacity(int newCapacity)
+        //{
+        //    refChangerSystem.ReplaceEntity(
+        //        selectedEntity,
+        //        newCapacity.ToString(),
+        //        ProcessType.Update,
+        //        RefChangerSystem.ValueType.MediHeli
+        //    );
+        //    UpdateUIVehicleBinding();
+        //    RequestUpdate();
+        //}
+
+        //public void ResetMediHeliCapacity()
+        //{
+        //    refChangerSystem.ReplaceEntity(
+        //        selectedEntity,
+        //        string.Empty,
+        //        ProcessType.Reset,
+        //        RefChangerSystem.ValueType.MediHeli
+        //    );
+        //    UpdateUIVehicleBinding();
+        //    RequestUpdate();
+        //}
     }
 }

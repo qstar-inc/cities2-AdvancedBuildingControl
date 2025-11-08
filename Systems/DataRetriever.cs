@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Colossal.Entities;
 using Colossal.Serialization.Entities;
@@ -9,6 +9,7 @@ using Game.SceneFlow;
 using Game.UI;
 using Game.UI.InGame;
 using Game.Zones;
+using StarQ.Shared.Extensions;
 using Unity.Collections;
 using Unity.Entities;
 
@@ -34,7 +35,8 @@ namespace AdvancedBuildingControl.Systems
         public string Color2 { get; set; } = "RGBA(0,0,0)";
         public float Upkeep { get; set; } = 0f;
         public Entity Entity { get; set; } = Entity.Null;
-        public string Icon { get; set; } = "";
+
+        //public string Icon { get; set; } = "";
         public AreaType AreaType { get; set; } = AreaType.None;
         public string AreaTypeString { get; set; } = "";
     }
@@ -67,8 +69,9 @@ namespace AdvancedBuildingControl.Systems
 
         public CreatedEntitiesManagementSystem createdEntitiesManagementSystem;
 
+        public static Entity integratedHelipad = Entity.Null;
 #nullable enable
-        public static GameMode gameMode;
+        public bool NeedUpdate = true;
 
         public int prevBrandEntityCount = 0;
         public static readonly List<BrandDataInfo> brandDataInfos = new();
@@ -82,22 +85,27 @@ namespace AdvancedBuildingControl.Systems
         public static readonly List<ResourceDataInfo> resourceDataInfos = new();
         public static bool hasNewResourceData = false;
 
-        public static bool dataRetrieved = false;
+        //public static bool dataRetrieved = false;
+        public static bool firstTime = true;
+
+        private static readonly object _lock1 = new();
+        private static readonly object _lock2 = new();
+
+        //private static readonly object _lock3 = new();
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            prefabSystem = Mod.world.GetOrCreateSystemManaged<PrefabSystem>();
-            prefabUISystem = Mod.world.GetOrCreateSystemManaged<PrefabUISystem>();
-            nameSystem = Mod.world.GetOrCreateSystemManaged<NameSystem>();
-            imageSystem = Mod.world.GetOrCreateSystemManaged<ImageSystem>();
+            prefabSystem = WorldHelper.PrefabSystem;
+            prefabUISystem = WorldHelper.PrefabUISystem;
+            nameSystem = WorldHelper.NameSystem;
+            imageSystem = WorldHelper.ImageSystem;
 
             createdEntitiesManagementSystem =
-                Mod.world.GetOrCreateSystemManaged<CreatedEntitiesManagementSystem>();
+                World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<CreatedEntitiesManagementSystem>();
 
-            GameManager.instance.localizationManager.onActiveDictionaryChanged += CleanAndGetData;
-            gameMode = GameMode.None;
+            //Mod.m_Setting.onSettingsApplied += OnSettingsChanged;
         }
 
         protected override void OnUpdate() { }
@@ -105,46 +113,65 @@ namespace AdvancedBuildingControl.Systems
         protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
         {
             base.OnGameLoadingComplete(purpose, mode);
-
-            gameMode = mode;
-
-            if (GameModeExtensions.IsGame(mode))
-                return;
-            try
+            if (firstTime)
             {
+                GameManager.instance.localizationManager.onActiveDictionaryChanged +=
+                    CleanAndGetData;
                 CleanAndGetData();
+                firstTime = false;
             }
-            catch (Exception ex)
-            {
-                Mod.log.Error(ex);
-            }
-            Enabled = false;
+
+            lock (_lock1)
+                CleanAndGetData();
         }
+
+        //private void OnSettingsChanged(Game.Settings.Setting setting) => NeedUpdate = true;
 
         void CleanAndGetData()
         {
-            brandDataInfos.Clear();
-            prevBrandEntityCount = 0;
-            hasNewBrandData = false;
+            if (!NeedUpdate)
+                return;
 
-            prevZoneEntityCount = 0;
-            zoneDataInfos.Clear();
-            hasNewZoneData = false;
+            lock (_lock2)
+            {
+                brandDataInfos.Clear();
+                prevBrandEntityCount = 0;
+                hasNewBrandData = false;
 
-            prevResourceEntityCount = 0;
-            resourceDataInfos.Clear();
-            hasNewResourceData = false;
+                //prevZoneEntityCount = 0;
+                //zoneDataInfos.Clear();
+                //hasNewZoneData = false;
 
-            dataRetrieved = false;
-            GetBrandData();
-            GetZoneData();
-            GetResourceData();
+                prevResourceEntityCount = 0;
+                resourceDataInfos.Clear();
+                hasNewResourceData = false;
+
+                //dataRetrieved = false;
+                GetBrandData();
+                GetZoneData();
+                GetResourceData();
+
+                if (
+                    prefabSystem.TryGetPrefab(
+                        new PrefabID("MarkerObjectPrefab", "Integrated Helipad"),
+                        out PrefabBase intHeli
+                    )
+                )
+                    prefabSystem.TryGetEntity(intHeli, out integratedHelipad);
+
+                //dataRetrieved = true;
+                LogHelper.SendLog(
+                    $"Data retrieved:\nBrandDataInfos: {brandDataInfos.Count}, ZoneDataInfos: {zoneDataInfos.Count}, ResourceDataInfos: {resourceDataInfos.Count}",
+                    LogLevel.DEV
+                );
+                NeedUpdate = false;
+            }
         }
 
         void GetBrandData()
         {
-            if (dataRetrieved)
-                return;
+            //if (dataRetrieved)
+            //    return;
             try
             {
                 EntityQuery brandQuery = SystemAPI.QueryBuilder().WithAll<BrandData>().Build();
@@ -211,6 +238,7 @@ namespace AdvancedBuildingControl.Systems
                                 Companies = companies,
                             }
                         );
+                        LogHelper.SendLog($"Added {brandPrefab.name}", LogLevel.DEV);
                     }
                     brandDataInfos.Sort(
                         (a, b) => string.Compare(a.Name, b.Name, StringComparison.Ordinal)
@@ -226,8 +254,8 @@ namespace AdvancedBuildingControl.Systems
 
         void GetZoneData()
         {
-            if (dataRetrieved)
-                return;
+            //if (dataRetrieved)
+            //    return;
             try
             {
                 EntityQuery zoneQuery = SystemAPI.QueryBuilder().WithAll<ZoneData>().Build();
@@ -252,15 +280,15 @@ namespace AdvancedBuildingControl.Systems
                             continue;
                         }
 
-                        string icon =
-                            imageSystem.GetIconOrGroupIcon(entity)
-                            ?? string.Format(
-                                "{0}?width={1}&height={2}",
-                                zonePrefab.thumbnailUrl,
-                                32,
-                                32
-                            )
-                            ?? "Media/Misc/Error.svg";
+                        //string icon =
+                        //    imageSystem.GetIconOrGroupIcon(entity)
+                        //    ?? string.Format(
+                        //        "{0}?width={1}&height={2}",
+                        //        zonePrefab.thumbnailUrl,
+                        //        32,
+                        //        32
+                        //    )
+                        //    ?? "Media/Misc/Error.svg";
 
                         //zonePrefab.TryGetExactly(out UIObject uiObject);
                         //string icon = "";
@@ -292,7 +320,7 @@ namespace AdvancedBuildingControl.Systems
                                 Color2 = zonePrefab.m_Edge.ToHexCode(),
                                 Upkeep = upkeep,
                                 Entity = entity,
-                                Icon = icon,
+                                //Icon = icon,
                                 AreaType = zonePrefab.m_AreaType,
                                 AreaTypeString = areaType,
                             }
@@ -338,8 +366,8 @@ namespace AdvancedBuildingControl.Systems
 
         void GetResourceData()
         {
-            if (dataRetrieved)
-                return;
+            //if (dataRetrieved)
+            //    return;
             try
             {
                 EntityQuery resourceQuery = SystemAPI
@@ -392,8 +420,6 @@ namespace AdvancedBuildingControl.Systems
             {
                 Mod.log.Error(ex);
             }
-
-            dataRetrieved = true;
         }
     }
 }

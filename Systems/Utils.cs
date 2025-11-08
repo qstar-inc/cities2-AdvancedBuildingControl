@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using AdvancedBuildingControl.Components;
 using Colossal.Entities;
 using Game;
@@ -22,13 +22,34 @@ namespace AdvancedBuildingControl.Systems
 #nullable enable
         protected override void OnCreate()
         {
-            prefabSystem = Mod.world.GetOrCreateSystemManaged<PrefabSystem>();
+            prefabSystem = WorldHelper.PrefabSystem;
         }
 
         protected override void OnUpdate() { }
 
+        public bool TryGetPrefabEntity(string prefabName, out Entity prefabEntity)
+        {
+            if (
+                !prefabSystem.TryGetPrefab(
+                    new PrefabID("BuildingPrefab", prefabName),
+                    out var prefabBase
+                )
+            )
+            {
+                LogHelper.SendLog($"Missing BuildingPrefab: {prefabName}");
+                prefabEntity = Entity.Null;
+                return false;
+            }
+            return prefabSystem.TryGetEntity(prefabBase, out prefabEntity);
+        }
+
         public bool CheckPrefab(Entity entity, ref Entity currentPrefabRef)
         {
+            if (EntityManager.HasComponent<Building>(entity) == false)
+            {
+                LogHelper.SendLog($"not a building, {entity}");
+                return false;
+            }
             if (entity == Entity.Null)
             {
                 LogHelper.SendLog($"entity null for {entity}");
@@ -47,6 +68,19 @@ namespace AdvancedBuildingControl.Systems
             {
                 LogHelper.SendLog($"currentPrefabRef null for {entity}");
                 return false;
+            }
+
+            if (EntityManager.TryGetComponent(entity, out OriginalEntity og))
+            {
+                var currentPrefabName = prefabSystem.GetPrefabName(currentPrefabRef);
+                if (!og.OGEntity.Equals(string.Empty) && og.OGEntity != currentPrefabName)
+                {
+                    LogHelper.SendLog(
+                        $"currentPrefabName '{currentPrefabName}' didn't match with '{og.OGEntity}' for {entity}"
+                    );
+                    return false;
+                }
+                return true;
             }
             return true;
         }
@@ -148,14 +182,55 @@ namespace AdvancedBuildingControl.Systems
             return (num3, num4);
         }
 
-        public int IntFromString(string value)
+        public void CheckPrefabData(
+            Entity newPrefabEntity,
+            Entity entity,
+            out bool hasStorage,
+            out StorageCompanyData storageCompanyData,
+            out bool isSpawnable,
+            out SpawnableBuildingData spawnableBuildingData,
+            out bool hasProperty,
+            out BuildingPropertyData buildingPropertyData,
+            out bool isWaterPump,
+            out WaterPumpingStationData waterPumpingStationData,
+            out bool isSewageDump,
+            out SewageOutletData sewageOutletData,
+            out bool isPowerProd,
+            out PowerPlantData powerPlantData,
+            out bool isDepot,
+            out TransportDepotData transportDepotData,
+            out bool isGarbageFacility,
+            out GarbageFacilityData garbageFacilityData,
+            out bool isHospital,
+            out HospitalData hospitalData,
+            out bool isDeathcare,
+            out DeathcareFacilityData deathcareFacilityData
+        )
         {
-            return string.IsNullOrEmpty(value) ? 0 : int.Parse(value);
+            hasStorage = EntityManager.TryGetComponent(newPrefabEntity, out storageCompanyData);
+            isSpawnable = EntityManager.TryGetComponent(newPrefabEntity, out spawnableBuildingData);
+            hasProperty =
+                EntityManager.TryGetComponent(newPrefabEntity, out buildingPropertyData)
+                && EntityManager.HasComponent<ResidentialProperty>(entity);
+            isWaterPump = EntityManager.TryGetComponent(
+                newPrefabEntity,
+                out waterPumpingStationData
+            );
+            isSewageDump = EntityManager.TryGetComponent(newPrefabEntity, out sewageOutletData);
+            isPowerProd = EntityManager.TryGetComponent(newPrefabEntity, out powerPlantData);
+            isDepot = EntityManager.TryGetComponent(newPrefabEntity, out transportDepotData);
+            isGarbageFacility = EntityManager.TryGetComponent(
+                newPrefabEntity,
+                out garbageFacilityData
+            );
+            isHospital = EntityManager.TryGetComponent(newPrefabEntity, out hospitalData);
+            isDeathcare = EntityManager.TryGetComponent(newPrefabEntity, out deathcareFacilityData);
         }
 
-        public ulong UlongFromString(string value)
-        {
-            return string.IsNullOrEmpty(value) ? 0 : ulong.Parse(value);
-        }
+        public int IntFromString(string value) =>
+            string.IsNullOrEmpty(value) ? 0 : int.Parse(value);
+
+        public ulong UlongFromString(string value) =>
+            string.IsNullOrEmpty(value) ? 0 : ulong.Parse(value);
     }
 }

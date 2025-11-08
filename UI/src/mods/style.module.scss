@@ -1,6 +1,6 @@
 $boxSize: 15rem;
 
-.BrandChangerPanel {
+.ABCPanel {
   position: absolute;
   top: calc(var(--screenPadding) * 2 + var(--floatingToggleSize));
   z-index: calc(var(--tooltipIndex) - 1);
@@ -9,13 +9,19 @@ $boxSize: 15rem;
   opacity: 0.5;
 }
 
-.BrandChangerAnimate {
-  animation: animate 0.25s ease-in forwards;
+.ABCAnimateIn {
+  animation: animateIn 0.25s ease-in forwards;
+  transform-origin: top center;
+  transition-property: all;
+}
+
+.ABCAnimateOut {
+  animation: animateOut 0.25s ease-in forwards;
   transform-origin: center center;
   transition-property: all;
 }
 
-@keyframes animate {
+@keyframes animateIn {
   from {
     transform: scale(0.9);
     opacity: 0.5;
@@ -23,6 +29,18 @@ $boxSize: 15rem;
   to {
     transform: scale(1);
     opacity: 1;
+  }
+}
+
+@keyframes animateOut {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.9);
+    opacity: 0;
+    display: none;
   }
 }
 

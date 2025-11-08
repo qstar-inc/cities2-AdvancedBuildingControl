@@ -1,28 +1,23 @@
 import {
-    brandPanelVisibleBinding, ClosePanel, selectedEntity, SetBrand, SizeProvider,
-    useUniformSizeProvider, VanillaVirtualList
+  brandPanelVisibleBinding,
+  selectedEntity,
+  SetBrand,
+  SizeProvider,
+  useUniformSizeProvider,
+  VanillaVirtualList,
 } from "bindings";
 import { useValue } from "cs2/api";
-import { Entity } from "cs2/bindings";
 import { AutoNavigationScope, FocusActivation } from "cs2/input";
 import { useLocalization } from "cs2/l10n";
-import { PanelSection, PanelSectionRow, Portal } from "cs2/ui";
+import { PanelSection, PanelSectionRow } from "cs2/ui";
 import { useCssLength } from "cs2/utils";
-import { FC, useCallback, useEffect, useMemo, useState } from "react";
-import {
-    closeButtonClass, closeButtonImageClass, styleDefault, stylePanel, wrapperClass
-} from "styleBindings";
+import { FC, useCallback, useMemo } from "react";
 import { BldgBrandInfo, BrandDataInfo, LocaleKeys } from "types";
 
 import { PanelBase } from "./PanelBase";
 import styles from "./style.module.scss";
 
 interface BrandPanelProps {
-  // h_brand: boolean;
-  // w_brand: string;
-  // w_brandlist: BrandDataInfo[];
-  // w_company: string;
-  // w_entity: Entity;
   bldgBrandInfo: BldgBrandInfo;
 }
 
@@ -138,9 +133,6 @@ export const BrandPanel: FC<BrandPanelProps> = (props: BrandPanelProps) => {
 
   let bldgBrandInfo = props.bldgBrandInfo;
 
-  // const [heightFull, setHeightFull] = useState(0);
-  // const [panelLeft, setPanelLeft] = useState(0);
-
   const headerText = translate(LocaleKeys.BRAND_HEADER);
   const CurrentBrandTitleText = translate(LocaleKeys.BRAND_CURRENT_BRAND);
   const CurrentCompanyTitleText = translate(LocaleKeys.BRAND_CURRENT_COMPANY);
@@ -170,51 +162,10 @@ export const BrandPanel: FC<BrandPanelProps> = (props: BrandPanelProps) => {
     return [supported, other];
   }, [bldgBrandInfo.BrandList, bldgBrandInfo.CompanyName]);
 
-  // const wrapperStyle = useMemo(
-  //   () => ({
-  //     maxHeight: `${heightFull}px`,
-  //     left: `calc(${panelLeft}px + 20rem)`,
-  //   }),
-  //   [panelLeft, heightFull]
-  // );
-
   const visible = useMemo(
     () => visibleBindingValue && bldgBrandInfo.HasBrand,
     [visibleBindingValue]
   );
-
-  // const calculateHeights = () => {
-  //   const wrapperElement = document.querySelector(
-  //     ".info-layout_BVk"
-  //   ) as HTMLElement | null;
-  //   const sipElement = document.querySelector(
-  //     ".selected-info-panel_gG8"
-  //   ) as HTMLElement | null;
-
-  //   const newHeightFull = wrapperElement?.offsetHeight ?? 1600;
-  //   if (sipElement?.offsetWidth == 0) {
-  //     return;
-  //   } else {
-  //     const newPanelLeft =
-  //       (sipElement?.offsetLeft ?? 6) + (sipElement?.offsetWidth ?? 300);
-  //     setPanelLeft(newPanelLeft);
-  //   }
-  //   setHeightFull(newHeightFull);
-  // };
-
-  // useEffect(() => {
-  //   calculateHeights();
-  //   const observer = new MutationObserver(() => {
-  //     calculateHeights();
-  //   });
-
-  //   observer.observe(document.body, {
-  //     childList: true,
-  //     subtree: true,
-  //   });
-
-  //   return () => observer.disconnect();
-  // }, []);
 
   const sizeProviderSupported = useUniformSizeProvider(
     useCssLength("30rem"),

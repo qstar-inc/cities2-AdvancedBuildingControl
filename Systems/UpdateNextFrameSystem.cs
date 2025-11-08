@@ -1,6 +1,7 @@
-﻿using AdvancedBuildingControl.Components;
+using AdvancedBuildingControl.Components;
 using Game;
 using Game.Common;
+using StarQ.Shared.Extensions;
 using Unity.Collections;
 using Unity.Entities;
 
@@ -30,7 +31,7 @@ namespace AdvancedBuildingControl.Systems
             //    .WithAll<UpdateNextFrame>()
             //    .WithNone<Deleted, Updated, ClearUpdateNextFrame>()
             //    .Build();
-            barrier = Mod.world.GetOrCreateSystemManaged<ModificationBarrier1>();
+            barrier = WorldHelper.ModificationBarrier1;
             RequireForUpdate(updateNextFrameQuery);
             //RequireAnyForUpdate(updateNextFrameQuery, updateNextFrameQuery2);
             base.OnCreate();

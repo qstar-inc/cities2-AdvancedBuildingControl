@@ -97,3 +97,4 @@ export const closeButtonImageClass = `${styleTintedIcon.tintedIcon} ${styleIcon.
 // UIL
 export const uilStandard = "coui://uil/Standard/";
 export const uilColored = "coui://uil/Colored/";
+export const baseGameIcons = "Media/Game/Icons/";

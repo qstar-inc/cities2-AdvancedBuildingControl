@@ -1,6 +1,7 @@
-﻿using AdvancedBuildingControl.Components;
+using AdvancedBuildingControl.Components;
 using Game;
 using Game.Common;
+using StarQ.Shared.Extensions;
 using Unity.Collections;
 using Unity.Entities;
 
@@ -17,7 +18,7 @@ namespace AdvancedBuildingControl.Systems
 #nullable enable
         protected override void OnCreate()
         {
-            barrier = Mod.world.GetOrCreateSystemManaged<ModificationEndBarrier>();
+            barrier = WorldHelper.ModificationEndBarrier;
             ClearUpdateNextFrameQuery = SystemAPI
                 .QueryBuilder()
                 .WithAny<UpdateNextFrame>()

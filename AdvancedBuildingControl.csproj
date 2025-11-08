@@ -3,15 +3,15 @@
     <Configurations>Debug;Release</Configurations>
     <AssemblyName>AdvancedBuildingControl</AssemblyName>
     <AssemblyTitle>Advanced Building Control</AssemblyTitle>
+    <Version>1.9.904</Version>
     <Authors>StarQ</Authors>
-    <Version>1.9.901</Version>
     <!--The file where mod information which is required for publishing mod on PDX mods are stored-->
     <PublishConfigurationPath>Properties\PublishConfiguration.xml</PublishConfigurationPath>
   </PropertyGroup>
   <!--Imports must be after PropertyGroup block-->
-  <Import Project="..\StarQ.Shared\StarQ.Shared.projitems" Label="Shared" />
   <Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.props" />
   <Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.targets" />
+  <Import Project="..\StarQ.Shared\StarQ.Shared.projitems" Label="Shared" />
   <ItemGroup>
     <Reference Include="Game">
       <Private>false</Private>
@@ -77,13 +77,35 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="$(ModPropsFile)" Link="Properties\Mod.props" />
+    <None Include="$(ModTargetsFile)" Link="Properties\Mod.targets" />
+  </ItemGroup>
+  <Target Name="GetAdditionalFiles" AfterTargets="DeployWIP">
+    <ItemGroup>
+      <AdditionalFilesToDeploy Include="Resources\**\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(AdditionalFilesToDeploy)" DestinationFiles="@(AdditionalFilesToDeploy->'$(DeployDir)\%(RecursiveDir)%(Filename)%(Extension)')" />
+  </Target>
+  <ItemGroup>
     <EmbeddedResource Include="Locale.json" />
     <EmbeddedResource Include="Locale\*.json" />
     <None Remove="Locale.json" />
-    <None Remove="Locale\*.json" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Locale\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <Target Name="BuildUI" AfterTargets="AfterBuild">
     <Exec Command="npm run build" WorkingDirectory="$(ProjectDir)/UI" />

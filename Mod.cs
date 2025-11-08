@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Reflection;
 using AdvancedBuildingControl.Systems;
 using AdvancedBuildingControl.Systems.Serialization;
@@ -27,13 +27,12 @@ namespace AdvancedBuildingControl
 
 #nullable disable
         public static Setting Setting;
-        public static World world;
 
 #nullable enable
         public void OnLoad(UpdateSystem updateSystem)
         {
             LogHelper.Init(Id, log);
-            LocaleHelper.Init(Id, GetReplacements);
+            LocaleHelper.Init(Id, Name, GetReplacements);
             foreach (var item in new LocaleHelper($"{Id}.Locale.json").GetAvailableLanguages())
             {
                 GameManager.instance.localizationManager.AddSource(item.LocaleId, item);
@@ -51,19 +50,18 @@ namespace AdvancedBuildingControl
                 new Setting(this)
             );
 
-            world = World.DefaultGameObjectInjectionWorld;
-
-            world.GetOrCreateSystemManaged<DataRetriever>();
-            world.GetOrCreateSystemManaged<PlopTheGrowableSystem>();
+            World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<DataRetriever>();
+            World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<PlopTheGrowableSystem>();
 
             //world.GetOrCreateSystemManaged<StorageChangerSystem>();
             //world.GetOrCreateSystemManaged<LevelChangerSystem>();
             //world.GetOrCreateSystemManaged<HouseholdChangerSystem>();
-            world.GetOrCreateSystemManaged<RefChangerSystem>();
+            World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<RefChangerSystem>();
 
-            world.GetOrCreateSystemManaged<CreatedEntitiesManagementSystem>();
+            World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<CreatedEntitiesManagementSystem>();
 
             updateSystem.UpdateAfter<SIP_ABC>(SystemUpdatePhase.UIUpdate);
+            updateSystem.UpdateAfter<SIP_ABC_District>(SystemUpdatePhase.UIUpdate);
 
             updateSystem.UpdateBefore<PreSerializationSystem>(SystemUpdatePhase.Serialize);
             updateSystem.UpdateAfter<PreDeserializationSystem>(SystemUpdatePhase.Serialize);

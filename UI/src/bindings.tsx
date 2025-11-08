@@ -5,6 +5,7 @@ import { getModule } from "cs2/modding";
 import { ButtonProps, ScrollController } from "cs2/ui";
 import mod from "mod.json";
 import { ReactElement } from "react";
+import { ValueType } from "types";
 
 import styles from "./mods/style.module.scss";
 
@@ -30,12 +31,8 @@ export const ResetLevel = () => {
   trigger(mod.id, "ResetLevel");
 };
 
-export const ChangeHousehold = (household: number) => {
-  trigger(mod.id, "ChangeHousehold", household);
-};
-
-export const ResetHousehold = () => {
-  trigger(mod.id, "ResetHousehold");
+export const ChangeLevelDistrict = (level: number) => {
+  trigger(mod.id, "ChangeLevelDistrict", level);
 };
 
 export const ToggleResource = (resId: string) => {
@@ -47,12 +44,100 @@ export const ResetStorage = () => {
   trigger(mod.id, "ResetStorage");
 };
 
+export const ChangeHousehold = (household: number) => {
+  trigger(mod.id, "ChangeHousehold", household);
+};
+
+export const ResetHousehold = () => {
+  trigger(mod.id, "ResetHousehold");
+};
+
+export const ChangeMaxWorkplace = (workplace: number) => {
+  trigger(mod.id, "ChangeMaxWorkplace", workplace);
+};
+
+export const ResetMaxWorkplace = () => {
+  trigger(mod.id, "ResetMaxWorkplace");
+};
+
+export const ChangeWaterPumpCapacity = (cap: number) => {
+  trigger(mod.id, "ChangeWaterPumpCapacity", cap);
+};
+
+export const ResetWaterPumpCapacity = () => {
+  trigger(mod.id, "ResetWaterPumpCapacity");
+};
+
+export const ChangeSewageDumpCapacity = (cap: number) => {
+  trigger(mod.id, "ChangeSewageDumpCapacity", cap);
+};
+
+export const ResetSewageDumpCapacity = () => {
+  trigger(mod.id, "ResetSewageDumpCapacity");
+};
+
+export const ChangePowerProdCapacity = (cap: number) => {
+  trigger(mod.id, "ChangePowerProdCapacity", cap);
+};
+
+export const ResetPowerProdCapacity = () => {
+  trigger(mod.id, "ResetPowerProdCapacity");
+};
+
+export const ChangeVehicleCapacity = (cap: number, valueType: ValueType) => {
+  trigger(mod.id, "ChangeVehicleCapacity", cap, valueType);
+};
+
+export const ResetVehicleCapacity = (valueType: ValueType) => {
+  trigger(mod.id, "ResetVehicleCapacity", valueType);
+};
+
+// export const ChangeTransportDepotCapacity = (cap: number) => {
+//   trigger(mod.id, "ChangeTransportDepotCapacity", cap);
+// };
+
+// export const ResetTransportDepotCapacity = () => {
+//   trigger(mod.id, "ResetTransportDepotCapacity");
+// };
+
+// export const ChangeGarbageTruckCapacity = (cap: number) => {
+//   trigger(mod.id, "ChangeGarbageTruckCapacity", cap);
+// };
+
+// export const ResetGarbageTruckCapacity = () => {
+//   trigger(mod.id, "ResetGarbageTruckCapacity");
+// };
+
+// export const ChangeAmbulanceCapacity = (cap: number) => {
+//   trigger(mod.id, "ChangeAmbulanceCapacity", cap);
+// };
+
+// export const ResetAmbulanceCapacity = () => {
+//   trigger(mod.id, "ResetAmbulanceCapacity");
+// };
+
+// export const ChangeMediHeliCapacity = (cap: number) => {
+//   trigger(mod.id, "ChangeMediHeliCapacity", cap);
+// };
+
+// export const ResetMediHeliCapacity = () => {
+//   trigger(mod.id, "ResetMediHeliCapacity");
+// };
+
 export const ClosePanel = () => {
   brandPanelVisibleBinding.update(false);
   levelPanelVisibleBinding.update(false);
   storagePanelVisibleBinding.update(false);
+  utilityPanelVisibleBinding.update(false);
+  vehiclePanelVisibleBinding.update(false);
   engine.trigger("audio.playSound", "select-item", 1);
 };
+
+// export const RefreshPanel = () => {
+//   document.querySelectorAll(".starq-abc-panel").forEach((el) => {
+//     el.remove();
+//   });
+// };
 
 export const SplitTextToDiv = ({ text }: { text: string }) => {
   const lines = text.split("\r\n");
@@ -79,17 +164,23 @@ export const SplitTextToDiv = ({ text }: { text: string }) => {
 export const brandPanelVisibleBinding = bindLocalValue(false);
 export const levelPanelVisibleBinding = bindLocalValue(false);
 export const storagePanelVisibleBinding = bindLocalValue(false);
+export const utilityPanelVisibleBinding = bindLocalValue(false);
+export const vehiclePanelVisibleBinding = bindLocalValue(false);
 
 export const visibleBindings = [
   brandPanelVisibleBinding,
   levelPanelVisibleBinding,
   storagePanelVisibleBinding,
+  utilityPanelVisibleBinding,
+  vehiclePanelVisibleBinding,
 ];
 
 export enum PanelIndex {
   Brand = 0,
   Level = 1,
   Storage = 2,
+  Utility = 3,
+  Vehicle = 4,
 }
 
 export const togglePanel = (indexToToggle: number) => {
