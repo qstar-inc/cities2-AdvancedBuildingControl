@@ -4,15 +4,15 @@ using Unity.Entities;
 
 namespace AdvancedBuildingControl.Components
 {
-    public struct ABC_PowerPlant
-        : IABC_Component_Int,
+    public struct ABC_SewagePurification
+        : IABC_Component_Float,
             IComponentData,
             IQueryTypeParameter,
             ISerializable
     {
         public bool Enabled { get; set; }
-        public int Modified { get; set; }
-        public int Original { get; set; }
+        public float Modified { get; set; }
+        public float Original { get; set; }
 
         public readonly bool IsDefault() => Enabled == false && Modified == 0;
 
@@ -28,8 +28,8 @@ namespace AdvancedBuildingControl.Components
             where TReader : IReader
         {
             reader.Read(out bool enabled);
-            reader.Read(out int modified);
-            reader.Read(out int ori);
+            reader.Read(out float modified);
+            reader.Read(out float ori);
 
             Enabled = enabled;
             Modified = modified;

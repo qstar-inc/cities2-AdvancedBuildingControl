@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Colossal.IO.AssetDatabase;
 using Colossal.Serialization.Entities;
 using Game;
@@ -20,10 +20,12 @@ namespace AdvancedBuildingControl.Systems
             if (!firstTime)
                 return;
 
+            Mod.m_Setting.IsPTGInGame = ModHelper.IsModActive("PlopTheGrowables");
+
             if (
                 AssetDatabase.global.TryGetAsset(
                     SearchFilter<ExecutableAsset>.ByCondition(asset =>
-                        asset.isEnabled && asset.isLoaded && asset.name.Equals("PlopTheGrowables")
+                        asset.isLoaded && asset.name.Equals("PlopTheGrowables")
                     ),
                     out ExecutableAsset ptgAsset
                 )
@@ -37,12 +39,11 @@ namespace AdvancedBuildingControl.Systems
                     return;
                 }
 
-                Mod.Setting.IsPTGInGame = true;
                 _ptgLockedComponent = new ComponentType(
                     ptgLockType,
                     ComponentType.AccessMode.ReadOnly
                 );
-                LogHelper.SendLog("PTG found");
+                LogHelper.SendLog("PTG found", LogLevel.DEV);
             }
             firstTime = false;
         }
@@ -53,10 +54,8 @@ namespace AdvancedBuildingControl.Systems
         {
             try
             {
-                if (Mod.Setting.IsPTGInGame && ptgLockType != null)
-                {
+                if (Mod.m_Setting.IsPTGInGame && ptgLockType != null)
                     EntityManager.AddComponent(entity, _ptgLockedComponent);
-                }
             }
             catch (Exception e)
             {

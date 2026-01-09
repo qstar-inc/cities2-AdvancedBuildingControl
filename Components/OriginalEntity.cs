@@ -1,4 +1,4 @@
-﻿using Colossal.Serialization.Entities;
+using Colossal.Serialization.Entities;
 using Unity.Collections;
 using Unity.Entities;
 
@@ -20,10 +20,7 @@ namespace AdvancedBuildingControl.Components
             OGEntity = oGEntity;
         }
 
-        public readonly bool CompareTo(OriginalEntity other)
-        {
-            return OGEntity == other.OGEntity;
-        }
+        public readonly bool CompareTo(OriginalEntity other) => OGEntity == other.OGEntity;
 
         public FixedString128Bytes OGEntity;
     }

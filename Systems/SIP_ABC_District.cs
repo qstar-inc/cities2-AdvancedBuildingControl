@@ -168,7 +168,7 @@ namespace AdvancedBuildingControl.Systems
                         entities[i],
                         level.ToString(),
                         ProcessType.Update,
-                        RefChangerSystem.ValueType.Level
+                        RefChangerSystem.UpdateValueType.Level
                     );
                 }
             }

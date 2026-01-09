@@ -19,22 +19,22 @@ import { baseGameIcons, uilStandard } from "styleBindings";
 import {
   BldgBrandInfo,
   BldgGeneralInfo,
+  BldgPropertiesInfo,
   BldgStorageInfo,
   BldgUtilityInfo,
   BldgVehicleInfo,
-  BldgZoningInfo,
   LocaleKeys,
 } from "types";
 
 import { BrandPanel } from "./BrandPanel";
-import { LevelPanel } from "./LevelPanel";
+import { PropertiesPanel } from "./PropertiesPanel";
 import { StoragePanel } from "./StoragePanel";
 import { UtilityPanel } from "./UtilityPanel";
 import { VehiclePanel } from "./VehiclePanel";
 
 interface SIP_ABC extends SelectedInfoSectionBase {
   bldgGeneralInfo: BldgGeneralInfo;
-  bldgZoningInfo: BldgZoningInfo;
+  bldgPropertiesInfo: BldgPropertiesInfo;
   bldgBrandInfo: BldgBrandInfo;
   bldgStorageInfo: BldgStorageInfo;
   bldgUtilityInfo: BldgUtilityInfo;
@@ -42,15 +42,21 @@ interface SIP_ABC extends SelectedInfoSectionBase {
 }
 
 export const SIP_ABC = (componentList: any): any => {
-  componentList["AdvancedBuildingControl.Systems.SIP_ABC"] = (e: SIP_ABC) => {
+  componentList["AdvancedBuildingControl.Systems.SIP_ABC"] = (
+    props: SIP_ABC,
+  ) => {
     const { translate } = useLocalization();
 
-    const bldgGeneralInfo = e.bldgGeneralInfo;
-    const bldgZoningInfo = e.bldgZoningInfo;
-    const bldgBrandInfo = e.bldgBrandInfo;
-    const bldgStorageInfo = e.bldgStorageInfo;
-    const bldgUtilityInfo = e.bldgUtilityInfo;
-    const bldgVehicleInfo = e.bldgVehicleInfo;
+    // console.log(JSON.stringify(props));
+
+    const bldgGeneralInfo = props.bldgGeneralInfo;
+    const bldgPropertiesInfo = props.bldgPropertiesInfo;
+    const bldgBrandInfo = props.bldgBrandInfo;
+    const bldgStorageInfo = props.bldgStorageInfo;
+    const bldgUtilityInfo = props.bldgUtilityInfo;
+    const bldgVehicleInfo = props.bldgVehicleInfo;
+
+    console.log(JSON.stringify(bldgGeneralInfo));
 
     const isBrandPanelOpen = useValue(brandPanelVisibleBinding);
     const isLevelPanelOpen = useValue(levelPanelVisibleBinding);
@@ -98,7 +104,7 @@ export const SIP_ABC = (componentList: any): any => {
                         focusKey={FOCUS_AUTO}
                         tooltip={tooltipBrandChanger}
                         selected={isBrandPanelOpen}
-                        src={e.bldgBrandInfo.BrandIcon}
+                        src={props.bldgBrandInfo.BrandIcon}
                         onSelect={() => {
                           togglePanel(PanelIndex.Brand);
                         }}
@@ -111,9 +117,9 @@ export const SIP_ABC = (componentList: any): any => {
                       )}
                     </>
                   )}
-                  {(bldgZoningInfo.HasLevel ||
-                    bldgZoningInfo.HasHousehold ||
-                    bldgZoningInfo.HasWorkplace) && (
+                  {(bldgPropertiesInfo.HasLevel ||
+                    bldgPropertiesInfo.HasHousehold ||
+                    bldgPropertiesInfo.IsWorkplace) && (
                     <>
                       <ToolButton
                         id="starq-abc-level"
@@ -125,9 +131,9 @@ export const SIP_ABC = (componentList: any): any => {
                         }}
                       />
                       {isLevelPanelOpen && (
-                        <LevelPanel
+                        <PropertiesPanel
                           key={selectedEntityVal.index}
-                          bldgZoningInfo={bldgZoningInfo}
+                          bldgPropertiesInfo={bldgPropertiesInfo}
                         />
                       )}
                     </>
@@ -178,7 +184,13 @@ export const SIP_ABC = (componentList: any): any => {
                   {(bldgVehicleInfo.IsDepot ||
                     bldgVehicleInfo.IsGarbageFacility ||
                     bldgVehicleInfo.IsHospital ||
-                    bldgVehicleInfo.IsDeathcare) && (
+                    bldgVehicleInfo.IsDeathcare ||
+                    bldgVehicleInfo.IsPoliceStation ||
+                    bldgVehicleInfo.IsPrison ||
+                    bldgVehicleInfo.IsFireStation ||
+                    bldgVehicleInfo.IsEmergencyShelter ||
+                    bldgVehicleInfo.IsPostFacility ||
+                    bldgVehicleInfo.IsMaintenanceDepot) && (
                     <>
                       <ToolButton
                         id="starq-abc-vehicle"

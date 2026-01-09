@@ -1,3 +1,4 @@
+using System;
 using AdvancedBuildingControl.Systems;
 
 namespace AdvancedBuildingControl.Variables
@@ -6,6 +7,8 @@ namespace AdvancedBuildingControl.Variables
     {
         public int Efficiency { get; set; } = 0;
         public bool HasHeli { get; set; } = false;
+        public bool HasPostVan { get; set; } = false;
+        public bool HasPostTruck { get; set; } = false;
     }
 
     public class BldgBrandInfo
@@ -17,13 +20,13 @@ namespace AdvancedBuildingControl.Variables
         public BrandDataInfo[] BrandList { get; set; } = new BrandDataInfo[0];
     }
 
-    public class BldgZoningInfo
+    public class BldgPropertiesInfo
     {
         public bool HasLevel { get; set; } = false;
-        public int Level { get; set; } = 0;
+        public InfoTypeCOCE Level { get; set; } = new InfoTypeCOCE();
         public int Upkeep { get; set; } = 0;
         public bool HasHousehold { get; set; } = false;
-        public int Household { get; set; } = 0;
+        public InfoTypeCOCE Household { get; set; } = new InfoTypeCOCE();
         public int MaxHousehold { get; set; } = 0;
         public int Rent { get; set; } = 0;
         public string AreaType { get; set; } = string.Empty;
@@ -38,9 +41,8 @@ namespace AdvancedBuildingControl.Variables
         //public bool IgnoreLandValue { get; set; } = false;
         //public int LotSize { get; set; } = 0;
         //public bool IsMixed { get; set; } = false;
-        public bool HasWorkplace { get; set; } = false;
-        public int CurrentMaxWorkplaceCount { get; set; } = 0;
-        public int OriginalMaxWorkplaceCount { get; set; } = 0;
+        public bool IsWorkplace { get; set; } = false;
+        public InfoTypeCOCE Workplace { get; set; } = new InfoTypeCOCE();
     }
 
     public class BldgStorageInfo
@@ -65,42 +67,40 @@ namespace AdvancedBuildingControl.Variables
         public int OriginalPowerProdCap { get; set; } = 0;
     }
 
-    public class VehicleInfo
+    public class InfoTypeCOCE
     {
         public int Current { get; set; } = 0;
         public int Original { get; set; } = 0;
         public int Combined { get; set; } = 0;
+        public bool Enabled { get; set; } = false;
     }
 
     public class BldgVehicleInfo
     {
         public bool IsDepot { get; set; } = false;
         public string TransportType { get; set; } = string.Empty;
-        public VehicleInfo DepotVehicle { get; set; } = new VehicleInfo();
-
-        //public int CurrentDepotCap { get; set; } = 0;
-        //public int OriginalDepotCap { get; set; } = 0;
-        //public int CombinedDepotCap { get; set; } = 0;
+        public InfoTypeCOCE DepotVehicle { get; set; } = new InfoTypeCOCE();
         public bool IsGarbageFacility { get; set; } = false;
-        public VehicleInfo GarbageTruck { get; set; } = new VehicleInfo();
-
-        //public int CurrentGarbageTruckCap { get; set; } = 0;
-        //public int OriginalGarbageTruckCap { get; set; } = 0;
-        //public int CombinedGarbageTruckCap { get; set; } = 0;
+        public InfoTypeCOCE GarbageTruck { get; set; } = new InfoTypeCOCE();
         public bool IsHospital { get; set; } = false;
-        public VehicleInfo Ambulance { get; set; } = new VehicleInfo();
-        public VehicleInfo MediHeli { get; set; } = new VehicleInfo();
-
-        //public int CurrentAmbulanceCap { get; set; } = 0;
-        //public int OriginalAmbulanceCap { get; set; } = 0;
-        //public int CombinedAmbulanceCap { get; set; } = 0;
-        //public int CurrentMediHeliCap { get; set; } = 0;
-        //public int OriginalMediHeliCap { get; set; } = 0;
-        //public int CombinedMediHeliCap { get; set; } = 0;
+        public InfoTypeCOCE Ambulance { get; set; } = new InfoTypeCOCE();
+        public InfoTypeCOCE MediHeli { get; set; } = new InfoTypeCOCE();
         public bool IsDeathcare { get; set; } = false;
-        public VehicleInfo Hearse { get; set; } = new VehicleInfo();
-        //public int CurrentHearseCap { get; set; } = 0;
-        //public int OriginalHearseCap { get; set; } = 0;
-        //public int CombinedHearseCap { get; set; } = 0;
+        public InfoTypeCOCE Hearse { get; set; } = new InfoTypeCOCE();
+        public bool IsPoliceStation { get; set; } = false;
+        public InfoTypeCOCE PatrolCar { get; set; } = new InfoTypeCOCE();
+        public InfoTypeCOCE PoliceHeli { get; set; } = new InfoTypeCOCE();
+        public bool IsPrison { get; set; } = false;
+        public InfoTypeCOCE PrisonVan { get; set; } = new InfoTypeCOCE();
+        public bool IsFireStation { get; set; } = false;
+        public InfoTypeCOCE FireTruck { get; set; } = new InfoTypeCOCE();
+        public InfoTypeCOCE FireHeli { get; set; } = new InfoTypeCOCE();
+        public bool IsEmergencyShelter { get; set; } = false;
+        public InfoTypeCOCE EvacBus { get; set; } = new InfoTypeCOCE();
+        public bool IsPostFacility { get; set; } = false;
+        public InfoTypeCOCE PostVan { get; set; } = new InfoTypeCOCE();
+        public InfoTypeCOCE PostTruck { get; set; } = new InfoTypeCOCE();
+        public bool IsMaintenanceDepot { get; set; } = false;
+        public InfoTypeCOCE MaintenanceVehicle { get; set; } = new InfoTypeCOCE();
     }
 }

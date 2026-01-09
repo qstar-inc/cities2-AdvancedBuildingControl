@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using AdvancedBuildingControl.Systems;
+using AdvancedBuildingControl.Systems.Changers;
 using AdvancedBuildingControl.Systems.Serialization;
 using Colossal.IO.AssetDatabase;
 using Colossal.Logging;
@@ -15,20 +16,18 @@ namespace AdvancedBuildingControl
     public class Mod : IMod
     {
         public static string Id = nameof(AdvancedBuildingControl);
-        public static string Name = "Advanced Building Control";
+        public static string Name = Assembly
+            .GetExecutingAssembly()
+            .GetCustomAttribute<AssemblyTitleAttribute>()
+            .Title;
         public static string Version = Assembly
             .GetExecutingAssembly()
             .GetName()
             .Version.ToString(3);
-        public static string Author = "StarQ";
-        public static ILog log = LogManager
-            .GetLogger($"{nameof(AdvancedBuildingControl)}")
-            .SetShowsErrorsInUI(true);
 
-#nullable disable
-        public static Setting Setting;
+        public static ILog log = LogManager.GetLogger($"{Id}").SetShowsErrorsInUI(false);
+        public static Setting m_Setting;
 
-#nullable enable
         public void OnLoad(UpdateSystem updateSystem)
         {
             LogHelper.Init(Id, log);
@@ -41,12 +40,12 @@ namespace AdvancedBuildingControl
             GameManager.instance.localizationManager.onActiveDictionaryChanged +=
                 LocaleHelper.OnActiveDictionaryChanged;
 
-            Setting = new Setting(this);
+            m_Setting = new Setting(this);
             //Setting.RegisterInOptionsUI();
 
             AssetDatabase.global.LoadSettings(
                 nameof(AdvancedBuildingControl),
-                Setting,
+                m_Setting,
                 new Setting(this)
             );
 
@@ -73,10 +72,10 @@ namespace AdvancedBuildingControl
 
         public void OnDispose()
         {
-            if (Setting != null)
+            if (m_Setting != null)
             {
                 //Setting.UnregisterInOptionsUI();
-                Setting = null;
+                m_Setting = null;
             }
         }
 

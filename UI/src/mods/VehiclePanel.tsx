@@ -1,6 +1,6 @@
 import {
-  ChangeVehicleCapacity,
-  ResetVehicleCapacity,
+  ChangeValue,
+  ResetValue,
   ToolButton,
   vehiclePanelVisibleBinding,
 } from "bindings";
@@ -20,8 +20,8 @@ import {
   BldgGeneralInfo,
   BldgVehicleInfo,
   FindTranslation,
-  ValueType as UpdateValueType,
-  VehicleInfo,
+  InfoTypeCOCE,
+  UpdateValueType,
 } from "types";
 
 import { PanelBase } from "./PanelBase";
@@ -34,26 +34,16 @@ interface VehiclePanelProps {
 function GetTitle(str: string) {
   str = str?.toLowerCase();
   switch (str) {
-    case "ambulance":
-      return FindTranslation("Properties.AMBULANCE_COUNT", true);
     case "bus":
       return FindTranslation("Transport.LEGEND_VEHICLES[Bus]", true);
     case "ferry":
       return FindTranslation("Transport.LEGEND_VEHICLES[Ferry]", true);
-    case "garbage":
-      return FindTranslation("Properties.GARBAGE_TRUCK_COUNT", true);
-    case "hearse":
-      return FindTranslation("Properties.HEARSE_COUNT", true);
-    case "mediheli":
-      return FindTranslation("Properties.MEDICAL_HELICOPTER_COUNT", true);
-    // case "post":
-    //   return FindTranslation("SelectedInfoPanel.POST_VEHICLE_TITLE", true);
     case "rocket":
       return FindTranslation("Transport.LEGEND_VEHICLES[Rocket]", true);
     case "subway":
       return `${FindTranslation(
         "SubServices.NAME[TransportationSubway]",
-        true
+        true,
       )} ${FindTranslation("Transport.LEGEND_VEHICLES[Train]", true)}`;
     case "taxi":
       return FindTranslation("Transport.LEGEND_VEHICLES[Taxi]", true);
@@ -61,6 +51,32 @@ function GetTitle(str: string) {
       return FindTranslation("Transport.LEGEND_VEHICLES[Train]", true);
     case "tram":
       return FindTranslation("Transport.LEGEND_VEHICLES[Tram]", true);
+    case "garbage":
+      return FindTranslation("Properties.GARBAGE_TRUCK_COUNT", true);
+    case "ambulance":
+      return FindTranslation("Properties.AMBULANCE_COUNT", true);
+    case "mediheli":
+      return FindTranslation("Properties.MEDICAL_HELICOPTER_COUNT", true);
+    case "hearse":
+      return FindTranslation("Properties.HEARSE_COUNT", true);
+    case "patrolcar":
+      return FindTranslation("Properties.PATROL_CAR_COUNT", true);
+    case "policeheli":
+      return FindTranslation("Properties.POLICE_HELICOPTER_COUNT", true);
+    case "prisonvan":
+      return FindTranslation("Properties.PRISON_VAN_COUNT", true);
+    case "firetruck":
+      return FindTranslation("Properties.FIRE_ENGINE_COUNT", true);
+    case "fireheli":
+      return FindTranslation("Properties.FIRE_HELICOPTER_COUNT", true);
+    case "evacbus":
+      return FindTranslation("Properties.EVACUATION_BUS_COUNT", true);
+    case "postvan":
+      return FindTranslation("Properties.POST_VAN_COUNT", true);
+    case "posttruck":
+      return FindTranslation("Properties.POST_TRUCK_COUNT", true);
+    case "maintenancevehicle":
+      return FindTranslation("Properties.MAINTENANCE_VEHICLES", true);
     default:
       return str;
   }
@@ -75,7 +91,7 @@ const Section = ({
   IsActive: boolean;
   vType: string;
   valueType: UpdateValueType;
-  Vehicle: VehicleInfo;
+  Vehicle: InfoTypeCOCE;
 }) => {
   const OverrideToLabel = FindTranslation(`OverrideTo`);
   const BaseLabel = FindTranslation(`Base`);
@@ -83,6 +99,11 @@ const Section = ({
   const BaseTooltip = FindTranslation(`BaseTooltip`);
   const FinalTooltip = FindTranslation(`FinalTooltip`);
   const ResetTooltip = FindTranslation(`ResetTooltip`);
+
+  console.log(IsActive);
+  console.log(vType);
+  console.log(JSON.stringify(valueType));
+  console.log(JSON.stringify(Vehicle));
 
   return (
     <>
@@ -113,18 +134,18 @@ const Section = ({
                             unit={Unit.Integer}
                           />
                         )}`}
-                        onKeyDown={(e) => {
+                        onKeyDown={e => {
                           if (e.key === "Enter") {
-                            ChangeVehicleCapacity(
+                            ChangeValue(
                               Number.parseInt(e.currentTarget.value),
-                              valueType
+                              valueType,
                             );
                           }
                         }}
-                        onBlur={(e) => {
-                          ChangeVehicleCapacity(
+                        onBlur={e => {
+                          ChangeValue(
                             Number.parseInt(e.currentTarget.value),
-                            valueType
+                            valueType,
                           );
                         }}
                       />
@@ -147,13 +168,13 @@ const Section = ({
                   tooltip={ResetTooltip!}
                   src={uilStandard + "Reset.svg"}
                   onSelect={() => {
-                    ResetVehicleCapacity(valueType);
+                    ResetValue(valueType);
                   }}
                 />
               </>
             }
           />
-          {Vehicle.Original != 0 && (
+          {Vehicle.Enabled && (
             <PanelSectionRow
               tooltip={BaseTooltip!}
               left={BaseLabel}
@@ -178,10 +199,8 @@ const Section = ({
 };
 
 export const VehiclePanel: FC<VehiclePanelProps> = (
-  props: VehiclePanelProps
+  props: VehiclePanelProps,
 ) => {
-  // const { translate } = useLocalization();
-
   const visibleBindingValue = useValue(vehiclePanelVisibleBinding);
 
   const headerText = FindTranslation(`VehicleHeader`);
@@ -209,7 +228,7 @@ export const VehiclePanel: FC<VehiclePanelProps> = (
             <Section
               vType={bldgVehicleInfo.TransportType}
               IsActive={bldgVehicleInfo.IsDepot}
-              valueType={UpdateValueType.Depot}
+              valueType={UpdateValueType.DepotVehicle}
               Vehicle={bldgVehicleInfo.DepotVehicle}
             />
             <Section
@@ -238,215 +257,64 @@ export const VehiclePanel: FC<VehiclePanelProps> = (
               valueType={UpdateValueType.Hearse}
               Vehicle={bldgVehicleInfo.Hearse}
             />
-            {/* {bldgVehicleInfo.IsGarbageFacility ? (
-              <PanelSection>
-                <PanelSectionRow
-                  uppercase={true}
-                  disableFocus={true}
-                  left={changeLabel}
-                  right={
-                    <>
-                      <div>
-                        <div className={textElipsisInputThemeModule.wrapper}>
-                          {" "}
-                          <div
-                            className={`${textElipsisInputModule.container} ${sipTextInputModule.container}`}
-                          >
-                            <input
-                              className={`${textElipsisInputModule.input} ${sipTextInputModule.input}`}
-                              maxLength={7}
-                              type="text"
-                              placeholder={`${bldgVehicleInfo.CurrentGarbageTruckCap}`}
-                              onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                  ChangeGarbageTruckCapacity(
-                                    Number.parseInt(e.currentTarget.value)
-                                  );
-                                }
-                              }}
-                              onBlur={(e) => {
-                                ChangeGarbageTruckCapacity(
-                                  Number.parseInt(e.currentTarget.value)
-                                );
-                              }}
-                            />
-                            <div
-                              className={`${infoRowModule.right} ${textElipsisInputModule.label} ${sipTextInputModule.label}`}
-                            >
-                              {bldgVehicleInfo.CurrentGarbageTruckCap}
-                            </div>
-                          </div>
-                        </div>
-                      </div>{" "}
-                      <ToolButton
-                        id="starq-abc-depot-reset"
-                        focusKey={FOCUS_DISABLED}
-                        tooltip={resetTooltip!}
-                        src={uilStandard + "Reset.svg"}
-                        onSelect={() => {
-                          ResetGarbageTruckCapacity();
-                        }}
-                      />
-                    </>
-                  }
-                />
-                {bldgVehicleInfo.OriginalGarbageTruckCap != 0 && (
-                  <PanelSectionRow
-                    uppercase={true}
-                    left={originalLabel}
-                    right={bldgVehicleInfo.OriginalGarbageTruckCap}
-                  />
-                )}
-                {bldgVehicleInfo.CombinedGarbageTruckCap !=
-                  bldgVehicleInfo.CurrentGarbageTruckCap && (
-                  <PanelSectionRow
-                    uppercase={true}
-                    left={totalWithUpgradesLabel}
-                    right={bldgVehicleInfo.CombinedGarbageTruckCap}
-                  />
-                )}
-              </PanelSection>
-            ) : null}
-            {bldgVehicleInfo.IsHospital ? (
-              <PanelSection>
-                <PanelSectionRow
-                  uppercase={true}
-                  disableFocus={true}
-                  left={changeLabel}
-                  right={
-                    <>
-                      <div>
-                        <div className={textElipsisInputThemeModule.wrapper}>
-                          {" "}
-                          <div
-                            className={`${textElipsisInputModule.container} ${sipTextInputModule.container}`}
-                          >
-                            <input
-                              className={`${textElipsisInputModule.input} ${sipTextInputModule.input}`}
-                              maxLength={7}
-                              type="text"
-                              placeholder={`${bldgVehicleInfo.CurrentAmbulanceCap}`}
-                              onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                  ChangeAmbulanceCapacity(
-                                    Number.parseInt(e.currentTarget.value)
-                                  );
-                                }
-                              }}
-                              onBlur={(e) => {
-                                ChangeAmbulanceCapacity(
-                                  Number.parseInt(e.currentTarget.value)
-                                );
-                              }}
-                            />
-                            <div
-                              className={`${infoRowModule.right} ${textElipsisInputModule.label} ${sipTextInputModule.label}`}
-                            >
-                              {bldgVehicleInfo.CurrentAmbulanceCap}
-                            </div>
-                          </div>
-                        </div>
-                      </div>{" "}
-                      <ToolButton
-                        id="starq-abc-ambulance-reset"
-                        focusKey={FOCUS_DISABLED}
-                        tooltip={resetTooltip!}
-                        src={uilStandard + "Reset.svg"}
-                        onSelect={() => {
-                          ResetAmbulanceCapacity();
-                        }}
-                      />
-                    </>
-                  }
-                />
-                {bldgVehicleInfo.OriginalAmbulanceCap != 0 && (
-                  <PanelSectionRow
-                    uppercase={true}
-                    left={originalLabel}
-                    right={bldgVehicleInfo.OriginalAmbulanceCap}
-                  />
-                )}
-                {bldgVehicleInfo.CombinedAmbulanceCap !=
-                  bldgVehicleInfo.CurrentAmbulanceCap && (
-                  <PanelSectionRow
-                    uppercase={true}
-                    left={totalWithUpgradesLabel}
-                    right={bldgVehicleInfo.CombinedAmbulanceCap}
-                  />
-                )}
-                {bldgGeneralInfo.HasHeli ? (
-                  <>
-                    <PanelSectionRow
-                      uppercase={true}
-                      disableFocus={true}
-                      left={changeLabel}
-                      right={
-                        <>
-                          <div>
-                            <div
-                              className={textElipsisInputThemeModule.wrapper}
-                            >
-                              {" "}
-                              <div
-                                className={`${textElipsisInputModule.container} ${sipTextInputModule.container}`}
-                              >
-                                <input
-                                  className={`${textElipsisInputModule.input} ${sipTextInputModule.input}`}
-                                  maxLength={7}
-                                  type="text"
-                                  placeholder={`${bldgVehicleInfo.CurrentMediHeliCap}`}
-                                  onKeyDown={(e) => {
-                                    if (e.key === "Enter") {
-                                      ChangeMediHeliCapacity(
-                                        Number.parseInt(e.currentTarget.value)
-                                      );
-                                    }
-                                  }}
-                                  onBlur={(e) => {
-                                    ChangeMediHeliCapacity(
-                                      Number.parseInt(e.currentTarget.value)
-                                    );
-                                  }}
-                                />
-                                <div
-                                  className={`${infoRowModule.right} ${textElipsisInputModule.label} ${sipTextInputModule.label}`}
-                                >
-                                  {bldgVehicleInfo.CurrentMediHeliCap}
-                                </div>
-                              </div>
-                            </div>
-                          </div>{" "}
-                          <ToolButton
-                            id="starq-abc-MediHel-reset"
-                            focusKey={FOCUS_DISABLED}
-                            tooltip={resetTooltip!}
-                            src={uilStandard + "Reset.svg"}
-                            onSelect={() => {
-                              ResetMediHeliCapacity();
-                            }}
-                          />
-                        </>
-                      }
-                    />
-                    {bldgVehicleInfo.OriginalMediHeliCap != 0 && (
-                      <PanelSectionRow
-                        uppercase={true}
-                        left={originalLabel}
-                        right={bldgVehicleInfo.OriginalMediHeliCap}
-                      />
-                    )}
-                    {bldgVehicleInfo.CombinedMediHeliCap !=
-                      bldgVehicleInfo.CurrentMediHeliCap && (
-                      <PanelSectionRow
-                        uppercase={true}
-                        left={totalWithUpgradesLabel}
-                        right={bldgVehicleInfo.CombinedMediHeliCap}
-                      />
-                    )}
-                  </>
-                ) : null}
-              </PanelSection>
-            ) : null} */}
+            <Section
+              vType="PatrolCar"
+              IsActive={bldgVehicleInfo.IsPoliceStation}
+              valueType={UpdateValueType.PatrolCar}
+              Vehicle={bldgVehicleInfo.PatrolCar}
+            />
+            {bldgGeneralInfo.HasHeli && (
+              <Section
+                vType="PoliceHeli"
+                IsActive={bldgVehicleInfo.IsPoliceStation}
+                valueType={UpdateValueType.PoliceHeli}
+                Vehicle={bldgVehicleInfo.PoliceHeli}
+              />
+            )}
+            <Section
+              vType="PrisonVan"
+              IsActive={bldgVehicleInfo.IsPrison}
+              valueType={UpdateValueType.PrisonVan}
+              Vehicle={bldgVehicleInfo.PrisonVan}
+            />
+            <Section
+              vType="FireTruck"
+              IsActive={bldgVehicleInfo.IsFireStation}
+              valueType={UpdateValueType.FireTruck}
+              Vehicle={bldgVehicleInfo.FireTruck}
+            />
+            {bldgGeneralInfo.HasHeli && (
+              <Section
+                vType="FireHeli"
+                IsActive={bldgVehicleInfo.IsFireStation}
+                valueType={UpdateValueType.FireHeli}
+                Vehicle={bldgVehicleInfo.FireHeli}
+              />
+            )}
+            <Section
+              vType="EvacBus"
+              IsActive={bldgVehicleInfo.IsEmergencyShelter}
+              valueType={UpdateValueType.EvacBus}
+              Vehicle={bldgVehicleInfo.EvacBus}
+            />
+            <Section
+              vType="PostVan"
+              IsActive={bldgVehicleInfo.IsPostFacility}
+              valueType={UpdateValueType.PostVan}
+              Vehicle={bldgVehicleInfo.PostVan}
+            />
+            <Section
+              vType="PostTruck"
+              IsActive={bldgVehicleInfo.IsPostFacility}
+              valueType={UpdateValueType.PostTruck}
+              Vehicle={bldgVehicleInfo.PostTruck}
+            />
+            <Section
+              vType="MaintenanceVehicle"
+              IsActive={bldgVehicleInfo.IsMaintenanceDepot}
+              valueType={UpdateValueType.MaintenanceVehicle}
+              Vehicle={bldgVehicleInfo.MaintenanceVehicle}
+            />
           </>
         }
       />

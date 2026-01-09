@@ -1,45 +1,39 @@
-﻿using Colossal.Serialization.Entities;
+using AdvancedBuildingControl.Interface;
+using Colossal.Serialization.Entities;
 using Unity.Entities;
 
 namespace AdvancedBuildingControl.Components
 {
-    public struct ABC_SewageDump : IComponentData, IQueryTypeParameter, ISerializable
+    public struct ABC_SewageDump
+        : IABC_Component_Int,
+            IComponentData,
+            IQueryTypeParameter,
+            ISerializable
     {
+        public bool Enabled { get; set; }
+        public int Modified { get; set; }
+        public int Original { get; set; }
+
+        public readonly bool IsDefault() => Enabled == false && Modified == 0;
+
         public void Serialize<TWriter>(TWriter writer)
             where TWriter : IWriter
         {
             writer.Write(Enabled);
-            writer.Write(Capacity);
-            writer.Write(OriginalCap);
-            writer.Write(Purification);
-            writer.Write(OriginalPurification);
+            writer.Write(Modified);
+            writer.Write(Original);
         }
 
         public void Deserialize<TReader>(TReader reader)
             where TReader : IReader
         {
             reader.Read(out bool enabled);
-            reader.Read(out int capacity);
-            reader.Read(out int original);
-            reader.Read(out int purification);
-            reader.Read(out int originalPurification);
+            reader.Read(out int modified);
+            reader.Read(out int ori);
 
             Enabled = enabled;
-            Capacity = capacity;
-            OriginalCap = original;
-            Purification = purification;
-            OriginalPurification = originalPurification;
+            Modified = modified;
+            Original = ori;
         }
-
-        public readonly bool IsDefault()
-        {
-            return Enabled == false && Capacity == 0;
-        }
-
-        public int Capacity;
-        public int OriginalCap;
-        public float Purification;
-        public float OriginalPurification;
-        public bool Enabled;
     }
 }

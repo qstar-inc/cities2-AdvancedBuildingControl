@@ -47,45 +47,6 @@ namespace AdvancedBuildingControl.Extensions
         }
     }
 
-    //public static class ZoneDataInfoJsonWriterExtensions
-    //{
-    //    public static void Write(this IJsonWriter writer, ZoneDataInfo value)
-    //    {
-    //        writer.TypeBegin(typeof(ZoneDataInfo).FullName);
-
-    //        writer.PropertyName("Name");
-    //        writer.Write(value.Name);
-
-    //        writer.PropertyName("PrefabName");
-    //        writer.Write(value.PrefabName);
-
-    //        writer.PropertyName("Color1");
-    //        writer.Write(value.Color1);
-
-    //        writer.PropertyName("Color2");
-    //        writer.Write(value.Color2);
-
-    //        writer.PropertyName("Entity");
-    //        writer.Write(value.Entity);
-
-    //        writer.PropertyName("Icon");
-    //        writer.Write(value.Icon);
-
-    //        writer.PropertyName("AreaTypeString");
-    //        writer.Write(value.AreaTypeString);
-
-    //        writer.TypeEnd();
-    //    }
-
-    //    public static void Write(this IJsonWriter writer, ZoneDataInfo[] array)
-    //    {
-    //        writer.ArrayBegin(array.Length);
-    //        foreach (var item in array)
-    //            Write(writer, item);
-    //        writer.ArrayEnd();
-    //    }
-    //}
-
     public static class ResourceDataInfoJsonWriterExtensions
     {
         public static void Write(this IJsonWriter writer, ResourceDataInfo value)
@@ -125,6 +86,12 @@ namespace AdvancedBuildingControl.Extensions
             writer.PropertyName("HasHeli");
             writer.Write(value.HasHeli);
 
+            writer.PropertyName("HasPostVan");
+            writer.Write(value.HasPostVan);
+
+            writer.PropertyName("HasPostTruck");
+            writer.Write(value.HasPostTruck);
+
             writer.TypeEnd();
         }
 
@@ -150,9 +117,9 @@ namespace AdvancedBuildingControl.Extensions
             writer.TypeEnd();
         }
 
-        public static void Write(this IJsonWriter writer, BldgZoningInfo value)
+        public static void Write(this IJsonWriter writer, BldgPropertiesInfo value)
         {
-            writer.TypeBegin(typeof(BldgZoningInfo).FullName);
+            writer.TypeBegin(typeof(BldgPropertiesInfo).FullName);
 
             writer.PropertyName("HasLevel");
             writer.Write(value.HasLevel);
@@ -178,44 +145,11 @@ namespace AdvancedBuildingControl.Extensions
             writer.PropertyName("AreaType");
             writer.Write(value.AreaType);
 
-            //writer.PropertyName("SpaceMultiplier");
-            //writer.Write(value.SpaceMultiplier);
+            writer.PropertyName("IsWorkplace");
+            writer.Write(value.IsWorkplace);
 
-            //writer.PropertyName("ZoneTypeBase");
-            //writer.Write(value.ZoneTypeBase);
-
-            //writer.PropertyName("TotalRent");
-            //writer.Write(value.TotalRent);
-
-            //writer.PropertyName("PropertiesCount");
-            //writer.Write(value.PropertiesCount);
-
-            //writer.PropertyName("MixedPercent");
-            //writer.Write(value.MixedPercent);
-
-            //writer.PropertyName("LandValueBase");
-            //writer.Write(value.LandValueBase);
-
-            //writer.PropertyName("LandValueModifier");
-            //writer.Write(value.LandValueModifier);
-
-            //writer.PropertyName("IgnoreLandValue");
-            //writer.Write(value.IgnoreLandValue);
-
-            //writer.PropertyName("LotSize");
-            //writer.Write(value.LotSize);
-
-            //writer.PropertyName("IsMixed");
-            //writer.Write(value.IsMixed);
-
-            writer.PropertyName("HasWorkplace");
-            writer.Write(value.HasWorkplace);
-
-            writer.PropertyName("CurrentMaxWorkplaceCount");
-            writer.Write(value.CurrentMaxWorkplaceCount);
-
-            writer.PropertyName("OriginalMaxWorkplaceCount");
-            writer.Write(value.OriginalMaxWorkplaceCount);
+            writer.PropertyName("Workplace");
+            writer.Write(value.Workplace);
 
             writer.TypeEnd();
         }
@@ -276,9 +210,9 @@ namespace AdvancedBuildingControl.Extensions
             writer.TypeEnd();
         }
 
-        public static void Write(this IJsonWriter writer, VehicleInfo value)
+        public static void Write(this IJsonWriter writer, InfoTypeCOCE value)
         {
-            writer.TypeBegin(typeof(VehicleInfo).FullName);
+            writer.TypeBegin(typeof(InfoTypeCOCE).FullName);
 
             writer.PropertyName("Current");
             writer.Write(value.Current);
@@ -288,6 +222,9 @@ namespace AdvancedBuildingControl.Extensions
 
             writer.PropertyName("Combined");
             writer.Write(value.Combined);
+
+            writer.PropertyName("Enabled");
+            writer.Write(value.Enabled);
 
             writer.TypeEnd();
         }
@@ -305,29 +242,11 @@ namespace AdvancedBuildingControl.Extensions
             writer.PropertyName("DepotVehicle");
             writer.Write(value.DepotVehicle);
 
-            //writer.PropertyName("CurrentDepotCap");
-            //writer.Write(value.CurrentDepotCap);
-
-            //writer.PropertyName("OriginalDepotCap");
-            //writer.Write(value.OriginalDepotCap);
-
-            //writer.PropertyName("CombinedDepotCap");
-            //writer.Write(value.CombinedDepotCap);
-
             writer.PropertyName("IsGarbageFacility");
             writer.Write(value.IsGarbageFacility);
 
             writer.PropertyName("GarbageTruck");
             writer.Write(value.GarbageTruck);
-
-            //writer.PropertyName("CurrentGarbageTruckCap");
-            //writer.Write(value.CurrentGarbageTruckCap);
-
-            //writer.PropertyName("OriginalGarbageTruckCap");
-            //writer.Write(value.OriginalGarbageTruckCap);
-
-            //writer.PropertyName("CombinedGarbageTruckCap");
-            //writer.Write(value.CombinedGarbageTruckCap);
 
             writer.PropertyName("IsHospital");
             writer.Write(value.IsHospital);
@@ -338,29 +257,56 @@ namespace AdvancedBuildingControl.Extensions
             writer.PropertyName("MediHeli");
             writer.Write(value.MediHeli);
 
-            //writer.PropertyName("CurrentAmbulanceCap");
-            //writer.Write(value.CurrentAmbulanceCap);
-
-            //writer.PropertyName("OriginalAmbulanceCap");
-            //writer.Write(value.OriginalAmbulanceCap);
-
-            //writer.PropertyName("CombinedAmbulanceCap");
-            //writer.Write(value.CombinedAmbulanceCap);
-
-            //writer.PropertyName("CurrentMediHeliCap");
-            //writer.Write(value.CurrentMediHeliCap);
-
-            //writer.PropertyName("OriginalMediHeliCap");
-            //writer.Write(value.OriginalMediHeliCap);
-
-            //writer.PropertyName("CombinedMediHeliCap");
-            //writer.Write(value.CombinedMediHeliCap);
-
             writer.PropertyName(name: "IsDeathcare");
             writer.Write(value.IsDeathcare);
 
             writer.PropertyName(name: "Hearse");
             writer.Write(value.Hearse);
+
+            writer.PropertyName("IsPoliceStation");
+            writer.Write(value.IsPoliceStation);
+
+            writer.PropertyName("PatrolCar");
+            writer.Write(value.PatrolCar);
+
+            writer.PropertyName("PoliceHeli");
+            writer.Write(value.PoliceHeli);
+
+            writer.PropertyName("IsPrison");
+            writer.Write(value.IsPrison);
+
+            writer.PropertyName("PrisonVan");
+            writer.Write(value.PrisonVan);
+
+            writer.PropertyName("IsFireStation");
+            writer.Write(value.IsFireStation);
+
+            writer.PropertyName("FireTruck");
+            writer.Write(value.FireTruck);
+
+            writer.PropertyName("FireHeli");
+            writer.Write(value.FireHeli);
+
+            writer.PropertyName("IsEmergencyShelter");
+            writer.Write(value.IsEmergencyShelter);
+
+            writer.PropertyName("EvacBus");
+            writer.Write(value.EvacBus);
+
+            writer.PropertyName("IsPostFacility");
+            writer.Write(value.IsPostFacility);
+
+            writer.PropertyName("PostVan");
+            writer.Write(value.PostVan);
+
+            writer.PropertyName("PostTruck");
+            writer.Write(value.PostTruck);
+
+            writer.PropertyName("IsMaintenanceDepot");
+            writer.Write(value.IsMaintenanceDepot);
+
+            writer.PropertyName("MaintenanceVehicle");
+            writer.Write(value.MaintenanceVehicle);
 
             writer.TypeEnd();
         }

@@ -1,10 +1,12 @@
-﻿using Colossal.Serialization.Entities;
+using Colossal.Serialization.Entities;
 using Unity.Entities;
 
 namespace AdvancedBuildingControl.Components
 {
     public struct ABC_LevelDistrict : IComponentData, IQueryTypeParameter, ISerializable
     {
+        public int Level;
+
         public void Serialize<TWriter>(TWriter writer)
             where TWriter : IWriter
         {
@@ -18,7 +20,5 @@ namespace AdvancedBuildingControl.Components
 
             Level = level;
         }
-
-        public int Level;
     }
 }

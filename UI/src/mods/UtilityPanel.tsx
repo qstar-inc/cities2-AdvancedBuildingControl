@@ -1,10 +1,6 @@
 import {
-  ChangePowerProdCapacity,
-  ChangeSewageDumpCapacity,
-  ChangeWaterPumpCapacity,
-  ResetPowerProdCapacity,
-  ResetSewageDumpCapacity,
-  ResetWaterPumpCapacity,
+  ChangeValue,
+  ResetValue,
   ToolButton,
   utilityPanelVisibleBinding,
 } from "bindings";
@@ -20,7 +16,12 @@ import {
   textElipsisInputThemeModule,
   uilStandard,
 } from "styleBindings";
-import { BldgGeneralInfo, BldgUtilityInfo, LocaleKeys } from "types";
+import {
+  BldgGeneralInfo,
+  BldgUtilityInfo,
+  LocaleKeys,
+  UpdateValueType,
+} from "types";
 
 import { PanelBase } from "./PanelBase";
 
@@ -30,7 +31,7 @@ interface UtilityPanelProps {
 }
 
 export const UtilityPanel: FC<UtilityPanelProps> = (
-  props: UtilityPanelProps
+  props: UtilityPanelProps,
 ) => {
   const { translate } = useLocalization();
   const visibleBindingValue = useValue(utilityPanelVisibleBinding);
@@ -98,16 +99,18 @@ export const UtilityPanel: FC<UtilityPanelProps> = (
                               maxLength={7}
                               type="text"
                               placeholder={`${bldgUtilityInfo.CurrentWaterPumpCap}`}
-                              onKeyDown={(e) => {
+                              onKeyDown={e => {
                                 if (e.key === "Enter") {
-                                  ChangeWaterPumpCapacity(
-                                    Number.parseInt(e.currentTarget.value)
+                                  ChangeValue(
+                                    Number.parseInt(e.currentTarget.value),
+                                    UpdateValueType.WaterPump,
                                   );
                                 }
                               }}
-                              onBlur={(e) => {
-                                ChangeWaterPumpCapacity(
-                                  Number.parseInt(e.currentTarget.value)
+                              onBlur={e => {
+                                ChangeValue(
+                                  Number.parseInt(e.currentTarget.value),
+                                  UpdateValueType.WaterPump,
                                 );
                               }}
                             />
@@ -125,7 +128,7 @@ export const UtilityPanel: FC<UtilityPanelProps> = (
                         tooltip={resetPumpCapTooltip!}
                         src={uilStandard + "Reset.svg"}
                         onSelect={() => {
-                          ResetWaterPumpCapacity();
+                          ResetValue(UpdateValueType.WaterPump);
                         }}
                       />
                     </>
@@ -168,107 +171,218 @@ export const UtilityPanel: FC<UtilityPanelProps> = (
               </PanelSection>
             ) : null}
             {bldgUtilityInfo.IsSewageOutlet ? (
-              <PanelSection>
-                <PanelSectionRow
-                  uppercase={true}
-                  disableFocus={true}
-                  left={changeDumpCapLabel}
-                  right={
-                    <>
-                      <div>
-                        <div className={textElipsisInputThemeModule.wrapper}>
-                          {" "}
-                          <div
-                            className={`${textElipsisInputModule.container} ${sipTextInputModule.container}`}
-                          >
-                            <input
-                              className={`${textElipsisInputModule.input} ${sipTextInputModule.input}`}
-                              maxLength={7}
-                              type="text"
-                              placeholder={`${(
-                                <LocalizedNumber
-                                  value={bldgUtilityInfo.CurrentSewageDumpCap}
-                                  unit={Unit.VolumePerMonth}
-                                />
-                              )}`}
-                              onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                  ChangeSewageDumpCapacity(
-                                    Number.parseInt(e.currentTarget.value)
-                                  );
-                                }
-                              }}
-                              onBlur={(e) => {
-                                ChangeSewageDumpCapacity(
-                                  Number.parseInt(e.currentTarget.value)
-                                );
-                              }}
-                            />
+              <>
+                <PanelSection>
+                  <PanelSectionRow
+                    uppercase={true}
+                    disableFocus={true}
+                    left={changeDumpCapLabel}
+                    right={
+                      <>
+                        <div>
+                          <div className={textElipsisInputThemeModule.wrapper}>
+                            {" "}
                             <div
-                              className={`${infoRowModule.right} ${textElipsisInputModule.label} ${sipTextInputModule.label}`}
+                              className={`${textElipsisInputModule.container} ${sipTextInputModule.container}`}
                             >
-                              {
-                                <LocalizedNumber
-                                  value={bldgUtilityInfo.CurrentSewageDumpCap}
-                                  unit={Unit.VolumePerMonth}
-                                />
-                              }
+                              <input
+                                className={`${textElipsisInputModule.input} ${sipTextInputModule.input}`}
+                                maxLength={7}
+                                type="text"
+                                placeholder={`${(
+                                  <LocalizedNumber
+                                    value={bldgUtilityInfo.CurrentSewageDumpCap}
+                                    unit={Unit.VolumePerMonth}
+                                  />
+                                )}`}
+                                onKeyDown={e => {
+                                  if (e.key === "Enter") {
+                                    ChangeValue(
+                                      Number.parseInt(e.currentTarget.value),
+                                      UpdateValueType.SewageCap,
+                                    );
+                                  }
+                                }}
+                                onBlur={e => {
+                                  ChangeValue(
+                                    Number.parseInt(e.currentTarget.value),
+                                    UpdateValueType.SewageCap,
+                                  );
+                                }}
+                              />
+                              <div
+                                className={`${infoRowModule.right} ${textElipsisInputModule.label} ${sipTextInputModule.label}`}
+                              >
+                                {
+                                  <LocalizedNumber
+                                    value={bldgUtilityInfo.CurrentSewageDumpCap}
+                                    unit={Unit.VolumePerMonth}
+                                  />
+                                }
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </div>{" "}
-                      <ToolButton
-                        id="starq-abc-sewagedump-reset"
-                        focusKey={FOCUS_DISABLED}
-                        tooltip={resetDumpCapTooltip!}
-                        src={uilStandard + "Reset.svg"}
-                        onSelect={() => {
-                          ResetSewageDumpCapacity();
-                        }}
+                        </div>{" "}
+                        <ToolButton
+                          id="starq-abc-sewagedump-reset"
+                          focusKey={FOCUS_DISABLED}
+                          tooltip={resetDumpCapTooltip!}
+                          src={uilStandard + "Reset.svg"}
+                          onSelect={() => {
+                            ResetValue(UpdateValueType.SewageCap);
+                          }}
+                        />
+                      </>
+                    }
+                  />
+                  {bldgGeneralInfo.Efficiency != 0 && (
+                    <>
+                      <PanelSectionRow
+                        uppercase={true}
+                        left={efficiencyLabel}
+                        right={
+                          <LocalizedNumber
+                            value={bldgGeneralInfo.Efficiency}
+                            unit={Unit.Percentage}
+                          />
+                        }
+                      />
+                      <PanelSectionRow
+                        uppercase={true}
+                        left={actualDumpCapLabel}
+                        right={
+                          <LocalizedNumber
+                            value={Math.round(
+                              bldgUtilityInfo.CurrentSewageDumpCap *
+                                (bldgGeneralInfo.Efficiency / 100),
+                            )}
+                            unit={Unit.VolumePerMonth}
+                          />
+                        }
                       />
                     </>
-                  }
-                />
-                {bldgGeneralInfo.Efficiency != 0 && (
-                  <>
+                  )}
+                  {bldgUtilityInfo.OriginalSewageDumpCap != 0 && (
                     <PanelSectionRow
                       uppercase={true}
-                      left={efficiencyLabel}
+                      left={originalDumpCapLabel}
                       right={
                         <LocalizedNumber
-                          value={bldgGeneralInfo.Efficiency}
-                          unit={Unit.Percentage}
-                        />
-                      }
-                    />
-                    <PanelSectionRow
-                      uppercase={true}
-                      left={actualDumpCapLabel}
-                      right={
-                        <LocalizedNumber
-                          value={Math.round(
-                            bldgUtilityInfo.CurrentSewageDumpCap *
-                              (bldgGeneralInfo.Efficiency / 100)
-                          )}
+                          value={bldgUtilityInfo.OriginalSewageDumpCap}
                           unit={Unit.VolumePerMonth}
                         />
                       }
                     />
-                  </>
-                )}
-                {bldgUtilityInfo.OriginalSewageDumpCap != 0 && (
+                  )}
+                </PanelSection>
+                <PanelSection>
                   <PanelSectionRow
                     uppercase={true}
-                    left={originalDumpCapLabel}
+                    disableFocus={true}
+                    left={changeDumpCapLabel}
                     right={
-                      <LocalizedNumber
-                        value={bldgUtilityInfo.OriginalSewageDumpCap}
-                        unit={Unit.VolumePerMonth}
-                      />
+                      <>
+                        <div>
+                          <div className={textElipsisInputThemeModule.wrapper}>
+                            {" "}
+                            <div
+                              className={`${textElipsisInputModule.container} ${sipTextInputModule.container}`}
+                            >
+                              <input
+                                className={`${textElipsisInputModule.input} ${sipTextInputModule.input}`}
+                                maxLength={7}
+                                type="text"
+                                placeholder={`${(
+                                  <LocalizedNumber
+                                    value={
+                                      bldgUtilityInfo.CurrentSewagePurification
+                                    }
+                                    unit={Unit.VolumePerMonth}
+                                  />
+                                )}`}
+                                onKeyDown={e => {
+                                  if (e.key === "Enter") {
+                                    ChangeValue(
+                                      Number.parseInt(e.currentTarget.value),
+                                      UpdateValueType.SewagePurification,
+                                    );
+                                  }
+                                }}
+                                onBlur={e => {
+                                  ChangeValue(
+                                    Number.parseInt(e.currentTarget.value),
+                                    UpdateValueType.SewagePurification,
+                                  );
+                                }}
+                              />
+                              <div
+                                className={`${infoRowModule.right} ${textElipsisInputModule.label} ${sipTextInputModule.label}`}
+                              >
+                                {
+                                  <LocalizedNumber
+                                    value={
+                                      bldgUtilityInfo.CurrentSewagePurification
+                                    }
+                                    unit={Unit.VolumePerMonth}
+                                  />
+                                }
+                              </div>
+                            </div>
+                          </div>
+                        </div>{" "}
+                        <ToolButton
+                          id="starq-abc-sewagedump-reset"
+                          focusKey={FOCUS_DISABLED}
+                          tooltip={resetDumpCapTooltip!}
+                          src={uilStandard + "Reset.svg"}
+                          onSelect={() => {
+                            ResetValue(UpdateValueType.SewagePurification);
+                          }}
+                        />
+                      </>
                     }
                   />
-                )}
-              </PanelSection>
+                  {bldgGeneralInfo.Efficiency != 0 && (
+                    <>
+                      <PanelSectionRow
+                        uppercase={true}
+                        left={efficiencyLabel}
+                        right={
+                          <LocalizedNumber
+                            value={bldgGeneralInfo.Efficiency}
+                            unit={Unit.Percentage}
+                          />
+                        }
+                      />
+                      <PanelSectionRow
+                        uppercase={true}
+                        left={actualDumpCapLabel}
+                        right={
+                          <LocalizedNumber
+                            value={Math.round(
+                              bldgUtilityInfo.CurrentSewagePurification *
+                                (bldgGeneralInfo.Efficiency / 100),
+                            )}
+                            unit={Unit.VolumePerMonth}
+                          />
+                        }
+                      />
+                    </>
+                  )}
+                  {bldgUtilityInfo.OriginalSewagePurification != 0 && (
+                    <PanelSectionRow
+                      uppercase={true}
+                      left={originalDumpCapLabel}
+                      right={
+                        <LocalizedNumber
+                          value={bldgUtilityInfo.OriginalSewagePurification}
+                          unit={Unit.VolumePerMonth}
+                        />
+                      }
+                    />
+                  )}
+                </PanelSection>
+              </>
             ) : null}
             {bldgUtilityInfo.IsPowerPlant ? (
               <PanelSection>
@@ -298,16 +412,18 @@ export const UtilityPanel: FC<UtilityPanelProps> = (
                                   unit={Unit.Power}
                                 />
                               )}`}
-                              onKeyDown={(e) => {
+                              onKeyDown={e => {
                                 if (e.key === "Enter") {
-                                  ChangePowerProdCapacity(
-                                    Number.parseInt(e.currentTarget.value)
+                                  ChangeValue(
+                                    Number.parseInt(e.currentTarget.value),
+                                    UpdateValueType.PowerPlant,
                                   );
                                 }
                               }}
-                              onBlur={(e) => {
-                                ChangePowerProdCapacity(
-                                  Number.parseInt(e.currentTarget.value)
+                              onBlur={e => {
+                                ChangeValue(
+                                  Number.parseInt(e.currentTarget.value),
+                                  UpdateValueType.PowerPlant,
                                 );
                               }}
                             />
@@ -330,7 +446,7 @@ export const UtilityPanel: FC<UtilityPanelProps> = (
                         tooltip={resetPowerCapTooltip!}
                         src={uilStandard + "Reset.svg"}
                         onSelect={() => {
-                          ResetPowerProdCapacity();
+                          ResetValue(UpdateValueType.PowerPlant);
                         }}
                       />
                     </>
@@ -355,7 +471,7 @@ export const UtilityPanel: FC<UtilityPanelProps> = (
                           <LocalizedNumber
                             value={Math.round(
                               bldgUtilityInfo.CurrentPowerProdCap *
-                                (bldgGeneralInfo.Efficiency / 100)
+                                (bldgGeneralInfo.Efficiency / 100),
                             )}
                             unit={Unit.Power}
                           />

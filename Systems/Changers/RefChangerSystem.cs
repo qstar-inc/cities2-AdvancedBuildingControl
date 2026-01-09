@@ -1,5 +1,6 @@
 using System;
 using AdvancedBuildingControl.Components;
+using AdvancedBuildingControl.Components.Vehicles;
 using AdvancedBuildingControl.Variables;
 using Game;
 using Game.Economy;
@@ -9,7 +10,7 @@ using StarQ.Shared.Extensions;
 using Unity.Collections;
 using Unity.Entities;
 
-namespace AdvancedBuildingControl.Systems
+namespace AdvancedBuildingControl.Systems.Changers
 {
     public partial class RefChangerSystem : GameSystemBase
     {
@@ -66,7 +67,7 @@ namespace AdvancedBuildingControl.Systems
             {
                 var entity = queryArray[i];
                 //LogHelper.SendLog($"Initing {entity}", LogLevel.DEV);
-                ReplaceEntity(entity, "", ProcessType.Loading, ValueType.All);
+                ReplaceEntity(entity, "", ProcessType.Loading, UpdateValueType.All);
             }
         }
 
@@ -79,11 +80,20 @@ namespace AdvancedBuildingControl.Systems
             public int SewageCap { get; set; }
             public float SewagePurification { get; set; }
             public int PowerProdCap { get; set; }
-            public int DepotCap { get; set; }
+            public int DepotVehicleCap { get; set; }
             public int GarbageTruckCap { get; set; }
             public int AmbulanceCap { get; set; }
             public int MediHeliCap { get; set; }
             public int HearseCap { get; set; }
+            public int PatrolCarCap { get; set; }
+            public int PoliceHeliCap { get; set; }
+            public int PrisonVanCap { get; set; }
+            public int FireTruckCap { get; set; }
+            public int FireHeliCap { get; set; }
+            public int EvacBusCap { get; set; }
+            public int PostVanCap { get; set; }
+            public int PostTruckCap { get; set; }
+            public int MaintenanceVehicleCap { get; set; }
         }
 
         public class EntityChangeFlag
@@ -95,11 +105,20 @@ namespace AdvancedBuildingControl.Systems
             public bool SewageCap { get; set; } = false;
             public bool SewagePurification { get; set; } = false;
             public bool PowerProd { get; set; } = false;
-            public bool Depot { get; set; } = false;
+            public bool DepotVehicle { get; set; } = false;
             public bool GarbageFacility { get; set; } = false;
             public bool Ambulance { get; set; } = false;
             public bool MediHeli { get; set; } = false;
             public bool Hearse { get; set; } = false;
+            public bool PatrolCar { get; set; }
+            public bool PoliceHeli { get; set; }
+            public bool PrisonVan { get; set; }
+            public bool FireTruck { get; set; }
+            public bool FireHeli { get; set; }
+            public bool EvacBus { get; set; }
+            public bool PostVan { get; set; }
+            public bool PostTruck { get; set; }
+            public bool MaintenanceVehicle { get; set; }
         }
 
         public struct EntityAltComponents
@@ -110,12 +129,22 @@ namespace AdvancedBuildingControl.Systems
             public ABC_Household Household;
             public ABC_WaterPump WaterPump;
             public ABC_SewageDump SewageDump;
+            public ABC_SewagePurification SewagePurification;
             public ABC_PowerPlant PowerProd;
-            public ABC_TransportDepot TransportDepot;
+            public ABC_DepotVehicle DepotVehicle;
             public ABC_GarbageTruck GarbageTruck;
             public ABC_Ambulance Ambulance;
             public ABC_MediHeli MediHeli;
             public ABC_Hearse Hearse;
+            public ABC_PatrolCar PatrolCar;
+            public ABC_PoliceHeli PoliceHeli;
+            public ABC_PrisonVan PrisonVan;
+            public ABC_FireTruck FireTruck;
+            public ABC_FireHeli FireHeli;
+            public ABC_EvacBus EvacBus;
+            public ABC_PostVan PostVan;
+            public ABC_PostTruck PostTruck;
+            public ABC_MaintenanceVehicle MaintenanceVehicle;
 
             public bool HasOriginal;
             public bool HasStorage;
@@ -123,15 +152,25 @@ namespace AdvancedBuildingControl.Systems
             public bool HasHousehold;
             public bool HasWaterPump;
             public bool HasSewageDump;
+            public bool HasSewagePurification;
             public bool HasPowerProd;
-            public bool HasDepot;
+            public bool HasDepotVehicle;
             public bool HasGarbageTruck;
             public bool HasAmbu;
             public bool HasMediHeli;
             public bool HasHearse;
+            public bool HasPatrolCar;
+            public bool HasPoliceHeli;
+            public bool HasPrisonVan;
+            public bool HasFireTruck;
+            public bool HasFireHeli;
+            public bool HasEvacBus;
+            public bool HasPostVan;
+            public bool HasPostTruck;
+            public bool HasMaintenanceVehicle;
         }
 
-        public enum ValueType
+        public enum UpdateValueType
         {
             None,
             Storage,
@@ -141,11 +180,24 @@ namespace AdvancedBuildingControl.Systems
             SewageCap,
             SewagePurification,
             PowerPlant,
-            Depot,
+            DepotVehicle,
             GarbageTruck,
             Ambulance,
             MediHeli,
             Hearse,
+            PatrolCar,
+            PoliceHeli,
+
+            // NEW
+            PrisonVan,
+            FireTruck,
+            FireHeli,
+            EvacBus,
+            PostVan,
+            PostTruck,
+            MaintenanceVehicle,
+
+            // NEW END
             All,
         }
 
@@ -155,12 +207,22 @@ namespace AdvancedBuildingControl.Systems
             ABC_Household ABC_Household,
             ABC_WaterPump ABC_WaterPump,
             ABC_SewageDump ABC_SewageDump,
+            ABC_SewagePurification ABC_SewagePurification,
             ABC_PowerPlant ABC_PowerPlant,
-            ABC_TransportDepot ABC_TransportDepot,
+            ABC_DepotVehicle ABC_DepotVehicle,
             ABC_GarbageTruck ABC_GarbageTruck,
             ABC_Ambulance ABC_Ambulance,
             ABC_MediHeli ABC_MediHeli,
             ABC_Hearse ABC_Hearse,
+            ABC_PatrolCar ABC_PatrolCar,
+            ABC_PoliceHeli ABC_PoliceHeli,
+            ABC_PrisonVan ABC_PrisonVan,
+            ABC_FireTruck ABC_FireTruck,
+            ABC_FireHeli ABC_FireHeli,
+            ABC_EvacBus ABC_EvacBus,
+            ABC_PostVan ABC_PostVan,
+            ABC_PostTruck ABC_PostTruck,
+            ABC_MaintenanceVehicle ABC_MaintenanceVehicle,
             ref EntityChangeData entityChangeData,
             ref EntityChangeFlag entityChangeFlags
         )
@@ -172,55 +234,103 @@ namespace AdvancedBuildingControl.Systems
             }
             if (!ABC_Level.IsDefault())
             {
-                entityChangeData.Level = ABC_Level.Level;
+                entityChangeData.Level = ABC_Level.Modified;
                 entityChangeFlags.Level = true;
             }
             if (!ABC_Household.IsDefault())
             {
-                entityChangeData.Household = ABC_Household.Household;
+                entityChangeData.Household = ABC_Household.Modified;
                 entityChangeFlags.Household = true;
             }
             if (!ABC_WaterPump.IsDefault())
             {
-                entityChangeData.WaterPumpCap = ABC_WaterPump.Capacity;
+                entityChangeData.WaterPumpCap = ABC_WaterPump.Modified;
                 entityChangeFlags.WaterPump = true;
             }
             if (!ABC_SewageDump.IsDefault())
             {
-                entityChangeData.SewageCap = ABC_SewageDump.Capacity;
-                entityChangeData.SewagePurification = ABC_SewageDump.Purification;
+                entityChangeData.SewageCap = ABC_SewageDump.Modified;
                 entityChangeFlags.SewageCap = true;
+            }
+            if (!ABC_SewagePurification.IsDefault())
+            {
+                entityChangeData.SewagePurification = ABC_SewagePurification.Modified;
                 entityChangeFlags.SewagePurification = true;
             }
             if (!ABC_PowerPlant.IsDefault())
             {
-                entityChangeData.PowerProdCap = ABC_PowerPlant.Capacity;
+                entityChangeData.PowerProdCap = ABC_PowerPlant.Modified;
                 entityChangeFlags.PowerProd = true;
             }
-            if (!ABC_TransportDepot.IsDefault())
+            if (!ABC_DepotVehicle.IsDefault())
             {
-                entityChangeData.DepotCap = ABC_TransportDepot.Capacity;
-                entityChangeFlags.Depot = true;
+                entityChangeData.DepotVehicleCap = ABC_DepotVehicle.Modified;
+                entityChangeFlags.DepotVehicle = true;
             }
             if (!ABC_GarbageTruck.IsDefault())
             {
-                entityChangeData.GarbageTruckCap = ABC_GarbageTruck.Capacity;
+                entityChangeData.GarbageTruckCap = ABC_GarbageTruck.Modified;
                 entityChangeFlags.GarbageFacility = true;
             }
             if (!ABC_Ambulance.IsDefault())
             {
-                entityChangeData.AmbulanceCap = ABC_Ambulance.Capacity;
+                entityChangeData.AmbulanceCap = ABC_Ambulance.Modified;
                 entityChangeFlags.Ambulance = true;
             }
             if (!ABC_MediHeli.IsDefault())
             {
-                entityChangeData.MediHeliCap = ABC_MediHeli.Capacity;
+                entityChangeData.MediHeliCap = ABC_MediHeli.Modified;
                 entityChangeFlags.MediHeli = true;
             }
             if (!ABC_Hearse.IsDefault())
             {
-                entityChangeData.HearseCap = ABC_Hearse.Capacity;
+                entityChangeData.HearseCap = ABC_Hearse.Modified;
                 entityChangeFlags.Hearse = true;
+            }
+            if (!ABC_PatrolCar.IsDefault())
+            {
+                entityChangeData.PatrolCarCap = ABC_PatrolCar.Modified;
+                entityChangeFlags.PatrolCar = true;
+            }
+            if (!ABC_PoliceHeli.IsDefault())
+            {
+                entityChangeData.PoliceHeliCap = ABC_PoliceHeli.Modified;
+                entityChangeFlags.PoliceHeli = true;
+            }
+            if (!ABC_PrisonVan.IsDefault())
+            {
+                entityChangeData.PrisonVanCap = ABC_PrisonVan.Modified;
+                entityChangeFlags.PrisonVan = true;
+            }
+            if (!ABC_FireTruck.IsDefault())
+            {
+                entityChangeData.FireTruckCap = ABC_FireTruck.Modified;
+                entityChangeFlags.FireTruck = true;
+            }
+            if (!ABC_FireHeli.IsDefault())
+            {
+                entityChangeData.FireHeliCap = ABC_FireHeli.Modified;
+                entityChangeFlags.FireHeli = true;
+            }
+            if (!ABC_EvacBus.IsDefault())
+            {
+                entityChangeData.EvacBusCap = ABC_EvacBus.Modified;
+                entityChangeFlags.EvacBus = true;
+            }
+            if (!ABC_PostVan.IsDefault())
+            {
+                entityChangeData.PostVanCap = ABC_PostVan.Modified;
+                entityChangeFlags.PostVan = true;
+            }
+            if (!ABC_PostTruck.IsDefault())
+            {
+                entityChangeData.PostTruckCap = ABC_PostTruck.Modified;
+                entityChangeFlags.PostTruck = true;
+            }
+            if (!ABC_MaintenanceVehicle.IsDefault())
+            {
+                entityChangeData.MaintenanceVehicleCap = ABC_MaintenanceVehicle.Modified;
+                entityChangeFlags.MaintenanceVehicle = true;
             }
         }
 
@@ -228,7 +338,7 @@ namespace AdvancedBuildingControl.Systems
             Entity entity,
             string value,
             ProcessType processMode = ProcessType.None,
-            ValueType valueType = ValueType.All
+            UpdateValueType valueType = UpdateValueType.All
         )
         {
             try
@@ -244,16 +354,26 @@ namespace AdvancedBuildingControl.Systems
                 ABC_Household ABC_Household = GetComponentOrDefault<ABC_Household>(entity);
                 ABC_WaterPump ABC_WaterPump = GetComponentOrDefault<ABC_WaterPump>(entity);
                 ABC_SewageDump ABC_SewageDump = GetComponentOrDefault<ABC_SewageDump>(entity);
+                ABC_SewagePurification ABC_SewagePurification =
+                    GetComponentOrDefault<ABC_SewagePurification>(entity);
                 ABC_PowerPlant ABC_PowerPlant = GetComponentOrDefault<ABC_PowerPlant>(entity);
-                ABC_TransportDepot ABC_TransportDepot = GetComponentOrDefault<ABC_TransportDepot>(
-                    entity
-                );
+                ABC_DepotVehicle ABC_DepotVehicle = GetComponentOrDefault<ABC_DepotVehicle>(entity);
                 ABC_GarbageTruck ABC_GarbageTruck = GetComponentOrDefault<ABC_GarbageTruck>(entity);
                 ABC_Ambulance ABC_Ambulance = GetComponentOrDefault<ABC_Ambulance>(entity);
                 ABC_MediHeli ABC_MediHeli = GetComponentOrDefault<ABC_MediHeli>(entity);
                 ABC_Hearse ABC_Hearse = GetComponentOrDefault<ABC_Hearse>(entity);
+                ABC_PatrolCar ABC_PatrolCar = GetComponentOrDefault<ABC_PatrolCar>(entity);
+                ABC_PoliceHeli ABC_PoliceHeli = GetComponentOrDefault<ABC_PoliceHeli>(entity);
+                ABC_PrisonVan ABC_PrisonVan = GetComponentOrDefault<ABC_PrisonVan>(entity);
+                ABC_FireTruck ABC_FireTruck = GetComponentOrDefault<ABC_FireTruck>(entity);
+                ABC_FireHeli ABC_FireHeli = GetComponentOrDefault<ABC_FireHeli>(entity);
+                ABC_EvacBus ABC_EvacBus = GetComponentOrDefault<ABC_EvacBus>(entity);
+                ABC_PostVan ABC_PostVan = GetComponentOrDefault<ABC_PostVan>(entity);
+                ABC_PostTruck ABC_PostTruck = GetComponentOrDefault<ABC_PostTruck>(entity);
+                ABC_MaintenanceVehicle ABC_MaintenanceVehicle =
+                    GetComponentOrDefault<ABC_MaintenanceVehicle>(entity);
 
-                if (valueType == ValueType.Level)
+                if (valueType == UpdateValueType.Level)
                 {
                     m_IconCommandBuffer = iconCommandSystem.CreateCommandBuffer();
 
@@ -293,15 +413,20 @@ namespace AdvancedBuildingControl.Systems
                     comps.SewageDump = ABC_SewageDump;
                     comps.HasSewageDump = true;
                 }
+                if (EntityManager.HasComponent<ABC_SewageDump>(entity))
+                {
+                    comps.SewagePurification = ABC_SewagePurification;
+                    comps.HasSewagePurification = true;
+                }
                 if (EntityManager.HasComponent<ABC_PowerPlant>(entity))
                 {
                     comps.PowerProd = ABC_PowerPlant;
                     comps.HasPowerProd = true;
                 }
-                if (EntityManager.HasComponent<ABC_TransportDepot>(entity))
+                if (EntityManager.HasComponent<ABC_DepotVehicle>(entity))
                 {
-                    comps.TransportDepot = ABC_TransportDepot;
-                    comps.HasDepot = true;
+                    comps.DepotVehicle = ABC_DepotVehicle;
+                    comps.HasDepotVehicle = true;
                 }
                 if (EntityManager.HasComponent<ABC_GarbageTruck>(entity))
                 {
@@ -323,6 +448,51 @@ namespace AdvancedBuildingControl.Systems
                     comps.Hearse = ABC_Hearse;
                     comps.HasHearse = true;
                 }
+                if (EntityManager.HasComponent<ABC_PatrolCar>(entity))
+                {
+                    comps.PatrolCar = ABC_PatrolCar;
+                    comps.HasPatrolCar = true;
+                }
+                if (EntityManager.HasComponent<ABC_PoliceHeli>(entity))
+                {
+                    comps.PoliceHeli = ABC_PoliceHeli;
+                    comps.HasPoliceHeli = true;
+                }
+                if (EntityManager.HasComponent<ABC_PrisonVan>(entity))
+                {
+                    comps.PrisonVan = ABC_PrisonVan;
+                    comps.HasPrisonVan = true;
+                }
+                if (EntityManager.HasComponent<ABC_FireTruck>(entity))
+                {
+                    comps.FireTruck = ABC_FireTruck;
+                    comps.HasFireTruck = true;
+                }
+                if (EntityManager.HasComponent<ABC_FireHeli>(entity))
+                {
+                    comps.FireHeli = ABC_FireHeli;
+                    comps.HasFireHeli = true;
+                }
+                if (EntityManager.HasComponent<ABC_EvacBus>(entity))
+                {
+                    comps.EvacBus = ABC_EvacBus;
+                    comps.HasEvacBus = true;
+                }
+                if (EntityManager.HasComponent<ABC_PostVan>(entity))
+                {
+                    comps.PostVan = ABC_PostVan;
+                    comps.HasPostVan = true;
+                }
+                if (EntityManager.HasComponent<ABC_PostTruck>(entity))
+                {
+                    comps.PostTruck = ABC_PostTruck;
+                    comps.HasPostTruck = true;
+                }
+                if (EntityManager.HasComponent<ABC_MaintenanceVehicle>(entity))
+                {
+                    comps.MaintenanceVehicle = ABC_MaintenanceVehicle;
+                    comps.HasMaintenanceVehicle = true;
+                }
 
                 //Dictionary<string, object>? components = new(6)
                 //{
@@ -343,67 +513,113 @@ namespace AdvancedBuildingControl.Systems
                     ABC_Household,
                     ABC_WaterPump,
                     ABC_SewageDump,
+                    ABC_SewagePurification,
                     ABC_PowerPlant,
-                    ABC_TransportDepot,
+                    ABC_DepotVehicle,
                     ABC_GarbageTruck,
                     ABC_Ambulance,
                     ABC_MediHeli,
                     ABC_Hearse,
+                    ABC_PatrolCar,
+                    ABC_PoliceHeli,
+                    ABC_PrisonVan,
+                    ABC_FireTruck,
+                    ABC_FireHeli,
+                    ABC_EvacBus,
+                    ABC_PostVan,
+                    ABC_PostTruck,
+                    ABC_MaintenanceVehicle,
                     ref entityChangeData,
                     ref entityChangeFlags
                 );
 
                 switch (valueType)
                 {
-                    case ValueType.Storage:
+                    case UpdateValueType.Storage:
                         entityChangeData.ResId = (Resource)(utils.UlongFromString(value));
                         entityChangeFlags.Storage = true;
                         break;
-                    case ValueType.Level:
+                    case UpdateValueType.Level:
                         entityChangeData.Level = utils.IntFromString(value);
                         entityChangeFlags.Level = true;
                         break;
-                    case ValueType.Household:
+                    case UpdateValueType.Household:
                         entityChangeData.Household = utils.IntFromString(value);
                         entityChangeFlags.Household = true;
                         break;
-                    case ValueType.WaterPump:
+                    case UpdateValueType.WaterPump:
                         entityChangeData.WaterPumpCap = utils.IntFromString(value);
                         entityChangeFlags.WaterPump = true;
                         break;
-                    case ValueType.SewageCap:
+                    case UpdateValueType.SewageCap:
                         entityChangeData.SewageCap = utils.IntFromString(value);
                         entityChangeFlags.SewageCap = true;
                         break;
-                    case ValueType.SewagePurification:
+                    case UpdateValueType.SewagePurification:
                         entityChangeData.SewagePurification = utils.IntFromString(value);
                         entityChangeFlags.SewagePurification = true;
                         break;
-                    case ValueType.PowerPlant:
+                    case UpdateValueType.PowerPlant:
                         entityChangeData.PowerProdCap = utils.IntFromString(value);
                         entityChangeFlags.PowerProd = true;
                         break;
-                    case ValueType.Depot:
-                        entityChangeData.DepotCap = utils.IntFromString(value);
-                        entityChangeFlags.Depot = true;
+                    case UpdateValueType.DepotVehicle:
+                        entityChangeData.DepotVehicleCap = utils.IntFromString(value);
+                        entityChangeFlags.DepotVehicle = true;
                         break;
-                    case ValueType.GarbageTruck:
+                    case UpdateValueType.GarbageTruck:
                         entityChangeData.GarbageTruckCap = utils.IntFromString(value);
                         entityChangeFlags.GarbageFacility = true;
                         break;
-                    case ValueType.Ambulance:
+                    case UpdateValueType.Ambulance:
                         entityChangeData.AmbulanceCap = utils.IntFromString(value);
                         entityChangeFlags.Ambulance = true;
                         break;
-                    case ValueType.MediHeli:
+                    case UpdateValueType.MediHeli:
                         entityChangeData.MediHeliCap = utils.IntFromString(value);
                         entityChangeFlags.MediHeli = true;
                         break;
-                    case ValueType.Hearse:
+                    case UpdateValueType.Hearse:
                         entityChangeData.HearseCap = utils.IntFromString(value);
                         entityChangeFlags.Hearse = true;
                         break;
-                    case ValueType.All:
+                    case UpdateValueType.PatrolCar:
+                        entityChangeData.PatrolCarCap = utils.IntFromString(value);
+                        entityChangeFlags.PatrolCar = true;
+                        break;
+                    case UpdateValueType.PoliceHeli:
+                        entityChangeData.PoliceHeliCap = utils.IntFromString(value);
+                        entityChangeFlags.PoliceHeli = true;
+                        break;
+                    case UpdateValueType.PrisonVan:
+                        entityChangeData.PrisonVanCap = utils.IntFromString(value);
+                        entityChangeFlags.PrisonVan = true;
+                        break;
+                    case UpdateValueType.FireTruck:
+                        entityChangeData.FireTruckCap = utils.IntFromString(value);
+                        entityChangeFlags.FireTruck = true;
+                        break;
+                    case UpdateValueType.FireHeli:
+                        entityChangeData.FireHeliCap = utils.IntFromString(value);
+                        entityChangeFlags.FireHeli = true;
+                        break;
+                    case UpdateValueType.EvacBus:
+                        entityChangeData.EvacBusCap = utils.IntFromString(value);
+                        entityChangeFlags.EvacBus = true;
+                        break;
+                    case UpdateValueType.PostVan:
+                        entityChangeData.PostVanCap = utils.IntFromString(value);
+                        entityChangeFlags.PostVan = true;
+                        break;
+                    case UpdateValueType.PostTruck:
+                        entityChangeData.PostTruckCap = utils.IntFromString(value);
+                        entityChangeFlags.PostTruck = true;
+                        break;
+                    case UpdateValueType.MaintenanceVehicle:
+                        entityChangeData.MaintenanceVehicleCap = utils.IntFromString(value);
+                        entityChangeFlags.MaintenanceVehicle = true;
+                        break;
+                    case UpdateValueType.All:
                     default:
                         break;
                 }
@@ -414,12 +630,22 @@ namespace AdvancedBuildingControl.Systems
                     && ABC_Household.IsDefault()
                     && ABC_WaterPump.IsDefault()
                     && ABC_SewageDump.IsDefault()
+                    && ABC_SewagePurification.IsDefault()
                     && ABC_PowerPlant.IsDefault()
-                    && ABC_TransportDepot.IsDefault()
+                    && ABC_DepotVehicle.IsDefault()
                     && ABC_GarbageTruck.IsDefault()
                     && ABC_Ambulance.IsDefault()
                     && ABC_MediHeli.IsDefault()
                     && ABC_Hearse.IsDefault()
+                    && ABC_PatrolCar.IsDefault()
+                    && ABC_PoliceHeli.IsDefault()
+                    && ABC_PrisonVan.IsDefault()
+                    && ABC_FireTruck.IsDefault()
+                    && ABC_FireHeli.IsDefault()
+                    && ABC_EvacBus.IsDefault()
+                    && ABC_PostVan.IsDefault()
+                    && ABC_PostTruck.IsDefault()
+                    && ABC_MaintenanceVehicle.IsDefault()
                     && 1 == 1;
 
                 switch (processMode)
@@ -456,12 +682,12 @@ namespace AdvancedBuildingControl.Systems
                         );
                         return;
                     case ProcessType.Reset:
-                        if (valueType == ValueType.All)
+                        if (valueType == UpdateValueType.All)
                         {
                             ResetToOG(entity, currentPrefabRef, entityChangeFlags, comps, false);
                             return;
                         }
-                        if (valueType != ValueType.All && valueType != ValueType.None)
+                        if (valueType != UpdateValueType.All && valueType != UpdateValueType.None)
                         {
                             RemoveSingle(entity, currentPrefabRef, valueType, comps);
                             return;

@@ -105,7 +105,7 @@ export interface ResourceDataInfo {
   DisplayName: string;
 }
 
-export enum ValueType {
+export enum UpdateValueType {
   None,
   Storage,
   Level,
@@ -114,41 +114,56 @@ export enum ValueType {
   SewageCap,
   SewagePurification,
   PowerPlant,
-  Depot,
+  DepotVehicle,
   GarbageTruck,
   Ambulance,
   MediHeli,
   Hearse,
+  PatrolCar,
+  PoliceHeli,
+  PrisonVan,
+  FireTruck,
+  FireHeli,
+  EvacBus,
+  PostVan,
+  PostTruck,
+  MaintenanceVehicle,
   All,
+}
+
+export interface InfoTypeCOCE {
+  Current: number;
+  Original: number;
+  Combined: number;
+  Enabled: boolean;
+}
+
+export interface InfoTypeCOCEWithData {
+  coce: InfoTypeCOCE;
+  title: string;
+  id: string;
+  onChange: (value: number) => void;
+  onReset: () => void;
 }
 
 export interface BldgGeneralInfo {
   Efficiency: number;
   HasHeli: boolean;
+  HasPostVan: boolean;
+  HasPostTruck: boolean;
 }
 
-export interface BldgZoningInfo {
+export interface BldgPropertiesInfo {
   HasLevel: boolean;
-  Level: number;
+  Level: InfoTypeCOCE;
   Upkeep: number;
   HasHousehold: boolean;
-  Household: number;
+  Household: InfoTypeCOCE;
   MaxHousehold: number;
   Rent: number;
   AreaType: string;
-  // SpaceMultiplier: number;
-  // ZoneTypeBase: number;
-  // TotalRent: number;
-  // PropertiesCount: number;
-  // MixedPercent: number;
-  // LandValueBase: number;
-  // LandValueModifier: number;
-  // IgnoreLandValue: boolean;
-  // LotSize: number;
-  // IsMixed: boolean;
-  HasWorkplace: boolean;
-  CurrentMaxWorkplaceCount: number;
-  OriginalMaxWorkplaceCount: number;
+  IsWorkplace: boolean;
+  Workplace: InfoTypeCOCE;
 }
 
 export interface BldgBrandInfo {
@@ -182,29 +197,25 @@ export interface BldgUtilityInfo {
 export interface BldgGeneralInfo {
   Efficiency: number;
   HasHeli: boolean;
-}
-
-export interface VehicleInfo {
-  Current: number;
-  Original: number;
-  Combined: number;
+  HasPostVan: boolean;
+  HasPostTruck: boolean;
 }
 
 export interface BldgVehicleInfo {
   IsDepot: boolean;
   TransportType: string;
-  DepotVehicle: VehicleInfo;
+  DepotVehicle: InfoTypeCOCE;
   // CurrentDepotCap: number;
   // OriginalDepotCap: number;
   // CombinedDepotCap: number;
   IsGarbageFacility: boolean;
-  GarbageTruck: VehicleInfo;
+  GarbageTruck: InfoTypeCOCE;
   // CurrentGarbageTruckCap: number;
   // OriginalGarbageTruckCap: number;
   // CombinedGarbageTruckCap: number;
   IsHospital: boolean;
-  Ambulance: VehicleInfo;
-  MediHeli: VehicleInfo;
+  Ambulance: InfoTypeCOCE;
+  MediHeli: InfoTypeCOCE;
   // CurrentAmbulanceCap: number;
   // OriginalAmbulanceCap: number;
   // CombinedAmbulanceCap: number;
@@ -212,8 +223,23 @@ export interface BldgVehicleInfo {
   // OriginalMediHeliCap: number;
   // CombinedMediHeliCap: number;
   IsDeathcare: boolean;
-  Hearse: VehicleInfo;
+  Hearse: InfoTypeCOCE;
   // CurrentHearseCap: number;
   // OriginalHearseCap: number;
   // CombinedHearseCap: number;
+  IsPoliceStation: boolean;
+  PatrolCar: InfoTypeCOCE;
+  PoliceHeli: InfoTypeCOCE;
+  IsPrison: boolean;
+  PrisonVan: InfoTypeCOCE;
+  IsFireStation: boolean;
+  FireTruck: InfoTypeCOCE;
+  FireHeli: InfoTypeCOCE;
+  IsEmergencyShelter: boolean;
+  EvacBus: InfoTypeCOCE;
+  IsPostFacility: boolean;
+  PostVan: InfoTypeCOCE;
+  PostTruck: InfoTypeCOCE;
+  IsMaintenanceDepot: boolean;
+  MaintenanceVehicle: InfoTypeCOCE;
 }

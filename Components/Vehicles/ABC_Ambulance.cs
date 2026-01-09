@@ -1,10 +1,11 @@
 using AdvancedBuildingControl.Interface;
+using Colossal;
 using Colossal.Serialization.Entities;
 using Unity.Entities;
 
-namespace AdvancedBuildingControl.Components
+namespace AdvancedBuildingControl.Components.Vehicles
 {
-    public struct ABC_PowerPlant
+    public struct ABC_Ambulance
         : IABC_Component_Int,
             IComponentData,
             IQueryTypeParameter,

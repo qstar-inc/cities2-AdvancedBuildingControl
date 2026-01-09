@@ -1,8 +1,9 @@
 import {
-  ResetStorage,
+  ChangeValue,
+  ChangeValueString,
+  ResetValue,
   selectedEntity,
   storagePanelVisibleBinding,
-  ToggleResource,
   ToolButton,
 } from "bindings";
 import { useValue } from "cs2/api";
@@ -27,6 +28,7 @@ import {
   LocaleKeys,
   ResourceDataInfo,
   ResourceGroup,
+  UpdateValueType,
 } from "types";
 
 import { PanelBase } from "./PanelBase";
@@ -54,12 +56,15 @@ const ResourcesSection = ({
         <div className={infoRowModule.left}>{title}</div>
       </div>
       <div className={infoSectionModule.infoWrapBox}>
-        {w_resourceslist.map((resource) => {
-          const isCurrent = w_resources.some((r) => r.Id === resource.Id);
+        {w_resourceslist.map(resource => {
+          const isCurrent = w_resources.some(r => r.Id === resource.Id);
           return (
             <div
               onClick={() => {
-                ToggleResource(resource.Id.toString());
+                ChangeValueString(
+                  resource.Id.toString(),
+                  UpdateValueType.Storage,
+                );
               }}
               className={`${storageBox.resource} ${resourceBox.field} ${
                 isCurrent
@@ -97,7 +102,10 @@ export const RenderRow = ({
   return (
     <div
       onClick={() => {
-        ToggleResource(currentResource.Id.toString());
+        ChangeValueString(
+          currentResource.Id.toString(),
+          UpdateValueType.Storage,
+        );
       }}
     >
       <PanelSectionRow
@@ -123,7 +131,7 @@ export const RenderRow = ({
 };
 
 export const StoragePanel: FC<StoragePanelProps> = (
-  props: StoragePanelProps
+  props: StoragePanelProps,
 ) => {
   const { translate } = useLocalization();
   const visibleBindingValue = useValue(storagePanelVisibleBinding);
@@ -137,7 +145,7 @@ export const StoragePanel: FC<StoragePanelProps> = (
 
   const visible = useMemo(
     () => visibleBindingValue && bldgStorageInfo.HasStorage,
-    [visibleBindingValue]
+    [visibleBindingValue],
   );
 
   if (sE.index === 0 || !visible) return null;
@@ -162,21 +170,21 @@ export const StoragePanel: FC<StoragePanelProps> = (
                   w_resources={bldgStorageInfo.BuildingResources}
                   title={translate("SelectedInfoPanel.RAW_MATERIALS")!}
                   w_resourceslist={bldgStorageInfo.BuildingResourcesAll.filter(
-                    (r) => r.Group === ResourceGroup.Raw
+                    r => r.Group === ResourceGroup.Raw,
                   ).sort((a, b) => (a.Id > b.Id ? 1 : -1))}
                 />
                 <ResourcesSection
                   w_resources={bldgStorageInfo.BuildingResources}
                   title={translate("SelectedInfoPanel.PROCESSED_GOODS")!}
                   w_resourceslist={bldgStorageInfo.BuildingResourcesAll.filter(
-                    (r) => r.Group === ResourceGroup.Processed
+                    r => r.Group === ResourceGroup.Processed,
                   ).sort((a, b) => (a.Id > b.Id ? 1 : -1))}
                 />
                 <ResourcesSection
                   w_resources={bldgStorageInfo.BuildingResources}
                   title={translate("SelectedInfoPanel.MAIL")!}
                   w_resourceslist={bldgStorageInfo.BuildingResourcesAll.filter(
-                    (r) => r.Group === ResourceGroup.Mail
+                    r => r.Group === ResourceGroup.Mail,
                   ).sort((a, b) => (a.Id > b.Id ? 1 : -1))}
                 />
               </>
@@ -194,7 +202,7 @@ export const StoragePanel: FC<StoragePanelProps> = (
                         tooltip={resetTooltip!}
                         src={uilStandard + "Reset.svg"}
                         onSelect={() => {
-                          ResetStorage();
+                          ResetValue(UpdateValueType.Storage);
                         }}
                       />
                     </FocusDisabled>

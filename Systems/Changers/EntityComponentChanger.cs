@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using AdvancedBuildingControl.Components;
 using Colossal.Entities;
@@ -6,6 +6,7 @@ using Game;
 using Game.Buildings;
 using Game.Common;
 using Game.Companies;
+using StarQ.Shared.Extensions;
 using Unity.Entities;
 
 namespace AdvancedBuildingControl.Systems.Changers
@@ -30,7 +31,7 @@ namespace AdvancedBuildingControl.Systems.Changers
             }
             catch (Exception ex)
             {
-                Mod.log.Info(ex.ToString());
+                LogHelper.SendLog(ex, LogLevel.Error);
             }
         }
 
@@ -70,7 +71,7 @@ namespace AdvancedBuildingControl.Systems.Changers
             }
             catch (Exception ex)
             {
-                Mod.log.Info(ex.ToString());
+                LogHelper.SendLog(ex, LogLevel.Error);
             }
         }
 
@@ -88,10 +89,12 @@ namespace AdvancedBuildingControl.Systems.Changers
                     EntityManager.TryGetComponent(entity, out ABC_Workplace altMaxWorkplace);
 
                     if (altMaxWorkplace.IsDefault())
-                    {
-                        altMaxWorkplace = new() { Workplace = newMaxWorker, Enabled = true };
-                        EntityManager.AddComponentData(entity, altMaxWorkplace);
-                    }
+                        altMaxWorkplace.Original = workProvider.m_MaxWorkers;
+
+                    altMaxWorkplace.Modified = newMaxWorker;
+                    altMaxWorkplace.Enabled = true;
+
+                    EntityManager.AddComponentData(entity, altMaxWorkplace);
 
                     workProvider.m_MaxWorkers = newMaxWorker;
 
@@ -101,7 +104,7 @@ namespace AdvancedBuildingControl.Systems.Changers
             }
             catch (Exception ex)
             {
-                Mod.log.Info(ex.ToString());
+                LogHelper.SendLog(ex, LogLevel.Error);
             }
         }
 
@@ -119,7 +122,7 @@ namespace AdvancedBuildingControl.Systems.Changers
                     && !altMaxWorkplace.IsDefault()
                 )
                 {
-                    workProvider.m_MaxWorkers = altMaxWorkplace.Workplace;
+                    workProvider.m_MaxWorkers = altMaxWorkplace.Original;
 
                     EntityManager.RemoveComponent<ABC_Workplace>(entity);
 
@@ -129,75 +132,7 @@ namespace AdvancedBuildingControl.Systems.Changers
             }
             catch (Exception ex)
             {
-                Mod.log.Info(ex.ToString());
-            }
-        }
-
-        public void ChangeWaterPumpCapacity(Entity entity, int newCapacity)
-        {
-            try
-            {
-                if (entity == Entity.Null || newCapacity <= 0)
-                    return;
-
-                if (EntityManager.Exists(entity))
-                {
-                    EntityManager.TryGetComponent(
-                        entity,
-                        out WaterPumpingStation waterPumpingStation
-                    );
-
-                    EntityManager.TryGetComponent(entity, out ABC_WaterPump altWaterPumpingStation);
-
-                    if (altWaterPumpingStation.IsDefault())
-                    {
-                        altWaterPumpingStation = new() { Capacity = newCapacity, Enabled = true };
-                        EntityManager.AddComponentData(entity, altWaterPumpingStation);
-                    }
-
-                    waterPumpingStation.m_Capacity = newCapacity;
-
-                    EntityManager.SetComponentData(entity, waterPumpingStation);
-                    EntityManager.AddComponent<Updated>(entity);
-                }
-            }
-            catch (Exception ex)
-            {
-                Mod.log.Info(ex.ToString());
-            }
-        }
-
-        public void ResetWaterPumpCapacity(Entity entity)
-        {
-            try
-            {
-                if (entity == Entity.Null)
-                    return;
-
-                if (
-                    EntityManager.Exists(entity)
-                    && EntityManager.TryGetComponent(
-                        entity,
-                        out WaterPumpingStation waterPumpingStation
-                    )
-                    && EntityManager.TryGetComponent(
-                        entity,
-                        out ABC_WaterPump altWaterPumpingStation
-                    )
-                    && !altWaterPumpingStation.IsDefault()
-                )
-                {
-                    waterPumpingStation.m_Capacity = altWaterPumpingStation.Capacity;
-
-                    EntityManager.RemoveComponent<ABC_WaterPump>(entity);
-
-                    EntityManager.SetComponentData(entity, waterPumpingStation);
-                    EntityManager.AddComponent<Updated>(entity);
-                }
-            }
-            catch (Exception ex)
-            {
-                Mod.log.Info(ex.ToString());
+                LogHelper.SendLog(ex, LogLevel.Error);
             }
         }
     }

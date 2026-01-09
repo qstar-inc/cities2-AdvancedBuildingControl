@@ -73,7 +73,7 @@ namespace AdvancedBuildingControl.Systems
             if (EntityManager.TryGetComponent(entity, out OriginalEntity og))
             {
                 var currentPrefabName = prefabSystem.GetPrefabName(currentPrefabRef);
-                if (!og.OGEntity.Equals(string.Empty) && og.OGEntity != currentPrefabName)
+                if (!og.OGEntity.Equals(string.Empty) && $"{og.OGEntity}" != currentPrefabName)
                 {
                     LogHelper.SendLog(
                         $"currentPrefabName '{currentPrefabName}' didn't match with '{og.OGEntity}' for {entity}"
@@ -204,7 +204,19 @@ namespace AdvancedBuildingControl.Systems
             out bool isHospital,
             out HospitalData hospitalData,
             out bool isDeathcare,
-            out DeathcareFacilityData deathcareFacilityData
+            out DeathcareFacilityData deathcareFacilityData,
+            out bool isPoliceStation,
+            out PoliceStationData policeStationData,
+            out bool isPrison,
+            out PrisonData prisonData,
+            out bool isFireStation,
+            out FireStationData fireStationData,
+            out bool isEmergencyShelter,
+            out EmergencyShelterData emergencyShelterData,
+            out bool isPostFacility,
+            out PostFacilityData postFacility,
+            out bool isMaintenanceDepot,
+            out MaintenanceDepotData maintenanceDepotData
         )
         {
             hasStorage = EntityManager.TryGetComponent(newPrefabEntity, out storageCompanyData);
@@ -225,12 +237,34 @@ namespace AdvancedBuildingControl.Systems
             );
             isHospital = EntityManager.TryGetComponent(newPrefabEntity, out hospitalData);
             isDeathcare = EntityManager.TryGetComponent(newPrefabEntity, out deathcareFacilityData);
+            isPoliceStation = EntityManager.TryGetComponent(newPrefabEntity, out policeStationData);
+            isPrison = EntityManager.TryGetComponent(newPrefabEntity, out prisonData);
+            isFireStation = EntityManager.TryGetComponent(newPrefabEntity, out fireStationData);
+            isEmergencyShelter = EntityManager.TryGetComponent(
+                newPrefabEntity,
+                out emergencyShelterData
+            );
+            isPostFacility = EntityManager.TryGetComponent(newPrefabEntity, out postFacility);
+            isMaintenanceDepot = EntityManager.TryGetComponent(
+                newPrefabEntity,
+                out maintenanceDepotData
+            );
         }
 
-        public int IntFromString(string value) =>
-            string.IsNullOrEmpty(value) ? 0 : int.Parse(value);
+        public int IntFromString(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return 0;
 
-        public ulong UlongFromString(string value) =>
-            string.IsNullOrEmpty(value) ? 0 : ulong.Parse(value);
+            return int.TryParse(value, out var result) ? result : 0;
+        }
+
+        public ulong UlongFromString(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return 0;
+
+            return ulong.TryParse(value, out var result) ? result : 0;
+        }
     }
 }

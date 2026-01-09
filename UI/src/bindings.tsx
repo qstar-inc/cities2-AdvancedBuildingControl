@@ -5,13 +5,13 @@ import { getModule } from "cs2/modding";
 import { ButtonProps, ScrollController } from "cs2/ui";
 import mod from "mod.json";
 import { ReactElement } from "react";
-import { ValueType } from "types";
+import { UpdateValueType } from "types";
 
 import styles from "./mods/style.module.scss";
 
 export const selectedEntity = bindValue<Entity>(
   "selectedInfo",
-  "selectedEntity"
+  "selectedEntity",
 );
 
 export const SetBrand = (replaceBrand: string) => {
@@ -23,33 +23,8 @@ export const RandomizeStyle = () => {
   trigger(mod.id, "RandomizeStyle");
 };
 
-export const ChangeLevel = (level: number) => {
-  trigger(mod.id, "ChangeLevel", level);
-};
-
-export const ResetLevel = () => {
-  trigger(mod.id, "ResetLevel");
-};
-
 export const ChangeLevelDistrict = (level: number) => {
   trigger(mod.id, "ChangeLevelDistrict", level);
-};
-
-export const ToggleResource = (resId: string) => {
-  trigger(mod.id, "ToggleResource", resId);
-  engine.trigger("audio.playSound", "select-toggle", 1);
-};
-
-export const ResetStorage = () => {
-  trigger(mod.id, "ResetStorage");
-};
-
-export const ChangeHousehold = (household: number) => {
-  trigger(mod.id, "ChangeHousehold", household);
-};
-
-export const ResetHousehold = () => {
-  trigger(mod.id, "ResetHousehold");
 };
 
 export const ChangeMaxWorkplace = (workplace: number) => {
@@ -60,69 +35,17 @@ export const ResetMaxWorkplace = () => {
   trigger(mod.id, "ResetMaxWorkplace");
 };
 
-export const ChangeWaterPumpCapacity = (cap: number) => {
-  trigger(mod.id, "ChangeWaterPumpCapacity", cap);
+export const ChangeValueString = (cap: string, valueType: UpdateValueType) => {
+  trigger(mod.id, "ChangeValue", cap, valueType);
 };
 
-export const ResetWaterPumpCapacity = () => {
-  trigger(mod.id, "ResetWaterPumpCapacity");
+export const ChangeValue = (cap: number, valueType: UpdateValueType) => {
+  trigger(mod.id, "ChangeValue", `${cap}`, valueType);
 };
 
-export const ChangeSewageDumpCapacity = (cap: number) => {
-  trigger(mod.id, "ChangeSewageDumpCapacity", cap);
+export const ResetValue = (valueType: UpdateValueType) => {
+  trigger(mod.id, "ResetValue", valueType);
 };
-
-export const ResetSewageDumpCapacity = () => {
-  trigger(mod.id, "ResetSewageDumpCapacity");
-};
-
-export const ChangePowerProdCapacity = (cap: number) => {
-  trigger(mod.id, "ChangePowerProdCapacity", cap);
-};
-
-export const ResetPowerProdCapacity = () => {
-  trigger(mod.id, "ResetPowerProdCapacity");
-};
-
-export const ChangeVehicleCapacity = (cap: number, valueType: ValueType) => {
-  trigger(mod.id, "ChangeVehicleCapacity", cap, valueType);
-};
-
-export const ResetVehicleCapacity = (valueType: ValueType) => {
-  trigger(mod.id, "ResetVehicleCapacity", valueType);
-};
-
-// export const ChangeTransportDepotCapacity = (cap: number) => {
-//   trigger(mod.id, "ChangeTransportDepotCapacity", cap);
-// };
-
-// export const ResetTransportDepotCapacity = () => {
-//   trigger(mod.id, "ResetTransportDepotCapacity");
-// };
-
-// export const ChangeGarbageTruckCapacity = (cap: number) => {
-//   trigger(mod.id, "ChangeGarbageTruckCapacity", cap);
-// };
-
-// export const ResetGarbageTruckCapacity = () => {
-//   trigger(mod.id, "ResetGarbageTruckCapacity");
-// };
-
-// export const ChangeAmbulanceCapacity = (cap: number) => {
-//   trigger(mod.id, "ChangeAmbulanceCapacity", cap);
-// };
-
-// export const ResetAmbulanceCapacity = () => {
-//   trigger(mod.id, "ResetAmbulanceCapacity");
-// };
-
-// export const ChangeMediHeliCapacity = (cap: number) => {
-//   trigger(mod.id, "ChangeMediHeliCapacity", cap);
-// };
-
-// export const ResetMediHeliCapacity = () => {
-//   trigger(mod.id, "ResetMediHeliCapacity");
-// };
 
 export const ClosePanel = () => {
   brandPanelVisibleBinding.update(false);
@@ -132,12 +55,6 @@ export const ClosePanel = () => {
   vehiclePanelVisibleBinding.update(false);
   engine.trigger("audio.playSound", "select-item", 1);
 };
-
-// export const RefreshPanel = () => {
-//   document.querySelectorAll(".starq-abc-panel").forEach((el) => {
-//     el.remove();
-//   });
-// };
 
 export const SplitTextToDiv = ({ text }: { text: string }) => {
   const lines = text.split("\r\n");
@@ -198,7 +115,7 @@ interface InfoButtonProps extends ButtonProps {
 
 export const InfoButton = getModule(
   "game-ui/game/components/selected-info-panel/shared-components/info-button/info-button.tsx",
-  "InfoButton"
+  "InfoButton",
 ) as React.FC<InfoButtonProps>;
 
 // export const A = getModule(
@@ -215,7 +132,7 @@ interface ToolButtonProps extends ButtonProps {
 
 export const ToolButton = getModule(
   "game-ui/game/components/tool-options/tool-button/tool-button.tsx",
-  "ToolButton"
+  "ToolButton",
 ) as React.FC<ToolButtonProps>;
 
 export type SizeProvider = {
@@ -229,11 +146,11 @@ export type SizeProvider = {
 };
 export type RenderItemFn = (
   itemIndex: number,
-  indexInRange: number
+  indexInRange: number,
 ) => ReactElement | null;
 type RenderedRangeChangedCallback = (
   startIndex: number,
-  endIndex: number
+  endIndex: number,
 ) => void;
 
 interface VirtualListProps {
@@ -249,14 +166,14 @@ interface VirtualListProps {
 
 export const VanillaVirtualList = getModule(
   "game-ui/common/scrolling/virtual-list/virtual-list.tsx",
-  "VirtualList"
+  "VirtualList",
 ) as React.FC<VirtualListProps>;
 
 export const useUniformSizeProvider: (
   height: number,
   visible: number,
-  extents: number
+  extents: number,
 ) => SizeProvider = getModule(
   "game-ui/common/scrolling/virtual-list/virtual-list-size-provider.ts",
-  "useUniformSizeProvider"
+  "useUniformSizeProvider",
 );
