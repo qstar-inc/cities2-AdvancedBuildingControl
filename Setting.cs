@@ -1,129 +1,132 @@
-﻿using System.Collections.Generic;
-using Colossal;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using AdvancedBuildingControl.Systems;
 using Colossal.IO.AssetDatabase;
 using Colossal.Json;
+using Colossal.PSI.Environment;
 using Game.Modding;
 using Game.Settings;
-using Game.UI;
 using Game.UI.Widgets;
+using StarQ.Shared.Extensions;
 
 namespace AdvancedBuildingControl
 {
-    //    [FileLocation(nameof(AdvancedBuildingControl))]
-    //    [SettingsUIGroupOrder(kButtonGroup, kToggleGroup, kSliderGroup, kDropdownGroup)]
-    //    [SettingsUIShowGroupName(kButtonGroup, kToggleGroup, kSliderGroup, kDropdownGroup)]
+    [FileLocation("ModsSettings\\StarQ\\" + nameof(AdvancedBuildingControl))]
+    [SettingsUITabOrder(GeneralTab, AboutTab, LogTab)]
     public class Setting : ModSetting
     {
-        //        public const string kSection = "Main";
-
-        //        public const string kButtonGroup = "Button";
-        //        public const string kToggleGroup = "Toggle";
-        //        public const string kSliderGroup = "Slider";
-        //        public const string kDropdownGroup = "Dropdown";
-
         public Setting(IMod mod)
-            : base(mod) { }
+            : base(mod) => SetDefaults();
 
-        [SettingsUIHidden]
+        public const string GeneralTab = "GeneralTab";
+        public const string GeneralGroup = "GeneralGroup";
+
+        public const string AboutTab = "AboutTab";
+        public const string InfoGroup = "InfoGroup";
+
+        public const string LogTab = "LogTab";
+
+        public bool hasBackup = false;
+        public bool InGame => WorldHelper.IsGame;
+
+        [SettingsUIButton]
+        [SettingsUIDisableByCondition(typeof(Setting), nameof(InGame))]
+        [SettingsUISection(GeneralTab, GeneralGroup)]
+        public bool BackupConfig
+        {
+            set => WorldHelper.GetSystem<BackupConfigSystem>().BackupConfig();
+        }
+
+        public DropdownItem<string>[] GetBackupFileList()
+        {
+            List<DropdownItem<string>> list = new();
+
+            string[] files = Directory.GetFiles(
+                $"{EnvPath.kUserDataPath}/ModsData/{Mod.Id}/BackupConfig",
+                "*.json",
+                SearchOption.TopDirectoryOnly
+            );
+
+            foreach (var file in files)
+            {
+                list.Add(new DropdownItem<string> { value = file, displayName = file });
+            }
+
+            if (list.Count > 0)
+                hasBackup = true;
+
+            list.Sort((a, b) => a.displayName.id.CompareTo(b.displayName.id));
+
+            return list.ToArray();
+        }
+
         [Exclude]
-        public bool IsPTGInGame { get; set; } = false;
+        [SettingsUIDropdown(typeof(Setting), nameof(GetBackupFileList))]
+        [SettingsUISection(GeneralTab, GeneralGroup)]
+        public string BackupFileName { get; set; } = string.Empty;
 
-        //        [SettingsUISection(kSection, kButtonGroup)]
-        //        public bool Button { set { Mod.log.Info("Button clicked"); } }
+        [SettingsUIButton]
+        [SettingsUIDisableByCondition(typeof(Setting), nameof(InGame))]
+        [SettingsUISection(GeneralTab, GeneralGroup)]
+        public bool RestoreConfig
+        {
+            set => WorldHelper.GetSystem<BackupConfigSystem>().RestoreConfig(BackupFileName);
+        }
 
-        //        [SettingsUIButton]
-        //        [SettingsUIConfirmation]
-        //        [SettingsUISection(kSection, kButtonGroup)]
-        //        public bool ButtonWithConfirmation { set { Mod.log.Info("ButtonWithConfirmation clicked"); } }
-
-        //        [SettingsUISection(kSection, kToggleGroup)]
-        //        public bool Toggle { get; set; }
-
-        //        [SettingsUISlider(min = 0, max = 100, step = 1, scalarMultiplier = 1, unit = Unit.kDataMegabytes)]
-        //        [SettingsUISection(kSection, kSliderGroup)]
-        //        public int IntSlider { get; set; }
-
-        //        [SettingsUIDropdown(typeof(Setting), nameof(GetIntDropdownItems))]
-        //        [SettingsUISection(kSection, kDropdownGroup)]
-        //        public int IntDropdown { get; set; }
-
-        //        [SettingsUISection(kSection, kDropdownGroup)]
-        //        public SomeEnum EnumDropdown { get; set; } = SomeEnum.Value1;
-
-        //        public DropdownItem<int>[] GetIntDropdownItems()
-        //        {
-        //            var items = new List<DropdownItem<int>>();
-
-        //            for (var i = 0; i < 3; i += 1)
-        //            {
-        //                items.Add(new DropdownItem<int>()
-        //                {
-        //                    value = i,
-        //                    displayName = i.ToString(),
-        //                });
-        //            }
-
-        //            return items.ToArray();
-        //        }
+        [SettingsUIButton]
+        [SettingsUIDisableByCondition(typeof(Setting), nameof(InGame))]
+        [SettingsUISection(GeneralTab, GeneralGroup)]
+        public bool ResetAll
+        {
+            set => WorldHelper.GetSystem<SelectedPrefabModifierSystem>().ResetAll();
+        }
 
         public override void SetDefaults() { }
 
-        //        public enum SomeEnum
-        //        {
-        //            Value1,
-        //            Value2,
-        //            Value3,
-        //        }
+        [SettingsUISection(AboutTab, InfoGroup)]
+        public string NameText => Mod.Name;
+
+        [SettingsUISection(AboutTab, InfoGroup)]
+        public string VersionText => VariableHelper.AddDevSuffix(Mod.Version);
+
+        [SettingsUISection(AboutTab, InfoGroup)]
+        public string AuthorText => VariableHelper.StarQ;
+
+        [SettingsUIButton]
+        [SettingsUIButtonGroup("Social")]
+        [SettingsUISection(AboutTab, InfoGroup)]
+        public bool BMaCLink
+        {
+            set => VariableHelper.OpenBMAC();
+        }
+
+        //[SettingsUIButton]
+        //[SettingsUIButtonGroup("Social")]
+        //[SettingsUISection(AboutTab, InfoGroup)]
+        //public bool Discord
+        //{
+        //    set => VariableHelper.OpenDiscord(XXXX);
+        //}
+
+        [SettingsUIMultilineText]
+        [SettingsUIDisplayName(typeof(LogHelper), nameof(LogHelper.LogText))]
+        [SettingsUISection(LogTab, "")]
+        public string LogText => string.Empty;
+
+        [Exclude]
+        [SettingsUIHidden]
+        public bool IsLogMissing
+        {
+            get => VariableHelper.CheckLog(Mod.Id);
+        }
+
+        [SettingsUIButton]
+        [SettingsUIDisableByCondition(typeof(Setting), nameof(IsLogMissing))]
+        [SettingsUISection(LogTab, "")]
+        public bool OpenLog
+        {
+            set => VariableHelper.OpenLog(Mod.Id);
+        }
     }
-
-    //    public class LocaleEN : IDictionarySource
-    //    {
-    //        private readonly Setting m_Setting;
-    //        public LocaleEN(Setting setting)
-    //        {
-    //            m_Setting = setting;
-    //        }
-    //        public IEnumerable<KeyValuePair<string, string>> ReadEntries(IList<IDictionaryEntryError> errors, Dictionary<string, int> indexCounts)
-    //        {
-    //            return new Dictionary<string, string>
-    //            {
-    //                { m_Setting.GetSettingsLocaleID(), "AdvancedBuildingControl" },
-    //                { m_Setting.GetOptionTabLocaleID(Setting.kSection), "Main" },
-
-    //                { m_Setting.GetOptionGroupLocaleID(Setting.kButtonGroup), "Buttons" },
-    //                { m_Setting.GetOptionGroupLocaleID(Setting.kToggleGroup), "Toggle" },
-    //                { m_Setting.GetOptionGroupLocaleID(Setting.kSliderGroup), "Sliders" },
-    //                { m_Setting.GetOptionGroupLocaleID(Setting.kDropdownGroup), "Dropdowns" },
-
-    //                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.Button)), "Button" },
-    //                { m_Setting.GetOptionDescLocaleID(nameof(Setting.Button)), $"Simple single button. It should be bool property with only setter or use [{nameof(SettingsUIButtonAttribute)}] to make button from bool property with setter and getter" },
-
-    //                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ButtonWithConfirmation)), "Button with confirmation" },
-    //                { m_Setting.GetOptionDescLocaleID(nameof(Setting.ButtonWithConfirmation)), $"Button can show confirmation message. Use [{nameof(SettingsUIConfirmationAttribute)}]" },
-    //                { m_Setting.GetOptionWarningLocaleID(nameof(Setting.ButtonWithConfirmation)), "is it confirmation text which you want to show here?" },
-
-    //                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.Toggle)), "Toggle" },
-    //                { m_Setting.GetOptionDescLocaleID(nameof(Setting.Toggle)), $"Use bool property with setter and getter to get toggable option" },
-
-    //                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.IntSlider)), "Int slider" },
-    //                { m_Setting.GetOptionDescLocaleID(nameof(Setting.IntSlider)), $"Use int property with getter and setter and [{nameof(SettingsUISliderAttribute)}] to get int slider" },
-
-    //                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.IntDropdown)), "Int dropdown" },
-    //                { m_Setting.GetOptionDescLocaleID(nameof(Setting.IntDropdown)), $"Use int property with getter and setter and [{nameof(SettingsUIDropdownAttribute)}(typeof(SomeType), nameof(SomeMethod))] to get int dropdown: Method must be static or instance of your setting class with 0 parameters and returns {typeof(DropdownItem<int>).Name}" },
-
-    //                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.EnumDropdown)), "Simple enum dropdown" },
-    //                { m_Setting.GetOptionDescLocaleID(nameof(Setting.EnumDropdown)), $"Use any enum property with getter and setter to get enum dropdown" },
-
-    //                { m_Setting.GetEnumValueLocaleID(Setting.SomeEnum.Value1), "Value 1" },
-    //                { m_Setting.GetEnumValueLocaleID(Setting.SomeEnum.Value2), "Value 2" },
-    //                { m_Setting.GetEnumValueLocaleID(Setting.SomeEnum.Value3), "Value 3" },
-
-    //            };
-    //        }
-
-    //        public void Unload()
-    //        {
-
-    //        }
-    //    }
 }

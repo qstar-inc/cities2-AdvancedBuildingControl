@@ -1,0 +1,12 @@
+
+namespace AdvancedBuildingControl.Variables
+{
+    public enum ComponentName
+    {
+        _None,
+
+        //start
+AttractionData,BatteryData,BuildingPropertyData,CargoTransportStationData,ConsumptionData,CoverageData,DeathcareFacilityData,DestructibleObjectData,EmergencyGeneratorData,EmergencyShelterData,FireStationData,GarbageFacilityData,GarbagePoweredData,GroundWaterPoweredData,HospitalData,MaintenanceDepotData,ParkData,ParkingFacilityData,PoliceStationData,PostFacilityData,PowerPlantData,PrisonData,SchoolData,SewageOutletData,SolarPoweredData,SpawnableBuildingData,StorageCompanyData,TelecomFacilityData,TransportDepotData,TransportStationData,WaterPoweredData,WaterPumpingStationData,WindPoweredData,WorkplaceData,
+        //end
+    }
+}

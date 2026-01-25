@@ -1,10 +1,11 @@
+﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using AdvancedBuildingControl.Systems;
-using AdvancedBuildingControl.Systems.Changers;
-using AdvancedBuildingControl.Systems.Serialization;
 using Colossal.IO.AssetDatabase;
 using Colossal.Logging;
+using Colossal.PSI.Environment;
 using Game;
 using Game.Modding;
 using Game.SceneFlow;
@@ -32,16 +33,18 @@ namespace AdvancedBuildingControl
         {
             LogHelper.Init(Id, log);
             LocaleHelper.Init(Id, Name, GetReplacements);
-            foreach (var item in new LocaleHelper($"{Id}.Locale.json").GetAvailableLanguages())
+
+            try
             {
-                GameManager.instance.localizationManager.AddSource(item.LocaleId, item);
+                Directory.CreateDirectory($"{EnvPath.kUserDataPath}/ModsData/{Id}/BackupConfig");
+            }
+            catch (Exception ex)
+            {
+                LogHelper.SendLog(ex, LogLevel.Error);
             }
 
-            GameManager.instance.localizationManager.onActiveDictionaryChanged +=
-                LocaleHelper.OnActiveDictionaryChanged;
-
             m_Setting = new Setting(this);
-            //Setting.RegisterInOptionsUI();
+            m_Setting.RegisterInOptionsUI();
 
             AssetDatabase.global.LoadSettings(
                 nameof(AdvancedBuildingControl),
@@ -50,38 +53,23 @@ namespace AdvancedBuildingControl
             );
 
             World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<DataRetriever>();
-            World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<PlopTheGrowableSystem>();
-
-            //world.GetOrCreateSystemManaged<StorageChangerSystem>();
-            //world.GetOrCreateSystemManaged<LevelChangerSystem>();
-            //world.GetOrCreateSystemManaged<HouseholdChangerSystem>();
-            World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<RefChangerSystem>();
-
-            World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<CreatedEntitiesManagementSystem>();
-
+            World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<SaveStoreSystem>();
             updateSystem.UpdateAfter<SIP_ABC>(SystemUpdatePhase.UIUpdate);
-            updateSystem.UpdateAfter<SIP_ABC_District>(SystemUpdatePhase.UIUpdate);
-
-            updateSystem.UpdateBefore<PreSerializationSystem>(SystemUpdatePhase.Serialize);
-            updateSystem.UpdateAfter<PreDeserializationSystem>(SystemUpdatePhase.Serialize);
-            updateSystem.UpdateAfter<PreDeserializationSystem>(SystemUpdatePhase.Deserialize);
-
-            updateSystem.UpdateAt<UpdateNextFrameSystem>(SystemUpdatePhase.Modification1);
-            //updateSystem.UpdateAt<UpdateNextFrameClearSystem>(SystemUpdatePhase.ModificationEnd);
         }
 
         public void OnDispose()
         {
+            log.Info(nameof(OnDispose));
             if (m_Setting != null)
             {
-                //Setting.UnregisterInOptionsUI();
+                m_Setting.UnregisterInOptionsUI();
                 m_Setting = null;
             }
         }
 
         public static Dictionary<string, string> GetReplacements()
         {
-            return new() { }; //{ "", "" } };
+            return new() { { "X", "Y" } };
         }
     }
 }

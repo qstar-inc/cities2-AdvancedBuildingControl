@@ -67,8 +67,6 @@ namespace AdvancedBuildingControl.Systems
         public NameSystem nameSystem;
         public ImageSystem imageSystem;
 
-        public CreatedEntitiesManagementSystem createdEntitiesManagementSystem;
-
         public static Entity integratedHelipad = Entity.Null;
 #nullable enable
         public bool NeedUpdate = true;
@@ -101,9 +99,6 @@ namespace AdvancedBuildingControl.Systems
             prefabUISystem = WorldHelper.PrefabUISystem;
             nameSystem = WorldHelper.NameSystem;
             imageSystem = WorldHelper.ImageSystem;
-
-            createdEntitiesManagementSystem =
-                World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<CreatedEntitiesManagementSystem>();
 
             //Mod.m_Setting.onSettingsApplied += OnSettingsChanged;
         }
@@ -238,7 +233,7 @@ namespace AdvancedBuildingControl.Systems
                                 Companies = companies,
                             }
                         );
-                        LogHelper.SendLog($"Added {brandPrefab.name}", LogLevel.DEV);
+                        //LogHelper.SendLog($"Added {brandPrefab.name}", LogLevel.DEV);
                     }
                     brandDataInfos.Sort(
                         (a, b) => string.Compare(a.Name, b.Name, StringComparison.Ordinal)

@@ -1,0 +1,112 @@
+AttractionData	m_Attractiveness	int			10101				
+BatteryData	m_Capacity	int			2701				
+BatteryData	m_PowerOutput	int			2702				
+BuildingPropertyData	m_ResidentialProperties	int			101		0		
+BuildingPropertyData	m_AllowedSold	Resource	ulong		102				
+BuildingPropertyData	m_AllowedInput	Resource	ulong		103				
+BuildingPropertyData	m_AllowedManufactured	Resource	ulong		104				
+BuildingPropertyData	m_AllowedStored	Resource	ulong		105				
+BuildingPropertyData	m_SpaceMultiplier	float			106		0		
+CargoTransportStationData	m_WorkMultiplier	float			9301		0		
+ConsumptionData	m_Upkeep	int			401	1	0		
+ConsumptionData	m_ElectricityConsumption	float			402		0		
+ConsumptionData	m_WaterConsumption	float			403		0		
+ConsumptionData	m_GarbageAccumulation	float			404		0		
+ConsumptionData	m_TelecomNeed	float			405		0		
+CoverageData	m_Service	CoverageService	byte		601				x
+CoverageData	m_Range	float			602		0		
+CoverageData	m_Capacity	float			603		0		
+CoverageData	m_Magnitude	float			604		0		
+DeathcareFacilityData	m_HearseCapacity	int			4501		0		
+DeathcareFacilityData	m_StorageCapacity	int			4502		0		
+DeathcareFacilityData	m_ProcessingRate	float			4503		0		
+DeathcareFacilityData	m_LongTermStorage	bool			4504				
+DestructibleObjectData	m_FireHazard	float			13001				
+DestructibleObjectData	m_StructuralIntegrity	float			13002				
+EmergencyGeneratorData	m_ElectricityProduction	int			2601				
+EmergencyGeneratorData	m_ActivationThreshold	Bounds1			2602		0	1	x
+EmergencyShelterData	m_ShelterCapacity	int			7501		0		
+EmergencyShelterData	m_VehicleCapacity	int			7502		0		
+FireStationData	m_FireEngineCapacity	int			7001		0		
+FireStationData	m_FireHelicopterCapacity	int			7002		0		
+FireStationData	m_DisasterResponseCapacity	int			7003		0		
+FireStationData	m_VehicleEfficiency	float			7004		0		
+GarbageFacilityData	m_GarbageCapacity	int			5001		0		
+GarbageFacilityData	m_VehicleCapacity	int			5002		0		
+GarbageFacilityData	m_TransportCapacity	int			5003		0		
+GarbageFacilityData	m_ProcessingSpeed	int			5004		0		
+GarbageFacilityData	m_IndustrialWasteOnly	bool			5005				
+GarbageFacilityData	m_LongTermStorage	bool			5006				
+GarbagePoweredData	m_Capacity	int			2501		0		
+GarbagePoweredData	m_ProductionPerUnit	float			2502		0		
+GroundWaterPoweredData	m_Production	int			2301		0		
+GroundWaterPoweredData	m_MaximumGroundWater	int			2302		0		
+HospitalData	m_AmbulanceCapacity	int			4001		0		
+HospitalData	m_MedicalHelicopterCapacity	int			4002		0		
+HospitalData	m_PatientCapacity	int			4003		0		
+HospitalData	m_TreatmentBonus	int			4004		0		
+HospitalData	m_HealthRange	int2			4005				
+HospitalData	m_TreatDiseases	bool			4006				
+HospitalData	m_TreatInjuries	bool			4007				
+MaintenanceDepotData	m_MaintenanceType	MaintenanceType	byte	1	1001				
+MaintenanceDepotData	m_VehicleCapacity	int			1002		0		
+MaintenanceDepotData	m_VehicleEfficiency	float			1003		0		
+ParkData	m_MaintenancePool	short			10001		0		
+ParkData	m_AllowHomeless	bool			10002				
+ParkingFacilityData	m_RoadTypes	RoadTypes	byte	1	1501				
+ParkingFacilityData	m_ComfortFactor	float			1502		0		
+ParkingFacilityData	m_GarageMarkerCapacity	int			1503		0		
+PoliceStationData	m_PatrolCarCapacity	int			8001		0		
+PoliceStationData	m_PoliceHelicopterCapacity	int			8002		0		
+PoliceStationData	m_JailCapacity	int			8003		0		
+PoliceStationData	m_PurposeMask	PolicePurpose	int	1	8004				
+PostFacilityData	m_PostVanCapacity	int			11001		0		
+PostFacilityData	m_PostTruckCapacity	int			11002		0		
+PostFacilityData	m_MailCapacity	int			11003		0		
+PostFacilityData	m_SortingRate	int			11004		0		
+PowerPlantData	m_ElectricityProduction	int			2001		0		
+PrisonData	m_PrisonVanCapacity	int			8501		0		
+PrisonData	m_PrisonerCapacity	int			8502		0		
+PrisonData	m_PrisonerWellbeing	sbyte			8503		0		
+PrisonData	m_PrisonerHealth	sbyte			8504		0		
+SchoolData	m_StudentCapacity	int			6001		0		
+SchoolData	m_GraduationModifier	float			6002		0		
+SchoolData	m_EducationLevel	byte			6003		1	4	
+SchoolData	m_StudentWellbeing	sbyte			6004		0		
+SchoolData	m_StudentHealth	sbyte			6005		0		
+SewageOutletData	m_Capacity	int			3501		0		
+SewageOutletData	m_Purification	float			3502		0		
+SolarPoweredData	m_Production	int			2401		0		
+SpawnableBuildingData	m_ZonePrefab	Entity			201				x
+SpawnableBuildingData	m_Level	byte			202		1	5	
+StorageCompanyData	m_StoredResources	Resource	ulong		501				
+StorageCompanyData	m_TransportInterval	int2			502				
+TelecomFacilityData	m_Range	float			11501		0		
+TelecomFacilityData	m_NetworkCapacity	float			11502		0		
+TelecomFacilityData	m_PenetrateTerrain	bool			11503				
+TransportDepotData	m_TransportType	TransportType	int		9001				
+TransportDepotData	m_EnergyTypes	EnergyTypes	byte		9002				
+TransportDepotData	m_SizeClass	SizeClass	byte		9003				
+TransportDepotData	m_DispatchCenter	bool			9004				
+TransportDepotData	m_VehicleCapacity	int			9005		0		
+TransportDepotData	m_ProductionDuration	float			9006		0		
+TransportDepotData	m_MaintenanceDuration	float			9007		0		
+TransportStationData	m_ComfortFactor	float			9101		0		
+TransportStationData	m_LoadingFactor	float			9102		0		
+TransportStationData	m_CarRefuelTypes	EnergyTypes	byte		9103				
+TransportStationData	m_TrainRefuelTypes	EnergyTypes	byte		9104				
+TransportStationData	m_WatercraftRefuelTypes	EnergyTypes	byte		9105				
+TransportStationData	m_AircraftRefuelTypes	EnergyTypes	byte		9106				
+WaterPoweredData	m_ProductionFactor	float			2201		0		
+WaterPoweredData	m_CapacityFactor	float			2202		0		
+WaterPumpingStationData	m_Types	AllowedWaterTypes	int	1	3001				
+WaterPumpingStationData	m_Capacity	int			3002		0		
+WaterPumpingStationData	m_Purification	float			3003		0		
+WindPoweredData	m_MaximumWind	float			2101		0		
+WindPoweredData	m_Production	int			2102		0		
+WorkplaceData	m_Complexity	WorkplaceComplexity	int		301				
+WorkplaceData	m_MaxWorkers	int			303	1	0		
+WorkplaceData	m_EveningShiftProbability	float			304		0	1	
+WorkplaceData	m_NightShiftProbability	float			305		0	1	
+WorkplaceData	m_MinimumWorkersLimit	int			302		0		
+WorkplaceData	m_WorkConditions	int			306		0	100	

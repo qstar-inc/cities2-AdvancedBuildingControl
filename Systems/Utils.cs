@@ -1,16 +1,13 @@
-using System.Linq;
-using AdvancedBuildingControl.Components;
+﻿using AdvancedBuildingControl.Components;
 using Colossal.Entities;
 using Game;
 using Game.Buildings;
-using Game.Economy;
+using Game.Common;
 using Game.Prefabs;
-using Game.Simulation;
 using Game.Zones;
 using StarQ.Shared.Extensions;
 using Unity.Entities;
 using UnityEngine;
-using Resources = Game.Economy.Resources;
 
 namespace AdvancedBuildingControl.Systems
 {
@@ -20,6 +17,7 @@ namespace AdvancedBuildingControl.Systems
         public PrefabSystem prefabSystem;
 
 #nullable enable
+
         protected override void OnCreate()
         {
             prefabSystem = WorldHelper.PrefabSystem;
@@ -27,105 +25,56 @@ namespace AdvancedBuildingControl.Systems
 
         protected override void OnUpdate() { }
 
-        public bool TryGetPrefabEntity(string prefabName, out Entity prefabEntity)
+        public void SetOrAdd<T>(Entity entity, T toSet)
+            where T : unmanaged, IComponentData
         {
-            if (
-                !prefabSystem.TryGetPrefab(
-                    new PrefabID("BuildingPrefab", prefabName),
-                    out var prefabBase
-                )
-            )
-            {
-                LogHelper.SendLog($"Missing BuildingPrefab: {prefabName}");
-                prefabEntity = Entity.Null;
-                return false;
-            }
-            return prefabSystem.TryGetEntity(prefabBase, out prefabEntity);
+            if (!EntityManager.HasComponent<T>(entity))
+                EntityManager.AddComponentData(entity, toSet);
+            else
+                EntityManager.SetComponentData(entity, toSet);
         }
 
-        public bool CheckPrefab(Entity entity, ref Entity currentPrefabRef)
+        public void SetAndUpdate<T>(Entity entity, T toSet)
+            where T : unmanaged, IComponentData
         {
-            if (EntityManager.HasComponent<Building>(entity) == false)
-            {
-                LogHelper.SendLog($"not a building, {entity}");
-                return false;
-            }
-            if (entity == Entity.Null)
-            {
-                LogHelper.SendLog($"entity null for {entity}");
-                return false;
-            }
-
-            if (!EntityManager.TryGetComponent(entity, out PrefabRef prefabRef))
-            {
-                LogHelper.SendLog($"prefabRef null for {entity}");
-                return false;
-            }
-
-            currentPrefabRef = prefabRef.m_Prefab;
-
-            if (currentPrefabRef == Entity.Null)
-            {
-                LogHelper.SendLog($"currentPrefabRef null for {entity}");
-                return false;
-            }
-
-            if (EntityManager.TryGetComponent(entity, out OriginalEntity og))
-            {
-                var currentPrefabName = prefabSystem.GetPrefabName(currentPrefabRef);
-                if (!og.OGEntity.Equals(string.Empty) && $"{og.OGEntity}" != currentPrefabName)
-                {
-                    LogHelper.SendLog(
-                        $"currentPrefabName '{currentPrefabName}' didn't match with '{og.OGEntity}' for {entity}"
-                    );
-                    return false;
-                }
-                return true;
-            }
-            return true;
+            if (!EntityManager.HasComponent<T>(entity))
+                EntityManager.AddComponentData(entity, toSet);
+            else
+                EntityManager.SetComponentData(entity, toSet);
+            EntityManager.AddComponent<Updated>(entity);
         }
 
-        public void UpdateUpkeep(Entity prefabRef, int level, Entity zonePrefab)
+        public void SetAndUpdate<T>(Entity toSetEntity, Entity toUpdateEntity, T toSet)
+            where T : unmanaged, IComponentData
         {
-            EntityManager.TryGetComponent(prefabRef, out BuildingData buildingData);
-            EntityManager.TryGetComponent(prefabRef, out BuildingPropertyData buildingPropertyData);
-
-            bool isStorage =
-                buildingPropertyData.m_AllowedStored > Game.Economy.Resource.NoResource;
-
-            var match = DataRetriever.zoneDataInfos.FirstOrDefault(b =>
-                b.PrefabName == prefabSystem.GetPrefabName(zonePrefab)
-            );
-
-            EconomyParameterData economyParameterData =
-                SystemAPI.GetSingleton<EconomyParameterData>();
-            int newUpkeep = PropertyRenterSystem.GetUpkeep(
-                level,
-                match.Upkeep,
-                buildingData.m_LotSize.x * buildingData.m_LotSize.y,
-                match.AreaType,
-                ref economyParameterData,
-                isStorage
-            );
-
-            EntityManager.TryGetComponent(prefabRef, out ConsumptionData consumptionData);
-            consumptionData.m_Upkeep = newUpkeep;
-            EntityManager.AddComponentData(prefabRef, consumptionData);
+            if (!EntityManager.HasComponent<T>(toSetEntity))
+                EntityManager.AddComponentData(toSetEntity, toSet);
+            else
+                EntityManager.SetComponentData(toSetEntity, toSet);
+            EntityManager.AddComponent<Updated>(toUpdateEntity);
         }
 
-        public void RemoveCurrentResource(Entity entity, Resource res)
+        public void AddAndUpdate<TAdd>(Entity entity, TAdd toAdd)
+            where TAdd : unmanaged, IComponentData
         {
-            EntityManager.TryGetBuffer(entity, false, out DynamicBuffer<Resources> resources);
+            EntityManager.AddComponentData(entity, toAdd);
+            EntityManager.AddComponent<Updated>(entity);
+        }
 
-            for (int i = resources.Length - 1; i >= 0; i--)
-            {
-                var r = resources[i].m_Resource;
+        public void AddAndSet<TAdd, TSet>(Entity entity, TAdd toAdd, TSet toSet)
+            where TAdd : unmanaged, IComponentData
+            where TSet : unmanaged, IComponentData
+        {
+            EntityManager.AddComponentData(entity, toAdd);
+            SetAndUpdate(entity, toSet);
+        }
 
-                if (r != Resource.Money && !res.HasFlag(r))
-                {
-                    resources.RemoveAt(i);
-                }
-            }
+        public void RemoveAndSet<TRemove, TSet>(Entity entity, TSet toSet)
+            where TRemove : unmanaged, IComponentData
+            where TSet : unmanaged, IComponentData
+        {
+            EntityManager.RemoveComponent<TRemove>(entity);
+            SetAndUpdate(entity, toSet);
         }
 
         public (float, float) CheckMaxRent(
@@ -153,118 +102,43 @@ namespace AdvancedBuildingControl.Systems
             float num3;
             if (ignoreLandValue)
             {
-                num3 =
-                    num
-                    * (float)buildingLevel
-                    * (float)lotSize
-                    * buildingPropertyData.m_SpaceMultiplier;
+                num3 = num * buildingLevel * lotSize * buildingPropertyData.m_SpaceMultiplier;
             }
             else
             {
                 num3 =
-                    (landValueBase * num2 + num * (float)buildingLevel)
-                    * (float)lotSize
+                    (landValueBase * num2 + num * buildingLevel)
+                    * lotSize
                     * buildingPropertyData.m_SpaceMultiplier;
             }
             float num4;
             if (PropertyUtils.IsMixedBuilding(buildingPropertyData))
             {
-                num4 = (float)
-                    Mathf.RoundToInt(
-                        (float)buildingPropertyData.m_ResidentialProperties
-                            / (1f - economyParameterData.m_MixedBuildingCompanyRentPercentage)
-                    );
+                num4 = Mathf.RoundToInt(
+                    buildingPropertyData.m_ResidentialProperties
+                        / (1f - economyParameterData.m_MixedBuildingCompanyRentPercentage)
+                );
             }
             else
             {
-                num4 = (float)buildingPropertyData.CountProperties();
+                num4 = buildingPropertyData.CountProperties();
             }
             return (num3, num4);
         }
 
-        public void CheckPrefabData(
-            Entity newPrefabEntity,
-            Entity entity,
-            out bool hasStorage,
-            out StorageCompanyData storageCompanyData,
-            out bool isSpawnable,
-            out SpawnableBuildingData spawnableBuildingData,
-            out bool hasProperty,
-            out BuildingPropertyData buildingPropertyData,
-            out bool isWaterPump,
-            out WaterPumpingStationData waterPumpingStationData,
-            out bool isSewageDump,
-            out SewageOutletData sewageOutletData,
-            out bool isPowerProd,
-            out PowerPlantData powerPlantData,
-            out bool isDepot,
-            out TransportDepotData transportDepotData,
-            out bool isGarbageFacility,
-            out GarbageFacilityData garbageFacilityData,
-            out bool isHospital,
-            out HospitalData hospitalData,
-            out bool isDeathcare,
-            out DeathcareFacilityData deathcareFacilityData,
-            out bool isPoliceStation,
-            out PoliceStationData policeStationData,
-            out bool isPrison,
-            out PrisonData prisonData,
-            out bool isFireStation,
-            out FireStationData fireStationData,
-            out bool isEmergencyShelter,
-            out EmergencyShelterData emergencyShelterData,
-            out bool isPostFacility,
-            out PostFacilityData postFacility,
-            out bool isMaintenanceDepot,
-            out MaintenanceDepotData maintenanceDepotData
+        public static bool TryGetModBuffer(
+            EntityManager EntityManager,
+            Entity city,
+            out DynamicBuffer<ModifiedPrefab_T7> buffer
         )
         {
-            hasStorage = EntityManager.TryGetComponent(newPrefabEntity, out storageCompanyData);
-            isSpawnable = EntityManager.TryGetComponent(newPrefabEntity, out spawnableBuildingData);
-            hasProperty =
-                EntityManager.TryGetComponent(newPrefabEntity, out buildingPropertyData)
-                && EntityManager.HasComponent<ResidentialProperty>(entity);
-            isWaterPump = EntityManager.TryGetComponent(
-                newPrefabEntity,
-                out waterPumpingStationData
-            );
-            isSewageDump = EntityManager.TryGetComponent(newPrefabEntity, out sewageOutletData);
-            isPowerProd = EntityManager.TryGetComponent(newPrefabEntity, out powerPlantData);
-            isDepot = EntityManager.TryGetComponent(newPrefabEntity, out transportDepotData);
-            isGarbageFacility = EntityManager.TryGetComponent(
-                newPrefabEntity,
-                out garbageFacilityData
-            );
-            isHospital = EntityManager.TryGetComponent(newPrefabEntity, out hospitalData);
-            isDeathcare = EntityManager.TryGetComponent(newPrefabEntity, out deathcareFacilityData);
-            isPoliceStation = EntityManager.TryGetComponent(newPrefabEntity, out policeStationData);
-            isPrison = EntityManager.TryGetComponent(newPrefabEntity, out prisonData);
-            isFireStation = EntityManager.TryGetComponent(newPrefabEntity, out fireStationData);
-            isEmergencyShelter = EntityManager.TryGetComponent(
-                newPrefabEntity,
-                out emergencyShelterData
-            );
-            isPostFacility = EntityManager.TryGetComponent(newPrefabEntity, out postFacility);
-            isMaintenanceDepot = EntityManager.TryGetComponent(
-                newPrefabEntity,
-                out maintenanceDepotData
-            );
-        }
+            buffer = new();
+            if (!EntityManager.HasBuffer<ModifiedPrefab_T7>(city))
+                return false;
 
-        public int IntFromString(string value)
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                return 0;
-
-            return int.TryParse(value, out var result) ? result : 0;
-        }
-
-        public ulong UlongFromString(string value)
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                return 0;
-
-            return ulong.TryParse(value, out var result) ? result : 0;
+            if (EntityManager.TryGetBuffer(city, false, out buffer))
+                return true;
+            return false;
         }
     }
 }

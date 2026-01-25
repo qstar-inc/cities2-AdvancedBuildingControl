@@ -3,7 +3,7 @@
     <Configurations>Debug;Release</Configurations>
     <AssemblyName>AdvancedBuildingControl</AssemblyName>
     <AssemblyTitle>Advanced Building Control</AssemblyTitle>
-    <Version>1.9.910</Version>
+    <Version>1.9.920</Version>
     <Authors>StarQ</Authors>
     <!--The file where mod information which is required for publishing mod on PDX mods are stored-->
     <PublishConfigurationPath>Properties\PublishConfiguration.xml</PublishConfigurationPath>
@@ -11,12 +11,15 @@
   <!--Imports must be after PropertyGroup block-->
   <Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.props" />
   <Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.targets" />
-  <Import Project="..\StarQ.Shared\StarQ.Shared.projitems" Label="Shared" />
+  <Import Project="..\..\ModsPersonal\StarQ.Shared\StarQ.Shared.projitems" Label="Shared" />
   <ItemGroup>
     <Reference Include="Game">
       <Private>false</Private>
     </Reference>
     <Reference Include="Colossal.AssetPipeline">
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Colossal.PSI.Common">
       <Private>false</Private>
     </Reference>
     <Reference Include="Colossal.Collections">
@@ -34,9 +37,6 @@
     <Reference Include="Colossal.Mathematics">
       <Private>false</Private>
     </Reference>
-    <Reference Include="Colossal.PSI.Common">
-      <Private>false</Private>
-    </Reference>
     <Reference Include="Colossal.UI">
       <Private>false</Private>
     </Reference>
@@ -44,6 +44,9 @@
       <Private>false</Private>
     </Reference>
     <Reference Include="Colossal.Localization">
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
       <Private>false</Private>
     </Reference>
     <Reference Include="Unity.InputSystem">

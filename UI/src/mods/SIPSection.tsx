@@ -1,81 +1,50 @@
 import {
   brandPanelVisibleBinding,
-  levelPanelVisibleBinding,
+  componentPanelVisibleBinding,
   PanelIndex,
   RandomizeStyle,
   selectedEntity,
-  storagePanelVisibleBinding,
   togglePanel,
   ToolButton,
-  utilityPanelVisibleBinding,
-  vehiclePanelVisibleBinding,
 } from "bindings";
 import { useValue } from "cs2/api";
 import { SelectedInfoSectionBase } from "cs2/bindings";
 import { FOCUS_AUTO, FocusDisabled } from "cs2/input";
-import { useLocalization } from "cs2/l10n";
 import { FOCUS_DISABLED, PanelSection, PanelSectionRow } from "cs2/ui";
-import { baseGameIcons, uilStandard } from "styleBindings";
-import {
-  BldgBrandInfo,
-  BldgGeneralInfo,
-  BldgPropertiesInfo,
-  BldgStorageInfo,
-  BldgUtilityInfo,
-  BldgVehicleInfo,
-  LocaleKeys,
-} from "types";
+import { FindTranslation } from "functions/lang";
+import mod from "mod.json";
+import { uilStandard } from "styleBindings";
+import { BldgBrandInfo } from "types";
+import { BldgComponentInfo } from "types/BldgComponentInfo";
+import { BldgModifiedInfo } from "types/BldgModifiedInfo";
 
 import { BrandPanel } from "./BrandPanel";
-import { PropertiesPanel } from "./PropertiesPanel";
-import { StoragePanel } from "./StoragePanel";
-import { UtilityPanel } from "./UtilityPanel";
-import { VehiclePanel } from "./VehiclePanel";
+// import { StoragePanel } from "./StoragePanel";
+import { ComponentPanel } from "./ComponentPanel";
 
 interface SIP_ABC extends SelectedInfoSectionBase {
-  bldgGeneralInfo: BldgGeneralInfo;
-  bldgPropertiesInfo: BldgPropertiesInfo;
   bldgBrandInfo: BldgBrandInfo;
-  bldgStorageInfo: BldgStorageInfo;
-  bldgUtilityInfo: BldgUtilityInfo;
-  bldgVehicleInfo: BldgVehicleInfo;
+  bldgComponentInfo: BldgComponentInfo;
+  bldgModifiedInfo: BldgModifiedInfo[];
 }
 
 export const SIP_ABC = (componentList: any): any => {
   componentList["AdvancedBuildingControl.Systems.SIP_ABC"] = (
     props: SIP_ABC,
   ) => {
-    const { translate } = useLocalization();
-
-    // console.log(JSON.stringify(props));
-
-    const bldgGeneralInfo = props.bldgGeneralInfo;
-    const bldgPropertiesInfo = props.bldgPropertiesInfo;
     const bldgBrandInfo = props.bldgBrandInfo;
-    const bldgStorageInfo = props.bldgStorageInfo;
-    const bldgUtilityInfo = props.bldgUtilityInfo;
-    const bldgVehicleInfo = props.bldgVehicleInfo;
-
-    console.log(JSON.stringify(bldgGeneralInfo));
+    const bldgComponentInfo = props.bldgComponentInfo;
+    const bldgModifiedInfo = props.bldgModifiedInfo;
 
     const isBrandPanelOpen = useValue(brandPanelVisibleBinding);
-    const isLevelPanelOpen = useValue(levelPanelVisibleBinding);
-    const isStoragePanelOpen = useValue(storagePanelVisibleBinding);
-    const isUtilityPanelOpen = useValue(utilityPanelVisibleBinding);
-    const isVehiclePanelOpen = useValue(vehiclePanelVisibleBinding);
+    const isVehiclePanelOpen = useValue(componentPanelVisibleBinding);
 
     const selectedEntityVal = useValue(selectedEntity);
 
-    const modNameText = translate(LocaleKeys.NAME) ?? "NAME";
+    const modNameText = mod.name;
 
-    const tooltipRandomizeButton =
-      translate(LocaleKeys.RANDOMIZE_TOOLTIP) ?? "RANDOMIZE_TOOLTIP";
-    const tooltipBrandChanger =
-      translate(LocaleKeys.BRAND_TOOLTIP) ?? "BRAND_TOOLTIP";
-    const tooltipStorageChanger =
-      translate(LocaleKeys.STORAGE_TOOLTIP) ?? "STORAGE_TOOLTIP";
-    const tooltipUtilityChanger =
-      translate(LocaleKeys.UTILITY_TOOLTIP) ?? "UTILITY_TOOLTIP";
+    const tooltipRandomizeButton = FindTranslation("Randomize.Tooltip");
+    const tooltipBrandChanger = FindTranslation("Brand.Tooltip");
 
     return (
       <>
@@ -117,100 +86,27 @@ export const SIP_ABC = (componentList: any): any => {
                       )}
                     </>
                   )}
-                  {(bldgPropertiesInfo.HasLevel ||
-                    bldgPropertiesInfo.HasHousehold ||
-                    bldgPropertiesInfo.IsWorkplace) && (
+                  {
                     <>
                       <ToolButton
-                        id="starq-abc-level"
-                        focusKey={FOCUS_AUTO}
-                        selected={isLevelPanelOpen}
-                        src={baseGameIcons + "Upkeep.svg"}
-                        onSelect={() => {
-                          togglePanel(PanelIndex.Level);
-                        }}
-                      />
-                      {isLevelPanelOpen && (
-                        <PropertiesPanel
-                          key={selectedEntityVal.index}
-                          bldgPropertiesInfo={bldgPropertiesInfo}
-                        />
-                      )}
-                    </>
-                  )}
-                  {bldgStorageInfo.HasStorage && (
-                    <>
-                      <ToolButton
-                        id="starq-abc-storage"
-                        focusKey={FOCUS_AUTO}
-                        tooltip={tooltipStorageChanger}
-                        selected={isStoragePanelOpen}
-                        src={uilStandard + "DeliveryVan.svg"}
-                        onSelect={() => {
-                          togglePanel(PanelIndex.Storage);
-                        }}
-                      />
-                      {isStoragePanelOpen && (
-                        <StoragePanel
-                          key={selectedEntityVal.index}
-                          bldgStorageInfo={bldgStorageInfo}
-                        />
-                      )}
-                    </>
-                  )}
-                  {(bldgUtilityInfo.IsWaterPump ||
-                    bldgUtilityInfo.IsSewageOutlet ||
-                    bldgUtilityInfo.IsPowerPlant) && (
-                    <>
-                      <ToolButton
-                        id="starq-abc-utility"
-                        focusKey={FOCUS_AUTO}
-                        // tooltip={tooltipServiceChanger}
-                        selected={isUtilityPanelOpen}
-                        src={uilStandard + "ServiceBuilding.svg"}
-                        onSelect={() => {
-                          togglePanel(PanelIndex.Utility);
-                        }}
-                      />
-                      {isUtilityPanelOpen && (
-                        <UtilityPanel
-                          key={selectedEntityVal.index}
-                          bldgUtilityInfo={bldgUtilityInfo}
-                          bldgGeneralInfo={bldgGeneralInfo}
-                        />
-                      )}
-                    </>
-                  )}
-                  {(bldgVehicleInfo.IsDepot ||
-                    bldgVehicleInfo.IsGarbageFacility ||
-                    bldgVehicleInfo.IsHospital ||
-                    bldgVehicleInfo.IsDeathcare ||
-                    bldgVehicleInfo.IsPoliceStation ||
-                    bldgVehicleInfo.IsPrison ||
-                    bldgVehicleInfo.IsFireStation ||
-                    bldgVehicleInfo.IsEmergencyShelter ||
-                    bldgVehicleInfo.IsPostFacility ||
-                    bldgVehicleInfo.IsMaintenanceDepot) && (
-                    <>
-                      <ToolButton
-                        id="starq-abc-vehicle"
+                        id="starq-abc-component"
                         focusKey={FOCUS_AUTO}
                         // tooltip={tool}
                         selected={isVehiclePanelOpen}
-                        src={uilStandard + "DeliveryVan.svg"}
+                        src={uilStandard + "Tools.svg"}
                         onSelect={() => {
-                          togglePanel(PanelIndex.Vehicle);
+                          togglePanel(PanelIndex.Component);
                         }}
                       />
                       {isVehiclePanelOpen && (
-                        <VehiclePanel
+                        <ComponentPanel
                           key={selectedEntityVal.index}
-                          bldgVehicleInfo={bldgVehicleInfo}
-                          bldgGeneralInfo={bldgGeneralInfo}
+                          bldgComponentInfo={bldgComponentInfo}
+                          bldgModifiedInfo={bldgModifiedInfo}
                         />
                       )}
                     </>
-                  )}
+                  }
                 </FocusDisabled>
               </>
             }

@@ -1,5 +1,6 @@
 {
   "id": "AdvancedBuildingControl",
+  "name": "Advanced Building Control",
   "author": "StarQ",
   "version": "2.0.0",
   "dependencies": []

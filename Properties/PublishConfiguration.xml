@@ -1,13 +1,19 @@
 ﻿<Publish>
-  <ModId Value="0" />
-  <DisplayName Value="Advanced Building Control [BETA]" />
+  <ModId Value="132676" />
+  <DisplayName Value="Advanced Building Control [BETA DEBUG Build]" />
   <ShortDescription Value="Modify building properties to your heart's content (within limits)." />
-  <LongDescription></LongDescription>
+  <LongDescription>Extremely alpha, debug build.
+  
+Download only for testing.
+  
+Mod data will not be compatible with final release.
+  
+Provide feedback in https://discord.com/channels/1024242828114673724/1393652142731956390.</LongDescription>
   <Thumbnail Value="Properties/Thumbnail.png" />
   <Screenshot Value="Properties/Thumbnail.png" />
   <Tag Value="Code Mod" />
   <ForumLink Value="" />
-  <ModVersion Value="2.0.0" />
+  <ModVersion Value="1.9.920" />
   <GameVersion Value="1.5.*" />
   <Dependency Id="74417" />
   <RequiredDLC Value="" />
@@ -15,5 +21,5 @@
 - Initial Release
 	</ChangeLog>
   <ExternalLink Type="" Url="" />
-  <AccessLevel Value="Public" />
+  <AccessLevel Value="Unlisted" />
 </Publish>

@@ -19,6 +19,7 @@ interface PanelBase {
   visible: boolean;
   content: ReactElement;
   height?: number;
+  icon?: string;
 }
 
 export const PanelBase: FC<PanelBase> = (props: PanelBase) => {
@@ -30,12 +31,12 @@ export const PanelBase: FC<PanelBase> = (props: PanelBase) => {
     () => ({
       left: `calc(${panelLeft}px + 20rem)`,
     }),
-    [panelLeft]
+    [panelLeft],
   );
 
   const calculateHeights = () => {
     const sipElement = document.querySelector(
-      ".selected-info-panel_iIe"
+      ".selected-info-panel_iIe",
     ) as HTMLElement | null;
 
     const newPanelLeft =
@@ -73,7 +74,7 @@ export const PanelBase: FC<PanelBase> = (props: PanelBase) => {
             <div className={stylePanel.titleBar}>
               <img
                 className={stylePanel.icon}
-                src="Media/Tools/Net Tool/Replace.svg"
+                src={props.icon || "Media/Tools/Net Tool/Replace.svg"}
               />
               <div className={styleSIPTheme.title}>{props.header}</div>
               <button className={closeButtonClass} onClick={() => ClosePanel()}>

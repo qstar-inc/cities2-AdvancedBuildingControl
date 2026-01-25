@@ -3,10 +3,11 @@ $boxSize: 15rem;
 .ABCPanel {
   position: absolute;
   top: calc(var(--screenPadding) * 2 + var(--floatingToggleSize));
-  z-index: calc(var(--tooltipIndex) - 1);
+  // z-index: calc(var(--tooltipIndex) - 1);
   overflow: hidden;
   transform: scale(0.9);
   opacity: 0.5;
+  max-height: 70vh;
 }
 
 .ABCAnimateIn {
@@ -110,7 +111,153 @@ $boxSize: 15rem;
   padding-right: 0 !important;
 }
 
+.NoMarginVertical {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.MarginRight3r {
+  margin-right: 3rem !important;
+  padding-right: 3rem !important;
+}
+
+.MarginLeft3r {
+  margin-left: 3rem !important;
+  padding-left: 3rem !important;
+}
+
+.AlignCenter {
+  align-content: center !important;
+}
+
+.LevelSegment {
+  border: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.LevelBox {
+  margin: auto !important;
+  text-align: center !important;
+  width: 100% !important;
+}
+
 .DisabledToolButton {
   background-color: rgb(208, 208, 208) !important;
   filter: saturate(1) brightness(0.85) invert(1) !important;
+}
+
+// .InputBoxCustom {
+//   //   display: flex !important;
+//   //   width: 100% !important;
+
+//   & > input:focus,
+//   &:hover > div {
+//     border-top-color: var(--accentColorLight) !important;
+//     border-bottom-color: var(--accentColorLight) !important;
+//   }
+// }
+
+.DropdownToggleCustom {
+  display: flex !important;
+  width: 100% !important;
+  padding-left: 8rem !important;
+  padding-right: 8rem !important;
+  // border: 0.5rem solid transparent !important;
+
+  background-color: transparent !important;
+  color: var(--textColorHighlight) !important;
+  & > * {
+    width: 100% !important;
+    text-align: right !important;
+  }
+}
+
+.DropdownToggleCustom:hover {
+  // border: 0.5rem solid red !important;
+  padding-left: 6.5rem !important;
+  padding-right: 6.5rem !important;
+  border-color: rgb(150, 150, 150, 1) !important;
+  border-width: 0.75rem !important;
+  border-style: solid !important;
+  background-color: rgba(28, 37, 52, 0.209) !important;
+}
+
+:global(.active).DropdownToggleCustom {
+  background-color: var(--textColorHighlight) !important;
+  color: black !important;
+}
+
+.DropdownItemCustomRight {
+  text-align: right !important;
+}
+
+.DropdownLabelWithCheckbox {
+  display: flex !important;
+  justify-content: space-between !important;
+  margin: auto !important;
+  align-items: center !important;
+  width: inherit !important;
+  border-radius: 0 !important;
+}
+
+.DropdownLabelWithCheckbox + .DropdownLabelWithCheckbox {
+  border-top: 0.5rem solid red !important;
+  border-top-color: var(--accentColorLighter) !important;
+}
+
+:global(.selected).DropdownItemCustomRight {
+  background-color: var(--textColorHighlight) !important;
+  color: black !important;
+}
+
+.CheckboxCustom {
+  width: 26rem !important;
+  height: 26rem !important;
+  background-color: transparent !important;
+
+  & > * {
+    padding: 2rem !important;
+  }
+}
+
+.ToggleSwitchCustom {
+  padding: 0;
+  border-radius: 100rem;
+  border: none;
+  background-color: var(--hoverColorNormal);
+  cursor: pointer;
+  position: relative;
+  transition: background-color 0.5s ease-out;
+  height: 20rem;
+  width: 56rem;
+}
+
+.ToggleSwitchCustom.on {
+  background-color: var(--textColorHighlight);
+}
+
+.ToggleSwitchCustom.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ToggleSwitchCustomCircle {
+  width: 14rem;
+  height: 14rem;
+  border-radius: 50%;
+  background-color: var(--accentColorNormal);
+  position: absolute;
+  top: 3rem;
+  left: 3rem;
+  transition:
+    transform 0.25s cubic-bezier(0.5, 0, 0.35, 0.5),
+    background-color 0.5s ease-out;
+}
+
+.ToggleSwitchCustom.on .ToggleSwitchCustomCircle {
+  transform: translateX(calc(36rem));
+  background-color: var(--accentColorLighter);
 }
