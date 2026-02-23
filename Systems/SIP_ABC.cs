@@ -31,6 +31,7 @@ namespace AdvancedBuildingControl.Systems
         }
 
 #nullable disable
+        public static bool hasMesh = false;
         public static BldgBrandInfo bldgBrandInfo = new();
         public static BldgComponentInfo bldgComponentInfo = new();
         public static List<BldgModifiedInfo> bldgModifiedInfo = new();
@@ -40,6 +41,7 @@ namespace AdvancedBuildingControl.Systems
 
         private SelectedPrefabModifierSystem selectedPrefabModifier;
         private SelectedEntityModifierSystem selectedEntityModifier;
+        private StaticPloppableBuilder staticPloppableBuilder;
         private static (string, int, Entity) lastTrigger = ("", 0, Entity.Null);
 
 #nullable enable
@@ -56,11 +58,13 @@ namespace AdvancedBuildingControl.Systems
 
             selectedPrefabModifier = WorldHelper.GetSystem<SelectedPrefabModifierSystem>();
             selectedEntityModifier = WorldHelper.GetSystem<SelectedEntityModifierSystem>();
+            staticPloppableBuilder = WorldHelper.GetSystem<StaticPloppableBuilder>();
 
             CreateTrigger("RandomizeStyle", RandomizeStyle);
             CreateTrigger<string>("SetBrand", SetBrand);
             CreateTrigger<string, int>("ChangeComponentValue", ChangeComponentValue);
             CreateTrigger<int>("ResetComponentValue", ResetComponentValue);
+            CreateTrigger("MakeSP", MakeSP);
 
             Enabled = false;
         }
@@ -73,6 +77,12 @@ namespace AdvancedBuildingControl.Systems
 
         public override void OnWriteProperties(IJsonWriter writer)
         {
+            writer.PropertyName("hasSP");
+            writer.Write(StaticPloppableBuilder.hasSP);
+
+            writer.PropertyName("hasMesh");
+            writer.Write(hasMesh);
+
             writer.PropertyName("bldgBrandInfo");
             BldgInfoJsonWriterExtensions.Write(writer, bldgBrandInfo);
 
@@ -88,6 +98,8 @@ namespace AdvancedBuildingControl.Systems
             bldgBrandInfo = new();
             bldgComponentInfo = new();
             bldgModifiedInfo = new();
+
+            hasMesh = false;
 
             companyEntity = Entity.Null;
         }
@@ -122,9 +134,19 @@ namespace AdvancedBuildingControl.Systems
             )
                 return;
 
+            CheckMesh();
             CheckBrand();
             CheckComponents();
             CheckCurrentModifications();
+        }
+
+        public void CheckMesh()
+        {
+            if (
+                EntityManager.TryGetBuffer(selectedPrefab, true, out DynamicBuffer<SubMesh> subMesh)
+            )
+                if (subMesh.Length > 0)
+                    hasMesh = true;
         }
 
         public void CheckBrand()
@@ -251,6 +273,11 @@ namespace AdvancedBuildingControl.Systems
             );
             EntityManager.AddComponent<Updated>(selectedEntity);
             RequestUpdate();
+        }
+
+        public void MakeSP()
+        {
+            staticPloppableBuilder.MakeSP(selectedPrefab);
         }
     }
 }

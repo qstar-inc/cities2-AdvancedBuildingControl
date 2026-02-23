@@ -1,14 +1,12 @@
 import engine from "cohtml/cohtml";
 import { bindLocalValue, bindValue, trigger } from "cs2/api";
-import { Entity, LocElement, Number2, ToggleField, UISound } from "cs2/bindings";
+import { Entity, ToggleField, UISound } from "cs2/bindings";
 import { StyleProps } from "cs2/input";
 import { getModule } from "cs2/modding";
 import { ButtonProps, FocusKey, ScrollController } from "cs2/ui";
 import mod from "mod.json";
-import { CSSProperties, ReactElement } from "react";
+import { ReactElement } from "react";
 import { UpdateValueType } from "types/UpdateValueType";
-
-import styles from "./mods/style.module.scss";
 
 export const selectedEntity = bindValue<Entity>(
   "selectedInfo",
@@ -22,6 +20,10 @@ export const SetBrand = (replaceBrand: string) => {
 
 export const RandomizeStyle = () => {
   trigger(mod.id, "RandomizeStyle");
+};
+
+export const MakeSP = () => {
+  trigger(mod.id, "MakeSP");
 };
 
 // export const ChangeLevelDistrict = (level: number) => {

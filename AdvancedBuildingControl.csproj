@@ -3,7 +3,7 @@
     <Configurations>Debug;Release</Configurations>
     <AssemblyName>AdvancedBuildingControl</AssemblyName>
     <AssemblyTitle>Advanced Building Control</AssemblyTitle>
-    <Version>1.9.920</Version>
+    <Version>1.9.930</Version>
     <Authors>StarQ</Authors>
     <!--The file where mod information which is required for publishing mod on PDX mods are stored-->
     <PublishConfigurationPath>Properties\PublishConfiguration.xml</PublishConfigurationPath>
@@ -83,6 +83,13 @@
     <None Include="$(ModPropsFile)" Link="Properties\Mod.props" />
     <None Include="$(ModTargetsFile)" Link="Properties\Mod.targets" />
   </ItemGroup>
+  <!-- Target Name="RunPythonPreBuild" BeforeTargets="GetAdditionalFiles">
+    <Message Text="Running Python file processor..." Importance="high" />
+    <Exec
+      Command="python &quot;$(ProjectDir)Tools\process_file.py&quot; &quot;$(ProjectDir)Input\input.txt&quot; &quot;$(ProjectDir)Resources\output.dat&quot;"
+      WorkingDirectory="$(ProjectDir)"
+    />
+  <Target-->
   <Target Name="GetAdditionalFiles" AfterTargets="DeployWIP">
     <ItemGroup>
       <AdditionalFilesToDeploy Include="Resources\**\*.*" />

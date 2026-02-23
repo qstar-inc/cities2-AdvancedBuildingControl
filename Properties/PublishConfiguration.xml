@@ -2,24 +2,35 @@
   <ModId Value="132676" />
   <DisplayName Value="Advanced Building Control [BETA DEBUG Build]" />
   <ShortDescription Value="Modify building properties to your heart's content (within limits)." />
-  <LongDescription>Extremely alpha, debug build.
+  <LongDescription>Beta, debug build.
   
 Download only for testing.
-  
+
 Mod data will not be compatible with final release.
+
+What can be done:
+- Randomize building's pseudo-random properties (per building instance)
+- Change brands on buildings (per building instance)
+- Override approved component data (per save)
+- Options to reset/backup/restore from Options menu
+- Create Static Ploppable variants of any buildings in-game
   
-Provide feedback in https://discord.com/channels/1024242828114673724/1393652142731956390.</LongDescription>
+Provide feedback in https://discord.com/channels/1024242828114673724/1393652142731956390
+</LongDescription>
   <Thumbnail Value="Properties/Thumbnail.png" />
   <Screenshot Value="Properties/Thumbnail.png" />
   <Tag Value="Code Mod" />
   <ForumLink Value="" />
-  <ModVersion Value="1.9.920" />
+  <ModVersion Value="1.9.930" />
   <GameVersion Value="1.5.*" />
   <Dependency Id="74417" />
   <RequiredDLC Value="" />
   <ChangeLog>
-- Initial Release
+- NEW: Static Ploppable Builder
 	</ChangeLog>
-  <ExternalLink Type="" Url="" />
+  <ExternalLink
+    Type="Github"
+    Url="https://github.com/qstar-inc/cities2-CompanyBrandChanger/tree/ABC-main"
+  />
   <AccessLevel Value="Unlisted" />
 </Publish>

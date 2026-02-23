@@ -1,7 +1,5 @@
 {
   //"AdvancedBuildingControl.NAME": "Advanced Building Control",
-  //"AdvancedBuildingControl.SIP[RandomizeTooltip]": "Randomize the building's seed to change billboard sizes/positions, trees, props and colors. Randomizing is irreversible. This does not change the company itself.",
-  //"AdvancedBuildingControl.SIP[BrandTooltip]": "Changing brand is completely visual only.\nIt does not affect simulation and does not change the company or the resources used/manufactured.",
   //"AdvancedBuildingControl.SIP[StorageTooltip]": "Modify the building's Tradeable Resources.\nWhen a tradeable resource is disabled, any resource currently stored will be lost permanently.",
   //"AdvancedBuildingControl.SIP[UtilityTooltip]": "Modify the building's utility production.",
   //"AdvancedBuildingControl.BRAND[Header]": "Company Brand Changer",
@@ -43,29 +41,67 @@
   //"AdvancedBuildingControl.UTILITIES[Change]": "Change",
   //"AdvancedBuildingControl.UTILITIES[Original]": "Original",
   //"AdvancedBuildingControl.UTILITIES[Boosted]": "Boosted",
-  "AdvancedBuildingControl.ComponentHeader": "Component Data Overrider",
-  "AdvancedBuildingControl.ComponentAppliesAll": "Any changes made in this panel applies to all instance of this prefab.",
   //"AdvancedBuildingControl.OverrideTo": "Override to",
   //"AdvancedBuildingControl.Base": "Original value",
   //"AdvancedBuildingControl.Final": "Final value",
   //"AdvancedBuildingControl.BaseTooltip": "The building's default value.",
   //"AdvancedBuildingControl.FinalTooltip": "Includes the main building value plus all upgrades.",
   //"AdvancedBuildingControl.ResetTooltip": "Reset to the building's default."
-  "AdvancedBuildingControl.WorkplaceComplexity[Manual]": "Manual",
-  "AdvancedBuildingControl.WorkplaceComplexity[Simple]": "Simple",
-  "AdvancedBuildingControl.WorkplaceComplexity[Complex]": "Complex",
-  "AdvancedBuildingControl.WorkplaceComplexity[Hitech]": "Hitech",
+
+
+  "AdvancedBuildingControl.Randomize.Tooltip": "Randomize the building's seed to change billboard sizes/positions, trees, props and colors. Randomizing is irreversible.",
+
+  "AdvancedBuildingControl.Brand.Tooltip": "Changing brand is completely visual only.\nIt does not affect simulation and does not change the company or the resources used/manufactured.",
+  "AdvancedBuildingControl.Brand.Header": "Company Brand Changer",
+  "AdvancedBuildingControl.Brand.CurrentBrand": "Current Brand",
+  "AdvancedBuildingControl.Brand.CurrentCompany": "Current Company",
+  "AdvancedBuildingControl.Brand.OtherBrands": "Other Brands",
+  "AdvancedBuildingControl.Brand.OtherBrands.Tooltip": "The following brands are from companies that's not the same as the current company.\nSelecting any of these will not have any effect on the business/simulation either.",
+  "AdvancedBuildingControl.Brand.SupportedBrands": "Supported Brands",
+  "AdvancedBuildingControl.Brand.SupportedBrands.Tooltip": "The following brands supports the current company.",
+  "AdvancedBuildingControl.Brand.GroupHover": "[?]",
+
+  "AdvancedBuildingControl.SPBuilder.Tooltip": "Static Ploppable Builder",
+
+  "AdvancedBuildingControl.Component.Header": "Component Data Overrider",
+
+  "AdvancedBuildingControl.ComponentAppliesAll": "Any changes made in this panel applies to all instance of this prefab.",
+
+  "AdvancedBuildingControl.WorkplaceComplexity_Manual": "Manual",
+  "AdvancedBuildingControl.WorkplaceComplexity_Simple": "Simple",
+  "AdvancedBuildingControl.WorkplaceComplexity_Complex": "Complex",
+  "AdvancedBuildingControl.WorkplaceComplexity_Hitech": "Hitech",
+
   "AdvancedBuildingControl.Small": "Small",
   "AdvancedBuildingControl.Medium": "Medium",
   "AdvancedBuildingControl.Large": "Large",
-  "AdvancedBuildingControl.Undefined": "Undefined",
   "AdvancedBuildingControl.Fuel": "Fuel",
-  "AdvancedBuildingControl.CompTooltip[BuildingPropertyData_ResidentialProperties]": "Override the maximum amount of households this building can have.",
-  "AdvancedBuildingControl.CompTooltip[BuildingPropertyData_AllowedSold]": "Override the maximum amount of households this building can have.",
-  "AdvancedBuildingControl.CompTooltip[BuildingPropertyData_AllowedInput]": "Override the maximum amount of households this building can have.",
-  "AdvancedBuildingControl.CompTooltip[BuildingPropertyData_AllowedManufactured]": "Override the maximum amount of households this building can have.",
-  "AdvancedBuildingControl.CompTooltip[BuildingPropertyData_AllowedStored]": "Override the maximum amount of households this building can have.",
-  "AdvancedBuildingControl.CompTooltip[BuildingPropertyData_SpaceMultiplier]": "Override the maximum amount of households this building can have.",
-  "AdvancedBuildingControl.CompTooltip[WorkplaceData_MaxWorkers]": "Override the maximum amount of households this building can have.",
-  "AdvancedBuildingControl.CompTooltip[WorkplaceData_MinimumWorkersLimit]": "Override the maximum amount of households this building can have."
+
+  "AdvancedBuildingControl.Undefined": "Undefined",
+
+  "AdvancedBuildingControl.CompTooltip_BuildingPropertyData_ResidentialProperties": "Override the maximum amount of households this building can have.",
+  "AdvancedBuildingControl.CompTooltip_BuildingPropertyData_AllowedSold": "Override the maximum amount of households this building can have.",
+  "AdvancedBuildingControl.CompTooltip_BuildingPropertyData_AllowedInput": "Override the maximum amount of households this building can have.",
+  "AdvancedBuildingControl.CompTooltip_BuildingPropertyData_AllowedManufactured": "Override the maximum amount of households this building can have.",
+  "AdvancedBuildingControl.CompTooltip_BuildingPropertyData_AllowedStored": "Override the maximum amount of households this building can have.",
+  "AdvancedBuildingControl.CompTooltip_BuildingPropertyData_SpaceMultiplier": "Override the maximum amount of households this building can have.",
+  "AdvancedBuildingControl.CompTooltip_WorkplaceData_MaxWorkers": "Override the maximum amount of households this building can have.",
+  "AdvancedBuildingControl.CompTooltip_WorkplaceData_MinimumWorkersLimit": "Override the maximum amount of households this building can have.",
+
+  "AdvancedBuildingControl.StarQ_OptionGroup.CityComponentOverride": "City-wide Component Override",
+  "AdvancedBuildingControl.StarQ_Option.CityComponentOverride_BackupConfig.Label": "Backup",
+  "AdvancedBuildingControl.StarQ_Option.CityComponentOverride_BackupConfig.Description": "Backup all custom component override made in this city.",
+  "AdvancedBuildingControl.StarQ_Option.CityComponentOverride_BackupFileName.Label": "Existing Backups",
+  "AdvancedBuildingControl.StarQ_Option.CityComponentOverride_BackupFileName.Description": "Select one of the existing backups to restore in current city.",
+  "AdvancedBuildingControl.StarQ_Option.CityComponentOverride_RestoreConfig.Label": "Restore",
+  "AdvancedBuildingControl.StarQ_Option.CityComponentOverride_RestoreConfig.Description": "Clear existing and restore custom component override from selected backup.",
+  "AdvancedBuildingControl.StarQ_Option.CityComponentOverride_ResetAll.Label": "Reset All",
+  "AdvancedBuildingControl.StarQ_Option.CityComponentOverride_ResetAll.Description": "Restore all custom component override to values before changes.",
+  "AdvancedBuildingControl.StarQ_Option.DeleteLocalSPCache.Label": "Delete local Static Ploppable cache JSON",
+  "AdvancedBuildingControl.StarQ_Option.DeleteLocalSPCache.Description": "Delete the StaticPloppableBuilder.json file which is used to check which Static Ploppables need to be rebuilt on game load. Using this often will result in longer loading time as the mod will rescan for missing buildings to recreate on game load.",
+
+  "Assets.NAME[StarQ SP00-ABC Pack]": "Advanced Building Control Pack",
+
+  "AdvancedBuildingControl.ReloadSave": "Missing Static Ploppables recreated. Please reload the save before continuing.",
+  "AdvancedBuildingControl.Continue": "Continue"
 }

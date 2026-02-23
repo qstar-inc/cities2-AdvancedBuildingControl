@@ -6,11 +6,11 @@ using AdvancedBuildingControl.Systems;
 using Colossal.IO.AssetDatabase;
 using Colossal.Logging;
 using Colossal.PSI.Environment;
+using Colossal.UI;
 using Game;
 using Game.Modding;
 using Game.SceneFlow;
 using StarQ.Shared.Extensions;
-using Unity.Entities;
 
 namespace AdvancedBuildingControl
 {
@@ -25,6 +25,7 @@ namespace AdvancedBuildingControl
             .GetExecutingAssembly()
             .GetName()
             .Version.ToString(3);
+        public static string uiHostName = "starq-advanced-building-control";
 
         public static ILog log = LogManager.GetLogger($"{Id}").SetShowsErrorsInUI(false);
         public static Setting m_Setting;
@@ -33,6 +34,7 @@ namespace AdvancedBuildingControl
         {
             LogHelper.Init(Id, log);
             LocaleHelper.Init(Id, Name, GetReplacements);
+            UIHostHelper.Init(Id, uiHostName);
 
             try
             {
@@ -52,8 +54,16 @@ namespace AdvancedBuildingControl
                 new Setting(this)
             );
 
-            World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<DataRetriever>();
-            World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<SaveStoreSystem>();
+            if (GameManager.instance.modManager.TryGetExecutableAsset(this, out var asset))
+                UIManager.defaultUISystem.AddHostLocation(
+                    uiHostName,
+                    Path.Combine(Path.GetDirectoryName(asset.path), "Icons"),
+                    false
+                );
+
+            WorldHelper.GetSystem<DataRetriever>();
+            WorldHelper.GetSystem<SaveStoreSystem>();
+            WorldHelper.GetSystem<StaticPloppableBuilder>();
             updateSystem.UpdateAfter<SIP_ABC>(SystemUpdatePhase.UIUpdate);
         }
 

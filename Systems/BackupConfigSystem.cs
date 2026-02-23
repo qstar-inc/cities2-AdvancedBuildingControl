@@ -28,6 +28,13 @@ namespace AdvancedBuildingControl.Systems
             selectedPrefabModifierSystem = WorldHelper.GetSystem<SelectedPrefabModifierSystem>();
         }
 
+        //protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
+        //{
+        //    base.OnGameLoadingComplete(purpose, mode);
+        //    if (mode.IsGame()) { Mod.m_Setting.InGame = true; return; }
+        //    Mod.m_Setting.InGame = false;
+        //}
+
         protected override void OnUpdate() { }
 
         public class BackupFile
@@ -49,6 +56,12 @@ namespace AdvancedBuildingControl.Systems
         {
             if (!bufferControlSystem.TryGetBufferCopy(out NativeArray<ModifiedPrefab_T7> array))
                 return;
+
+            if (array.Length == 0)
+            {
+                LogHelper.SendLog("Nothing to Backup...");
+                return;
+            }
 
             Dictionary<string, List<BackupFormat>> dict = new();
             var time = DateTimeOffset.Now;
@@ -116,6 +129,7 @@ namespace AdvancedBuildingControl.Systems
 
             string json = JsonConvert.SerializeObject(backup, options);
             File.WriteAllText(fullPath, json);
+            Mod.m_Setting.DropdownVersion++;
         }
 
         public void RestoreConfig(string filePath)
@@ -159,7 +173,7 @@ namespace AdvancedBuildingControl.Systems
                 if (
                     !WorldHelper
                         .GetSystem<PrefabFinder>()
-                        .TryFindPrefab(prefabName, out Entity prefab)
+                        .TryFindBuildingPrefab(prefabName, out Entity prefab)
                 )
                 {
                     skipped++;

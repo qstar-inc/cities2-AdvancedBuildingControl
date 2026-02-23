@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 using AdvancedBuildingControl.Systems;
 using Colossal.IO.AssetDatabase;
 using Colossal.Json;
@@ -14,6 +15,7 @@ namespace AdvancedBuildingControl
 {
     [FileLocation("ModsSettings\\StarQ\\" + nameof(AdvancedBuildingControl))]
     [SettingsUITabOrder(GeneralTab, AboutTab, LogTab)]
+    [SettingsUIShowGroupName(CityComponentOverride)]
     public class Setting : ModSetting
     {
         public Setting(IMod mod)
@@ -21,19 +23,31 @@ namespace AdvancedBuildingControl
 
         public const string GeneralTab = "GeneralTab";
         public const string GeneralGroup = "GeneralGroup";
+        public const string CityComponentOverride = "CityComponentOverride";
 
         public const string AboutTab = "AboutTab";
         public const string InfoGroup = "InfoGroup";
 
         public const string LogTab = "LogTab";
 
+        [Exclude]
         public bool hasBackup = false;
-        public bool InGame => WorldHelper.IsGame;
+
+        [Exclude]
+        [SettingsUIHidden]
+        public bool InGame
+        {
+            get => !WorldHelper.IsGame;
+        }
+
+        [Exclude]
+        [SettingsUIHidden]
+        public bool NoSPCache { get; set; } = false;
 
         [SettingsUIButton]
         [SettingsUIDisableByCondition(typeof(Setting), nameof(InGame))]
-        [SettingsUISection(GeneralTab, GeneralGroup)]
-        public bool BackupConfig
+        [SettingsUISection(GeneralTab, CityComponentOverride)]
+        public bool CityComponentOverride_BackupConfig
         {
             set => WorldHelper.GetSystem<BackupConfigSystem>().BackupConfig();
         }
@@ -48,9 +62,19 @@ namespace AdvancedBuildingControl
                 SearchOption.TopDirectoryOnly
             );
 
-            foreach (var file in files)
+            for (int i = files.Length - 1; i >= 0; i--)
             {
-                list.Add(new DropdownItem<string> { value = file, displayName = file });
+                string file = files[i];
+                string fileName = Path.GetFileName(file);
+
+                var regex = Regex.Match(fileName, @"ABC_Backup_([\d\-]+)_([\d\-]+)_(.+)\.json");
+
+                string dName = fileName;
+                if (regex.Success)
+                    dName =
+                        $"{regex.Groups[3]?.Value} : {regex.Groups[1]?.Value} {regex.Groups[2]?.Value}";
+
+                list.Add(new DropdownItem<string> { value = file, displayName = dName });
             }
 
             if (list.Count > 0)
@@ -62,24 +86,40 @@ namespace AdvancedBuildingControl
         }
 
         [Exclude]
+        [SettingsUIHidden]
+        internal int DropdownVersion { get; set; } = 0;
+
+        [Exclude]
+        [SettingsUIValueVersion(typeof(Setting), nameof(DropdownVersion))]
         [SettingsUIDropdown(typeof(Setting), nameof(GetBackupFileList))]
-        [SettingsUISection(GeneralTab, GeneralGroup)]
-        public string BackupFileName { get; set; } = string.Empty;
+        [SettingsUISection(GeneralTab, CityComponentOverride)]
+        public string CityComponentOverride_BackupFileName { get; set; } = string.Empty;
 
         [SettingsUIButton]
         [SettingsUIDisableByCondition(typeof(Setting), nameof(InGame))]
-        [SettingsUISection(GeneralTab, GeneralGroup)]
-        public bool RestoreConfig
+        [SettingsUISection(GeneralTab, CityComponentOverride)]
+        public bool CityComponentOverride_RestoreConfig
         {
-            set => WorldHelper.GetSystem<BackupConfigSystem>().RestoreConfig(BackupFileName);
+            set =>
+                WorldHelper
+                    .GetSystem<BackupConfigSystem>()
+                    .RestoreConfig(CityComponentOverride_BackupFileName);
         }
 
         [SettingsUIButton]
         [SettingsUIDisableByCondition(typeof(Setting), nameof(InGame))]
-        [SettingsUISection(GeneralTab, GeneralGroup)]
-        public bool ResetAll
+        [SettingsUISection(GeneralTab, CityComponentOverride)]
+        public bool CityComponentOverride_ResetAll
         {
             set => WorldHelper.GetSystem<SelectedPrefabModifierSystem>().ResetAll();
+        }
+
+        [SettingsUIButton]
+        [SettingsUIDisableByCondition(typeof(Setting), nameof(NoSPCache))]
+        [SettingsUISection(GeneralTab, CityComponentOverride)]
+        public bool DeleteLocalSPCache
+        {
+            set => WorldHelper.GetSystem<StaticPloppableData>().DeleteFile();
         }
 
         public override void SetDefaults() { }

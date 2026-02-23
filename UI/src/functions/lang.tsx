@@ -204,13 +204,13 @@ export function GetAlternateDropdownText(
     case UpdateValueType.WorkplaceData_Complexity:
       switch (value) {
         case 0:
-          return FindTranslation("WorkplaceComplexity[Manual]");
+          return FindTranslation("WorkplaceComplexity_Manual");
         case 1:
-          return FindTranslation("WorkplaceComplexity[Simple]");
+          return FindTranslation("WorkplaceComplexity_Simple");
         case 2:
-          return FindTranslation("WorkplaceComplexity[Complex]");
+          return FindTranslation("WorkplaceComplexity_Complex");
         case 3:
-          return FindTranslation("WorkplaceComplexity[Hitech]");
+          return FindTranslation("WorkplaceComplexity_Hitech");
         default:
           break;
       }
@@ -223,7 +223,7 @@ export function GetAlternateDropdownText(
 export function GetComponentTooltip(valueType: UpdateValueType) {
   const tt = FindTranslation(`CompTooltip[${valueType.toString()}]`);
 
-  if (tt != `CompTooltip[${valueType.toString()}]`) return tt;
+  if (tt != `CompTooltip_${valueType.toString()}`) return tt;
 
   return FindTranslation("NoTooltipYet");
 }
