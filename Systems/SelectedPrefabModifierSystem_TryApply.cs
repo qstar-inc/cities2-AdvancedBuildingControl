@@ -720,6 +720,7 @@ namespace AdvancedBuildingControl.Systems
                     originalValue = UVTHelper.ConvertToLong(orig_ParkData_AllowHomeless);
                     parkData.m_AllowHomeless = UVTHelper.ConvertToBool(modifiedValue);
                     utils.SetOrAdd(selectedPrefab, parkData);
+                    AdditionalPostApply(selectedPrefab, modifiedValue, valueType);
                     return true;
 
                 case UpdateValueType.ParkingFacilityData_RoadTypes:

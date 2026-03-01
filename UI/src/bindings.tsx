@@ -6,6 +6,7 @@ import { getModule } from "cs2/modding";
 import { ButtonProps, FocusKey, ScrollController } from "cs2/ui";
 import mod from "mod.json";
 import { ReactElement } from "react";
+import { BldgCleanupType as BldgCleanupType } from "types/BldgCleanupInfo";
 import { UpdateValueType } from "types/UpdateValueType";
 
 export const selectedEntity = bindValue<Entity>(
@@ -26,56 +27,50 @@ export const MakeSP = () => {
   trigger(mod.id, "MakeSP");
 };
 
-// export const ChangeLevelDistrict = (level: number) => {
-//   trigger(mod.id, "ChangeLevelDistrict", level);
-// };
-
-// export const ChangeMaxWorkplace = (workplace: number) => {
-//   trigger(mod.id, "ChangeMaxWorkplace", workplace);
-// };
-
-// export const ResetMaxWorkplace = () => {
-//   trigger(mod.id, "ResetMaxWorkplace");
-// };
-
-export const ChangeValueString = (
+export const ChangeUVTValueString = (
   value: string,
   valueType: UpdateValueType,
 ) => {
-  console.log(`TSX: Triggering string ChangeValue(${value},${valueType})`);
   trigger(mod.id, "ChangeComponentValue", value, valueType);
 };
 
-export const ChangeValue = (value: number, valueType: UpdateValueType) => {
-  console.log(`TSX: Triggering number ChangeValue(${value},${valueType})`);
+export const ChangeUVTValue = (value: number, valueType: UpdateValueType) => {
   trigger(mod.id, "ChangeComponentValue", `${value}`, valueType);
 };
 
-export const ResetValue = (valueType: UpdateValueType) => {
+export const ResetUVTValue = (valueType: UpdateValueType) => {
   trigger(mod.id, "ResetComponentValue", valueType);
+};
+
+export const ChangeBCTValue = (value: number, valueType: BldgCleanupType) => {
+  trigger(mod.id, "ChangeBCTValue", `${value}`, valueType);
 };
 
 export const ClosePanel = () => {
   brandPanelVisibleBinding.update(false);
   componentPanelVisibleBinding.update(false);
+  resetPanelVisibleBinding.update(false);
   storagePanelVisibleBinding.update(false);
   engine.trigger("audio.playSound", "select-item", 1);
 };
 
 export const brandPanelVisibleBinding = bindLocalValue(false);
 export const componentPanelVisibleBinding = bindLocalValue(false);
+export const resetPanelVisibleBinding = bindLocalValue(false);
 export const storagePanelVisibleBinding = bindLocalValue(false);
 
 export const visibleBindings = [
   brandPanelVisibleBinding,
   componentPanelVisibleBinding,
+  resetPanelVisibleBinding,
   storagePanelVisibleBinding,
 ];
 
 export enum PanelIndex {
   Brand = 0,
   Component = 1,
-  Storage = 2,
+  Cleanup = 2,
+  Storage = 3,
 }
 
 export const togglePanel = (indexToToggle: number) => {
@@ -88,7 +83,6 @@ export const togglePanel = (indexToToggle: number) => {
 
 interface InfoButtonProps extends ButtonProps {
   label: string;
-  // tooltip?: string;
 }
 
 export const InfoButton = getModule(

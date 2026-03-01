@@ -1,6 +1,6 @@
 import {
-    ChangeValue, ChangeValueString, CheckBox, componentPanelVisibleBinding, Divider, ResetValue,
-    ToolButton
+    ChangeUVTValue, ChangeUVTValueString, CheckBox, componentPanelVisibleBinding, Divider,
+    ResetUVTValue, ToolButton
 } from "bindings";
 import { useValue } from "cs2/api";
 import { Number2 } from "cs2/bindings";
@@ -17,11 +17,13 @@ import {
 import { GetFlags, isMultiSelect as isSingleSelect } from "functions/uvt";
 import { FC, useEffect, useMemo, useState } from "react";
 import {
-    dropdownModule, infoRowModule, sipTextInputModule, styleLevelProgress, styleLevelSection,
-    styleProgress, styleSIP, textElipsisInputModule, textElipsisInputThemeModule, uilStandard
+    baseGameIcons, dropdownModule, infoRowModule, sipTextInputModule, styleLevelProgress,
+    styleLevelSection, styleProgress, styleSIP, textElipsisInputModule, textElipsisInputThemeModule,
+    uilStandard
 } from "styleBindings";
 import { BldgComponentInfo } from "types/BldgComponentInfo";
 import { BldgModifiedInfo } from "types/BldgModifiedInfo";
+import { GetSectionOpen, SetSectionOpen } from "types/SectionControl";
 import { UpdateValueType } from "types/UpdateValueType";
 
 import { PanelBase } from "./PanelBase";
@@ -30,17 +32,6 @@ import styles from "./style.module.scss";
 interface ComponentPanelProps {
   bldgComponentInfo: BldgComponentInfo;
   bldgModifiedInfo: BldgModifiedInfo[];
-}
-
-const SectionParams: Record<string, boolean> = {};
-function GetSectionOpen(key: string) {
-  if (!(key in SectionParams)) {
-    SectionParams[key] = false;
-  }
-  return SectionParams[key];
-}
-function SetSectionOpen(key: string, value: boolean) {
-  SectionParams[key] = value;
 }
 
 const DropDownItemSnippet = ({
@@ -65,7 +56,7 @@ const DropDownItemSnippet = ({
         theme={dropdownModule}
         onChange={e => {
           setVal(e);
-          ChangeValue(e, valueType);
+          ChangeUVTValue(e, valueType);
         }}
         className={styles.DropdownItemCustomRight}
       >
@@ -90,7 +81,7 @@ const MultiSelectDropdownItemSnippet = ({
   const valFunc = () => {
     const newValue = toggleFlag(selectedFlags, current);
     setFlags(newValue);
-    ChangeValue(newValue, valueType);
+    ChangeUVTValue(newValue, valueType);
   };
 
   return (
@@ -218,7 +209,7 @@ const Int2Editor: FC<{
 
   const commit = (next: Number2) => {
     setValue2(next);
-    ChangeValueString(`${next.x},${next.y}`, valueType);
+    ChangeUVTValueString(`${next.x},${next.y}`, valueType);
   };
 
   return (
@@ -273,13 +264,13 @@ const ResetButtonSnippet = ({
         className={`${false ? "" : styles.MarginLeft3r} ${styles.AlignCenter}`}
       >
         <ToolButton
-          id={`starq-abc-${valueType}-reset`}
+          id={`starq-abc-comp-${valueType}-reset`}
           focusKey={FOCUS_DISABLED}
           disabled={isDisabled}
           tooltip={tooltip}
-          src={uilStandard + "Reset.svg"}
+          src={baseGameIcons + "NewUI/Reset_Button.svg"}
           onSelect={() => {
-            ResetValue(valueType);
+            ResetUVTValue(valueType);
           }}
         />
       </div>
@@ -328,7 +319,7 @@ const Section = ({
                       key={i}
                       focusKey={FOCUS_AUTO}
                       onSelect={() =>
-                        ChangeValue(
+                        ChangeUVTValue(
                           i,
                           UpdateValueType.SpawnableBuildingData_Level,
                         )
@@ -372,10 +363,9 @@ const Section = ({
     const singleSelect = isSingleSelect(valueType);
 
     const val = value;
-    const setVal = (v: number) => ChangeValue(v, valueType);
+    const setVal = (v: number) => ChangeUVTValue(v, valueType);
 
     if (singleSelect) {
-      // let [val, setVal] = useState<number>(value);
       return (
         <>
           <PanelSectionRow
@@ -484,7 +474,7 @@ const Section = ({
           <>
             <NumberInputSnippet
               value={value}
-              onCommit={newValue => ChangeValue(newValue, valueType)}
+              onCommit={newValue => ChangeUVTValue(newValue, valueType)}
             />
             <ResetButtonSnippet
               valueType={valueType}
@@ -497,11 +487,6 @@ const Section = ({
     );
 
   if (typeof value === "boolean") {
-    // var changedVal = 0;
-    // if (value == false) {
-    //   changedVal = 1;
-    // }
-
     return (
       <PanelSectionRow
         className={styles.NoMarginVertical}
@@ -512,7 +497,7 @@ const Section = ({
         right={
           <>
             <Switch
-              onChange={next => ChangeValue(next ? 1 : 0, valueType)}
+              onChange={next => ChangeUVTValue(next ? 1 : 0, valueType)}
               checked={value}
             />
             <ResetButtonSnippet
@@ -537,52 +522,6 @@ const Section = ({
         originalText={originalText}
       />
     );
-    // const valueX = value["x"];
-    // const valueY = value["y"];
-    // const [value2, setValue2] = useState<Number2>(value);
-
-    // const commitX = (x: number) => {
-    //   const next = { x, y: value2.y };
-    //   setValue2(next);
-
-    //   ChangeValueString(`${next.x},${next.y}`, valueType);
-    // };
-
-    // const commitY = (y: number) => {
-    //   const next = { x: value2.x, y };
-    //   setValue2(next);
-    //   ChangeValueString(`${next.x},${next.y}`, valueType);
-    // };
-
-    // return (
-    //   <PanelSectionRow
-    //     disableFocus={true}
-    //     subRow={true}
-    //     tooltip={tooltip}
-    //     left={nicifyVariableName(field)}
-    //     right={
-    //       <>
-    //         <NumberInputSnippet
-    //           value={valueX}
-    //           onCommit={commitX}
-    //           inputPrefix={FindTranslation(
-    //             "PhotoMode.PROPERTY_LIMIT_MIN",
-    //             true,
-    //           )}
-    //         />
-    //         <NumberInputSnippet
-    //           value={valueY}
-    //           onCommit={commitY}
-    //           inputPrefix={FindTranslation(
-    //             "PhotoMode.PROPERTY_LIMIT_MAX",
-    //             true,
-    //           )}
-    //         />
-    //         <ResetButtonSnippet valueType={valueType} isCustom={isCustom} />
-    //       </>
-    //     }
-    //   />
-    // );
   }
 
   return (
@@ -616,8 +555,8 @@ export const ComponentPanel: FC<ComponentPanelProps> = (
 ) => {
   const visibleBindingValue = useValue(componentPanelVisibleBinding);
 
-  const headerText = FindTranslation(`ComponentHeader`);
-  const infoText = FindTranslation(`ComponentAppliesAll`);
+  const headerText = FindTranslation(`Component.Header`);
+  const infoText = FindTranslation(`Component.AppliesAll`);
   const bldgComponentInfo = props.bldgComponentInfo;
   const bldgModifiedInfo = props.bldgModifiedInfo;
 
@@ -639,10 +578,6 @@ export const ComponentPanel: FC<ComponentPanelProps> = (
 
       const isCustom = (bldgModifiedInfo.find(mods => mods.ValueType == v) !=
         undefined) as boolean;
-
-      // if (isCustom) {
-      //   console.log(bldgModifiedInfo.find(mods => mods.ValueType == v));
-      // }
 
       const original =
         bldgModifiedInfo.find(mods => mods.ValueType == v)?.OriginalText || "";

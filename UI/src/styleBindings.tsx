@@ -1,5 +1,9 @@
 import { getModule } from "cs2/modding";
-import mod from "mod.json";
+
+export const uilStandard = "coui://uil/Standard/";
+export const uilColored = "coui://uil/Colored/";
+export const abcIcons = `coui://starq-advanced-building-control/`;
+export const baseGameIcons = "Media/Game/Icons/";
 
 export const stylePanel = getModule(
   "game-ui/common/panel/panel.module.scss",
@@ -109,9 +113,3 @@ export const dropdownModule = getModule(
 export const wrapperClass = `${stylePanel.panel} ${styleSIP.selectedInfoPanel}`;
 export const closeButtonClass = `${styleCloseButton.button} ${stylePanel.closeButton}`;
 export const closeButtonImageClass = `${styleTintedIcon.tintedIcon} ${styleIcon.icon}`;
-
-// UIL
-export const uilStandard = "coui://uil/Standard/";
-export const uilColored = "coui://uil/Colored/";
-export const abcIcons = `coui://starq-advanced-building-control/`;
-export const baseGameIcons = "Media/Game/Icons/";

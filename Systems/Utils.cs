@@ -1,22 +1,16 @@
 ﻿using AdvancedBuildingControl.Components;
 using Colossal.Entities;
 using Game;
-using Game.Buildings;
 using Game.Common;
 using Game.Prefabs;
-using Game.Zones;
 using StarQ.Shared.Extensions;
 using Unity.Entities;
-using UnityEngine;
 
 namespace AdvancedBuildingControl.Systems
 {
     public partial class Utils : GameSystemBase
     {
-#nullable disable
         public PrefabSystem prefabSystem;
-
-#nullable enable
 
         protected override void OnCreate()
         {
@@ -77,63 +71,14 @@ namespace AdvancedBuildingControl.Systems
             SetAndUpdate(entity, toSet);
         }
 
-        public (float, float) CheckMaxRent(
-            BuildingPropertyData buildingPropertyData,
-            int buildingLevel,
-            int lotSize,
-            float landValueBase,
-            AreaType areaType,
-            ref EconomyParameterData economyParameterData,
-            bool ignoreLandValue = false
-        )
-        {
-            float num = economyParameterData.m_RentPriceBuildingZoneTypeBase.x;
-            float num2 = economyParameterData.m_LandValueModifier.x;
-            if (areaType == AreaType.Commercial)
-            {
-                num = economyParameterData.m_RentPriceBuildingZoneTypeBase.y;
-                num2 = economyParameterData.m_LandValueModifier.y;
-            }
-            else if (areaType == AreaType.Industrial)
-            {
-                num = economyParameterData.m_RentPriceBuildingZoneTypeBase.z;
-                num2 = economyParameterData.m_LandValueModifier.z;
-            }
-            float num3;
-            if (ignoreLandValue)
-            {
-                num3 = num * buildingLevel * lotSize * buildingPropertyData.m_SpaceMultiplier;
-            }
-            else
-            {
-                num3 =
-                    (landValueBase * num2 + num * buildingLevel)
-                    * lotSize
-                    * buildingPropertyData.m_SpaceMultiplier;
-            }
-            float num4;
-            if (PropertyUtils.IsMixedBuilding(buildingPropertyData))
-            {
-                num4 = Mathf.RoundToInt(
-                    buildingPropertyData.m_ResidentialProperties
-                        / (1f - economyParameterData.m_MixedBuildingCompanyRentPercentage)
-                );
-            }
-            else
-            {
-                num4 = buildingPropertyData.CountProperties();
-            }
-            return (num3, num4);
-        }
-
         public static bool TryGetModBuffer(
             EntityManager EntityManager,
             Entity city,
-            out DynamicBuffer<ModifiedPrefab_T7> buffer
+            out DynamicBuffer<ModifiedPrefab> buffer
         )
         {
             buffer = new();
-            if (!EntityManager.HasBuffer<ModifiedPrefab_T7>(city))
+            if (!EntityManager.HasBuffer<ModifiedPrefab>(city))
                 return false;
 
             if (EntityManager.TryGetBuffer(city, false, out buffer))

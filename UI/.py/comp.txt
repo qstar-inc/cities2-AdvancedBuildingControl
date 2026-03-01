@@ -52,7 +52,7 @@ MaintenanceDepotData	m_MaintenanceType	MaintenanceType	byte	1	1001
 MaintenanceDepotData	m_VehicleCapacity	int			1002		0		
 MaintenanceDepotData	m_VehicleEfficiency	float			1003		0		
 ParkData	m_MaintenancePool	short			10001		0		
-ParkData	m_AllowHomeless	bool			10002				
+ParkData	m_AllowHomeless	bool			10002	1			
 ParkingFacilityData	m_RoadTypes	RoadTypes	byte	1	1501				
 ParkingFacilityData	m_ComfortFactor	float			1502		0		
 ParkingFacilityData	m_GarageMarkerCapacity	int			1503		0		

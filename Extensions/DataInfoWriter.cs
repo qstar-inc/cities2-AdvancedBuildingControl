@@ -5,7 +5,41 @@ using Unity.Entities;
 
 namespace AdvancedBuildingControl.Extensions
 {
-    public static class BrandDataInfoJsonWriterExtensions
+    //public static class ResourceDataInfoJsonWriterExtensions
+    //{
+    //    public static void Write(this IJsonWriter writer, ResourceDataInfo value)
+    //    {
+    //        writer.TypeBegin(value.GetType().FullName);
+
+    //        writer.PropertyName(nameof(value.Group));
+    //        writer.Write((int)value.Group);
+
+    //        writer.PropertyName(nameof(value.Id));
+    //        writer.Write(value.Id);
+
+    //        writer.PropertyName(nameof(value.Name));
+    //        writer.Write(value.Name);
+
+    //        writer.TypeEnd();
+    //    }
+
+    //    public static void Write(this IJsonWriter writer, ResourceDataInfo[] array)
+    //    {
+    //        if (array == null)
+    //        {
+    //            writer.ArrayBegin(0);
+    //            writer.ArrayEnd();
+    //            return;
+    //        }
+
+    //        writer.ArrayBegin(array.Length);
+    //        foreach (var item in array)
+    //            Write(writer, item);
+    //        writer.ArrayEnd();
+    //    }
+    //}
+
+    public static class BldgBrandInfoWriterExtensions
     {
         public static void Write(this IJsonWriter writer, BrandDataInfo value)
         {
@@ -45,44 +79,7 @@ namespace AdvancedBuildingControl.Extensions
                 Write(writer, item);
             writer.ArrayEnd();
         }
-    }
 
-    public static class ResourceDataInfoJsonWriterExtensions
-    {
-        public static void Write(this IJsonWriter writer, ResourceDataInfo value)
-        {
-            writer.TypeBegin(value.GetType().FullName);
-
-            writer.PropertyName(nameof(value.Group));
-            writer.Write((int)value.Group);
-
-            writer.PropertyName(nameof(value.Id));
-            writer.Write(value.Id);
-
-            writer.PropertyName(nameof(value.Name));
-            writer.Write(value.Name);
-
-            writer.TypeEnd();
-        }
-
-        public static void Write(this IJsonWriter writer, ResourceDataInfo[] array)
-        {
-            if (array == null)
-            {
-                writer.ArrayBegin(0);
-                writer.ArrayEnd();
-                return;
-            }
-
-            writer.ArrayBegin(array.Length);
-            foreach (var item in array)
-                Write(writer, item);
-            writer.ArrayEnd();
-        }
-    }
-
-    public static class BldgInfoJsonWriterExtensions
-    {
         public static void Write(this IJsonWriter writer, BldgBrandInfo value)
         {
             writer.TypeBegin(value.GetType().FullName);
@@ -106,18 +103,51 @@ namespace AdvancedBuildingControl.Extensions
         }
     }
 
+    public static class BldgCleanupInfoWriterExtensions
+    {
+        public static void Write(this IJsonWriter writer, BldgCleanupInfo value)
+        {
+            writer.TypeBegin(value.GetType().FullName);
+
+            writer.PropertyName(nameof(value.Enabled));
+            writer.Write(value.Enabled);
+
+            writer.PropertyName(nameof(value.Array));
+            writer.Write(value.Array);
+
+            writer.TypeEnd();
+        }
+
+        public static void Write(this IJsonWriter writer, BldgCleanupTypeInfo[] array)
+        {
+            writer.ArrayBegin(array.Length);
+            foreach (var item in array)
+                Write(writer, item);
+            writer.ArrayEnd();
+        }
+
+        public static void Write(this IJsonWriter writer, BldgCleanupTypeInfo value)
+        {
+            writer.TypeBegin(value.GetType().FullName);
+
+            writer.PropertyName(nameof(value.Enabled));
+            writer.Write(value.Enabled);
+
+            writer.PropertyName(nameof(value.CurrentValueNumber));
+            writer.Write(value.CurrentValueNumber);
+
+            writer.PropertyName(nameof(value.CleanupType));
+            writer.Write((long)value.CleanupType);
+
+            writer.TypeEnd();
+        }
+    }
+
     public static class BldgModifiedInfoWriterExtensions
     {
         public static void Write(this IJsonWriter writer, BldgModifiedInfo value)
         {
             writer.TypeBegin(value.GetType().FullName);
-            ;
-
-            //writer.PropertyName(nameof(value.Modified));
-            //writer.Write(value.Modified);
-
-            //writer.PropertyName(nameof(value.Original));
-            //writer.Write(value.Original);
 
             writer.PropertyName(nameof(value.OriginalText));
             writer.Write(value.OriginalText);

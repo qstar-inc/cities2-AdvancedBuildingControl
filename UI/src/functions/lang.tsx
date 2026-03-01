@@ -221,9 +221,9 @@ export function GetAlternateDropdownText(
 }
 
 export function GetComponentTooltip(valueType: UpdateValueType) {
-  const tt = FindTranslation(`CompTooltip[${valueType.toString()}]`);
+  const tt = FindTranslation(`CompTooltip.${valueType.toString()}`);
 
-  if (tt != `CompTooltip_${valueType.toString()}`) return tt;
+  if (tt != `CompTooltip.${valueType.toString()}`) return tt;
 
-  return FindTranslation("NoTooltipYet");
+  return "No Tooltip Yet";
 }

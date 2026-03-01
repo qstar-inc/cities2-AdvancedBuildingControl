@@ -137,21 +137,30 @@ namespace AdvancedBuildingControl.Systems
                 if (ents3.Length <= 0)
                     return false;
 
-                var pm = AssetDatabase.global.GetAssets<PrefabAsset>();
-                Dictionary<string, PrefabBase> prefabAssets = new();
-                foreach (var pmItem in pm)
+                foreach (var ents3Item in ents3)
                 {
-                    PrefabBase? prefabBase = pmItem.GetInstance<PrefabBase>();
-
-                    if (prefabBase is not BuildingPrefab)
-                        continue;
-
-                    if (prefabBase.name == name)
+                    if (prefabSystem.GetPrefabName(ents3Item) == name)
                     {
-                        prefabSystem.TryGetEntity(prefabBase, out entity);
+                        entity = ents3Item;
                         return true;
                     }
                 }
+
+                //var pm = AssetDatabase.global.GetAssets<PrefabAsset>();
+                //Dictionary<string, PrefabBase> prefabAssets = new();
+                //foreach (var pmItem in pm)
+                //{
+                //    PrefabBase? prefabBase = pmItem.GetInstance<PrefabBase>();
+
+                //    if (prefabBase is not BuildingPrefab)
+                //        continue;
+
+                //    if (prefabBase.name == name)
+                //    {
+                //        prefabSystem.TryGetEntity(prefabBase, out entity);
+                //        return true;
+                //    }
+                //}
                 if (log)
                     LogHelper.SendLog($"Unable to find {name} prefab");
             }

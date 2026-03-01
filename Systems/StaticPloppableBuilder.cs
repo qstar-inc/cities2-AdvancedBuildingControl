@@ -1,19 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Colossal.Entities;
-using Colossal.IO.AssetDatabase;
 using Colossal.Serialization.Entities;
 using Game;
-using Game.Common;
 using Game.Prefabs;
-using Game.Prefabs.Water;
 using Game.SceneFlow;
 using Game.Tools;
 using Game.UI;
-using Game.UI.Menu;
+using Game.UI.InGame;
 using StarQ.Shared.Extensions;
 using Unity.Collections;
 using Unity.Entities;
@@ -42,6 +38,7 @@ namespace AdvancedBuildingControl.Systems
             toolSystem = WorldHelper.ToolSystem;
             prefabFinder = WorldHelper.GetSystem<PrefabFinder>();
             staticPloppableData = WorldHelper.GetSystem<StaticPloppableData>();
+
             Enabled = true;
             ModHelper.AddAfterActivePlaysetOrModStatusChanged(CheckSP);
         }
@@ -255,7 +252,14 @@ namespace AdvancedBuildingControl.Systems
                                 out Entity existing
                             ) && prefabSystem.TryGetPrefab(existing, out createdPrefab)
                         )
+                        {
+                            LogHelper.SendLog($"Found existing: {nonMeshName}", LogLevel.DEVD);
                             return true;
+                        }
+                        LogHelper.SendLog(
+                            $"Existing not found, creating: {nonMeshName}",
+                            LogLevel.DEVD
+                        );
 
                         PrefabBase newRenderPrefab = prefabSystem.DuplicatePrefab(
                             renderPrefab,
@@ -732,14 +736,15 @@ namespace AdvancedBuildingControl.Systems
                 {
                     LogHelper.SendLog($"{spCount} SP created/found on startup");
                     GameManager.instance.userInterface.appBindings.ShowMessageDialog(
-                        new MessageDialog(Mod.Name, $"{Mod.Id}.ReloadSave", $"{Mod.Id}.Continue"),
+                        new MessageDialog(
+                            Mod.Name,
+                            $"{Mod.Id}.ReloadSave",
+                            $"{Mod.Id}.OpenLoadGameScreen"
+                        ),
                         x =>
                         {
-                            // doesn't work
-
-                            WorldHelper.GetSystem<MenuUISystem>().activeScreen = MenuUISystem
-                                .MenuScreen
-                                .LoadGame;
+                            WorldHelper.GetSystem<GameScreenUISystem>().activeScreen =
+                                GameScreenUISystem.GameScreen.LoadGame;
                         }
                     );
                 }

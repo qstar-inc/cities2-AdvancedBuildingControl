@@ -1,18 +1,14 @@
 import {
-  brandPanelVisibleBinding,
-  selectedEntity,
-  SetBrand,
-  SizeProvider,
-  useUniformSizeProvider,
-  VanillaVirtualList,
+    brandPanelVisibleBinding, Divider, selectedEntity, SetBrand, SizeProvider,
+    useUniformSizeProvider, VanillaVirtualList
 } from "bindings";
 import { useValue } from "cs2/api";
 import { AutoNavigationScope, FocusActivation } from "cs2/input";
 import { PanelSection, PanelSectionRow } from "cs2/ui";
 import { useCssLength } from "cs2/utils";
-import { FindTranslation } from "functions/lang";
+import { FindTranslation, nicifyVariableName } from "functions/lang";
 import { FC, useCallback, useMemo } from "react";
-import { BldgBrandInfo, BrandDataInfo } from "types";
+import { BldgBrandInfo, BrandDataInfo } from "types/BrandDataInfo";
 
 import { PanelBase } from "./PanelBase";
 import styles from "./style.module.scss";
@@ -132,16 +128,20 @@ export const BrandPanel: FC<BrandPanelProps> = (props: BrandPanelProps) => {
 
   let bldgBrandInfo = props.bldgBrandInfo;
 
-  const headerText = FindTranslation("headerText");
-  const CurrentBrandTitleText = FindTranslation("CurrentBrandTitleText");
-  const CurrentCompanyTitleText = FindTranslation("CurrentCompanyTitleText");
+  const headerText = FindTranslation("Brand.Header");
+  const CurrentBrandTitleText = FindTranslation("Brand.CurrentBrand");
+  const CurrentCompanyTitleText = FindTranslation("Brand.CurrentCompany");
   const SupportedBrandsText = FindTranslation(
-    "SupportedBrandsText",
+    "Brand.SupportedBrands",
   )?.toUpperCase();
-  const SupportedBrandsTooltip = FindTranslation("SupportedBrandsTooltip");
-  const OtherBrandsText = FindTranslation("OtherBrandsText")?.toUpperCase();
-  const OtherBrandsTooltip = FindTranslation("OtherBrandsTooltip");
-  const BrandGroupHoverText = FindTranslation("BrandGroupHoverText");
+  const SupportedBrandsTooltip = FindTranslation(
+    "Brand.SupportedBrands.Tooltip",
+  );
+  const OtherBrandsText = FindTranslation("Brand.OtherBrands")?.toUpperCase();
+  const OtherBrandsTooltip = FindTranslation("Brand.OtherBrands.Tooltip");
+  const BrandGroupHoverText = FindTranslation("Brand.GroupHover");
+
+  const infoText = FindTranslation("Brand.Info");
 
   const [SupportedBrandsArray, OtherBrandsArray] = useMemo(() => {
     const supported: BrandDataInfo[] = [];
@@ -195,7 +195,9 @@ export const BrandPanel: FC<BrandPanelProps> = (props: BrandPanelProps) => {
               <PanelSectionRow
                 uppercase={true}
                 left={CurrentCompanyTitleText}
-                right={bldgBrandInfo.CompanyName}
+                right={nicifyVariableName(
+                  bldgBrandInfo.CompanyName.replace("_", ": "),
+                )}
               />
             </PanelSection>
             <PanelSection>
@@ -214,8 +216,16 @@ export const BrandPanel: FC<BrandPanelProps> = (props: BrandPanelProps) => {
                 BrandsArrayX={OtherBrandsArray}
                 BrandGroupHoverText={BrandGroupHoverText!}
                 SelectedBrand={bldgBrandInfo.BrandName}
-                MaxHeight={650 - Math.min(SupportedBrandsArray.length, 7) * 30}
+                MaxHeight={440 - Math.min(SupportedBrandsArray.length, 7) * 30}
                 SizeProvider={sizeProviderOther}
+              />
+            </PanelSection>
+            <Divider noMargin={1} />
+            <PanelSection>
+              <PanelSectionRow
+                uppercase={false}
+                disableFocus={true}
+                left={infoText}
               />
             </PanelSection>
           </>

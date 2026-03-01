@@ -24,6 +24,7 @@ namespace AdvancedBuildingControl
         public const string GeneralTab = "GeneralTab";
         public const string GeneralGroup = "GeneralGroup";
         public const string CityComponentOverride = "CityComponentOverride";
+        public const string StaticPloppableBuilder = "StaticPloppableBuilder";
 
         public const string AboutTab = "AboutTab";
         public const string InfoGroup = "InfoGroup";
@@ -116,7 +117,7 @@ namespace AdvancedBuildingControl
 
         [SettingsUIButton]
         [SettingsUIDisableByCondition(typeof(Setting), nameof(NoSPCache))]
-        [SettingsUISection(GeneralTab, CityComponentOverride)]
+        [SettingsUISection(GeneralTab, StaticPloppableBuilder)]
         public bool DeleteLocalSPCache
         {
             set => WorldHelper.GetSystem<StaticPloppableData>().DeleteFile();
@@ -141,13 +142,13 @@ namespace AdvancedBuildingControl
             set => VariableHelper.OpenBMAC();
         }
 
-        //[SettingsUIButton]
-        //[SettingsUIButtonGroup("Social")]
-        //[SettingsUISection(AboutTab, InfoGroup)]
-        //public bool Discord
-        //{
-        //    set => VariableHelper.OpenDiscord(XXXX);
-        //}
+        [SettingsUIButton]
+        [SettingsUIButtonGroup("Social")]
+        [SettingsUISection(AboutTab, InfoGroup)]
+        public bool Discord
+        {
+            set => VariableHelper.OpenDiscord("1464858378747645983");
+        }
 
         [SettingsUIMultilineText]
         [SettingsUIDisplayName(typeof(LogHelper), nameof(LogHelper.LogText))]

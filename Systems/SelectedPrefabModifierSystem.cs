@@ -4,6 +4,8 @@ using AdvancedBuildingControl.Components;
 using AdvancedBuildingControl.Variables;
 using Colossal.Entities;
 using Game;
+using Game.Agents;
+using Game.Common;
 using Game.Prefabs;
 using StarQ.Shared.Extensions;
 using Unity.Collections;
@@ -14,7 +16,7 @@ namespace AdvancedBuildingControl.Systems
     public class PrefabChange
     {
         public UpdateValueType ValueType { get; set; }
-        public ModifiedPrefab_T7 Modifications { get; set; }
+        public ModifiedPrefab Modifications { get; set; }
     }
 
     public class CreatedEntitiesData
@@ -74,7 +76,7 @@ namespace AdvancedBuildingControl.Systems
                 if (!TryApply(selectedPrefab, valueType, modifiedValue, out long originalValue))
                     return;
 
-                ModifiedPrefab_T7 entry;
+                ModifiedPrefab entry;
                 if (
                     bufferControlSystem.TryGetEntryFromBuffer(
                         selectedPrefab,
@@ -196,12 +198,14 @@ namespace AdvancedBuildingControl.Systems
                     return;
 
                 case UpdateValueType.WorkplaceData_MaxWorkers:
-                    EntityQuery query = SystemAPI
+                    EntityQuery workProviderQuery = SystemAPI
                         .QueryBuilder()
                         .WithAll<Game.Companies.WorkProvider>()
                         .Build();
-                    NativeArray<Entity> entities = query.ToEntityArray(Allocator.Temp);
-                    foreach (Entity entity in entities)
+                    NativeArray<Entity> workProviderEntities = workProviderQuery.ToEntityArray(
+                        Allocator.Temp
+                    );
+                    foreach (Entity entity in workProviderEntities)
                     {
                         if (
                             !EntityManager.TryGetComponent(entity, out PrefabRef prefabRef)
@@ -217,12 +221,55 @@ namespace AdvancedBuildingControl.Systems
                     }
 
                     return;
+
+                case UpdateValueType.ParkData_AllowHomeless:
+                    bool allowHomeless = UVTHelper.ConvertToBool(modifiedValue);
+
+                    if (!allowHomeless)
+                    {
+                        EntityQuery homelessShelterable = SystemAPI
+                            .QueryBuilder()
+                            .WithAll<Game.Buildings.Park, Game.Buildings.Renter>()
+                            .Build();
+                        NativeArray<Entity> homelessShelterableEntities =
+                            homelessShelterable.ToEntityArray(Allocator.Temp);
+                        foreach (Entity entity in homelessShelterableEntities)
+                        {
+                            if (
+                                !EntityManager.TryGetComponent(entity, out PrefabRef prefabRef)
+                                || prefabRef.m_Prefab != selectedPrefab
+                            )
+                                continue;
+
+                            EntityManager.TryGetBuffer(
+                                entity,
+                                false,
+                                out DynamicBuffer<Game.Buildings.Renter> renters
+                            );
+                            if (!renters.IsEmpty)
+                            {
+                                for (int i = renters.Length - 1; i >= 0; i--)
+                                {
+                                    MovingAway movingAway = new()
+                                    {
+                                        m_Reason = MoveAwayReason.NoSuitableProperty,
+                                    };
+                                    utils.SetAndUpdate(renters[i].m_Renter, movingAway);
+                                    renters.RemoveAt(i);
+                                }
+                            }
+                            //EntityManager.RemoveComponent<Game.Buildings.Renter>(entity);
+                            EntityManager.RemoveComponent<Game.Buildings.PropertyOnMarket>(entity);
+                            EntityManager.AddComponent<Updated>(entity);
+                        }
+                    }
+                    return;
                 default:
                     return;
             }
         }
 
-        public void AddChangesToDict(Entity selectedPrefab, ModifiedPrefab_T7 mods)
+        public void AddChangesToDict(Entity selectedPrefab, ModifiedPrefab mods)
         {
             LogHelper.SendLog(
                 $"AddChangesToDict: {selectedPrefab}, {mods.ValueType}",
@@ -321,7 +368,7 @@ namespace AdvancedBuildingControl.Systems
             if (
                 !bufferControlSystem.TryGetAllEntityEntriesFromBuffer(
                     selectedPrefab,
-                    out List<ModifiedPrefab_T7> entries
+                    out List<ModifiedPrefab> entries
                 )
             )
                 return;

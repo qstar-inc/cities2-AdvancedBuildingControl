@@ -1,20 +1,11 @@
 import {
-  ChangeValue,
-  ChangeValueString,
-  ResetValue,
-  selectedEntity,
-  storagePanelVisibleBinding,
-  ToolButton,
+    ChangeUVTValue, ChangeUVTValueString, ResetUVTValue, selectedEntity, storagePanelVisibleBinding,
+    ToolButton
 } from "bindings";
 import { useValue } from "cs2/api";
 import { FocusDisabled } from "cs2/input";
 import { useLocalization } from "cs2/l10n";
-import {
-  FOCUS_AUTO,
-  FOCUS_DISABLED,
-  PanelSection,
-  PanelSectionRow,
-} from "cs2/ui";
+import { FOCUS_AUTO, FOCUS_DISABLED, PanelSection, PanelSectionRow } from "cs2/ui";
 import { FC, useMemo } from "react";
 
 // import {

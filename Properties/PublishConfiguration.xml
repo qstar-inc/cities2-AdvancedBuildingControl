@@ -1,36 +1,82 @@
 ﻿<Publish>
-  <ModId Value="132676" />
-  <DisplayName Value="Advanced Building Control [BETA DEBUG Build]" />
-  <ShortDescription Value="Modify building properties to your heart's content (within limits)." />
-  <LongDescription>Beta, debug build.
-  
-Download only for testing.
+  <ModId Value="112283" />
+  <DisplayName Value="Advanced Building Control" />
+  <ShortDescription Value="Modify buildings to your heart's content (within limits)." />
+  <LongDescription># Advanced Building Control
 
-Mod data will not be compatible with final release.
+Modify buildings to your heart's content (within limits).
 
-What can be done:
-- Randomize building's pseudo-random properties (per building instance)
-- Change brands on buildings (per building instance)
-- Override approved component data (per save)
-- Options to reset/backup/restore from Options menu
-- Create Static Ploppable variants of any buildings in-game
-  
-Provide feedback in https://discord.com/channels/1024242828114673724/1393652142731956390
+## Features:
+- Static Ploppable Builder: Create Static Ploppable variants of any buildings in-game. Requires **[Static Ploppables 01: Base Game](https://mods.paradoxplaza.com/mods/128043/Any)**. If the asset pack is missing, the feature will be disabled but the rest of the mod will work fine.
+- Visual Randomizer: Randomize building's pseudo-random properties (per building). Let's players randomize the building's seed - reshuffling the colours and props like trees, fences, and billboards.
+- Brand Changer: Change brands on buildings (per building): Access any building with an active business, and instantly switch its brand (including the logo and the name) to any other brand available in the game, including those added by mods. Changes to brand is completely visual and does not affect simulation or products.
+- Property Customizer: Change building properties/component values (per save). This includes but not limited to: spawn level, upkeep, service consumption, service vehicle count, service workplace count, etc. Changes to properties are applied city wide and will affect the simulation.
+- Building Maintenance: Cleanup building's garbage, mails, crimes and damages (per building). This is a manual cleanup for now, but an auto cleanup system based on limits will be added in a future update.
+
+## Requirements:
+- Unified Icon Library (ID: 74417) - Required for the icons used in the mod. Make sure to subscribe to it before using the mod.
+- Static Ploppables 01: Base Game (ID: 128043) - Required to enable Static Ploppable Builder.
+
+## Planned Features for Future Updates:
+- Property Customizer: Add support for changing resources being sold, consumed, manufactured or stored in the building.
+- Building Maintenance: Set limits for garbage, mails, crimes and damages, and automatically cleanup the building when the limit is reached.
+- Secret Feature: There is a secret feature planned that I will not reveal until it's tested to be possible. But I can give you a hint, it is the feature of a popular Cities Skylines 1 mod.
+
+# DEVLOG
+July 10, 2024. I was working on custom vehicle variants for my 'Vanilla Vehicles Remixed' asset pack and found that when there's a custom asset, it spawns way too much instead of the identical vanilla version. In three days, I first created a project solution to work on a mod that allows editing asset data in runtime. What better way to start working on it by editing a vehicle. Few days later, we got the 1.1.8f1 which made me focus on other mods for a while, as I was struggling to spend time working on the UI with very little experience with React. Then I started having technical difficulties with my computer, which made it impossible for me to work on the mod for a while, so I created a thread about it in #mods-collaboration forum on Cities: Skylines Modding Discord server.
+
+Skip a few months, by the end of 2024, I was testing a different mod where I tried changing the spawn level of a zonable building. This was an exciting moment for me, and gave me a lot of motivation to work on the building editing mod beside the vehicle editing mod, but the plan was just plans since I was busy with other projects such as Modular Blocks and automation of Static Ploppable creation to easily create Region Pack Ploppables and the Modding Bot of course.
+
+At the beginning of 2025, Mimonsi has decided to start working on his version of my Vehicle Manager mod, and it is now 'Vehicle Controller' (ID: 104781). And since I had no progress in a year, I decided not to work on my mod anymore and instead focused on other projects. And as for the 'Building Manager', Bruceyboy expressed interest to work on it instead, and I shared some pointers with him to get started. But he was also busy with other projects, so he wasn't able to work on it for a while. One of his projects 'Brand Selector' wasn't going well as he was busy with InfoLoom, so I offered to take over that which became 'Company Brand Changer'. And with the guidance of YenYang and Krzychu124, I was able to create a proper looking UI for it, and I was able to release it very promptly. But InfoLoom was still a beast and Bruceyboy was still busy with it, so he decided to ask me if I would be interested to retry the project. Of course I decided to give it another try, as I have a better grasp of everything than I had the previous year and I started working on it again in June 2025 with it being planned to be an update to the 'Company Brand Changer' mod, but with more features.
+
+After my takeover, I decided to rename the mod to 'Advanced Building Manager' instead of just 'Building Manager' purely because I'm very fond of my three word mods collection. This is my second time writing the mod (foreshadowing the possibility of a third time), but I now have goals and a plan on how to proceed. Soon after the Bridges &amp; Ports chaos started and following it was the leave of Colossal Order and the Editor update. This opened up a lot of possibilities for modding, but it also made it very difficult to work on the mod as I had to keep up with the changes and make sure that my other mods are compatible with the latest version of the game.
+
+Disaster struck when I saw a major flaw in my system when I thought ABM is almost good enough to release, and I had to rewrite a large portion of the code. I also had the idea to rename the mod to 'Advanced Building Control' so the abbreviation is ABC, which is fun. So time for a `git reset --hard` again.
+
+After a few weeks of work, I thought that I have finally fixed the major flaw and I was ready to release the mod in January after the holiday, but then I found another major crash trigger. Anytime a building with the mod's custom data is moved using the vanilla Relocate button, it will crash the game. This was definetly the biggest setback for me, and I went to consult the experts and decided that per building customization of building level is probably not safely possible without actually duplicating the prefabs. I've found why it happens and unfortunately, the system is rooted into the core process how assets are loaded in game. After carefully testing and considering everything I can think of, I came to the conclusion that some stuff can't be set by instance safely the way I'm currently doing it. And changes need to be applied to the prefab itself, no asset duplication.
+
+This time after another reset I decided to hugely increase the scope of the mod and add a lot more features. If there's gonna be a delay it rather have good content, so I created an spreadsheet to help process everything I need to be able to edit, such as Spawn Level, Building Upkeep, Ambulance count, etc. Then I wrote a python script to help me generate the code for all the properties I want to edit and wrote all the systems required to implement it. It finally feels like the mod is actually coming together. And now all changes are applied city wide only, so differnt cities can have different building levels, upkeep, etc. without any issues. I also had to implement a system to backup and restore the customized data of the buildings, so the user can import changes between saves if they wish to do so.
+
+January 25, 2026. I released the unlisted version of the mod for testing, and I have been getting a lot of positive feedback from the testers. I have fixed some minor issues reported by the testers, but nothing to serious. This made me more confident about the mod, and I am now planning to release it in February after I finish testing and polishing it.
+
+Then I thought what else can I add to the mod, and I came up with the idea of creating Static Ploppable variants of any buildings. This is a very requested feature and it is also something that I have wanted to do for a long time, as I already had the code to do so in bulk and save the prefab, but this time I need to do the same on request, and without saving the prefab. It did not take very long to implement it, but it is a overly complicated system with so much variables to take care of. Things like how to handle assets saving and reloading, how to handle custom asset unsubscribing, how to handle the new asset being created on game load, etc. What I ended up with was a JSON file to store the name of each custom ploppables created with the mod, and every time a save is loaded, the mod will check if the ploppable exists, if not it will create it again. And for unsubscribing, the mod will simply skip the ploppable creation if the original asset is missing for any reason. The placed ploppables will appear with the white checkered missing texture, just like any other assets. Same if the ABC mod itself is unsubscribed, the ploppables will still be there but with the missing texture. This made me create a way to delete the JSON cache in case someone have lots of ploppables created and want to start fresh, so I added a button in the Options menu to do so. But now, what if my save has created ploppable but my JSON was deleted? What will happen to the ploppable already placed? Do I have to manually recreate them all? No, that would be a nightmare. So I added a check for the ploppable on game load, after the JSON cache assets are created, it will check for every missing assets present in the save. If any of those assets have name starting with "StarQ_SP" (which is the prefix for all the ploppables, whether created by the mod or from existing packs), it will be recreated. This way, even if the JSON cache is deleted, the ploppables will still be there and will be recreated if missing. The user will see a pop-up dialog to reload the save if any missing ploppables are created, similar to how RoadBuilder creates missing networks on save load.
+
+Last week of February 2026, I added the final feature for the release verion of the mod, the 'Building Maintenance' panel, might be named something else in-game. This panel allows the player to cleanup all garbage, mail, crime and damages from the building. The plan was to set a limit and auto cleanup the building when the limit is reached, but that is not an easy task and will be postponed for a future update. For now, the player can manually cleanup the building whenever they want.
+
+The mod is now in a very good state, and I am very happy with it. I have tested it extensively and I have not found any major issues. After months of work, I was finally ready to update CBC to become AC Yon 1st March 2026. This is by far the one of the most ambitious mods I have ever worked on and hoping players will enjoy it as much as I enjoyed working on it, through it's ups and downs.
+
+Last but not least, I also want to thank everyone who helped me with the mod, especially the legend YenYang and Krzychu124 for their help with the UI; BruceyBoy and Mimonsi for the being bros; HarbourMasterJay, River-Mochi, GagaXM, MayorCheeks, elGendo for supporting the mods in various ways. I also want to thank the traslators, contributors and testers for their feedback and support, notably Kyodra, Modus, Sam and more; and all the well wishers of the project, notably Sully, Sunny Scunny, Const Builds, rzzirrah, Shane, Skilz, and everyone who interacted with my silly posts. This mod would not be possible without all of you. Thank you!
+
+Writing this devlog was a very fun experience for me, and I hope you enjoyed reading it as much as I enjoyed writing it. I will try to keep it updated with any future updates or major changes to the mod. If you have any reports, questions or suggestions, feel free to reach out to me on Discord. I am always open to feedback and ideas for improving the mod. Thank you again for your support, and I hope you enjoy the mod!
+
 </LongDescription>
   <Thumbnail Value="Properties/Thumbnail.png" />
-  <Screenshot Value="Properties/Thumbnail.png" />
+  <Screenshot Value="Properties/Screenshot01.png" />
+  <Screenshot Value="Properties/Screenshot02.png" />
+  <Screenshot Value="Properties/Screenshot03.png" />
+  <Screenshot Value="Properties/Screenshot04.png" />
+  <Screenshot Value="Properties/Screenshot05.png" />
+  <Screenshot Value="Properties/Screenshot06.png" />
   <Tag Value="Code Mod" />
   <ForumLink Value="" />
-  <ModVersion Value="1.9.930" />
+  <ModVersion Value="2.0.0" />
   <GameVersion Value="1.5.*" />
   <Dependency Id="74417" />
-  <RequiredDLC Value="" />
-  <ChangeLog>
-- NEW: Static Ploppable Builder
+  <ChangeLog># Advanced Building Control
+
+Modify buildings to your heart's content (within limits).
+
+## Features:
+- Static Ploppable Builder: Create Static Ploppable variants of any buildings in-game. Requires **[Static Ploppables 01: Base Game](https://mods.paradoxplaza.com/mods/128043/Any)**. If the asset pack is missing, the feature will be disabled but the rest of the mod will work fine.
+- Visual Randomizer: Randomize building's pseudo-random properties (per building). Let's players randomize the building's seed - reshuffling the colours and props like trees, fences, and billboards.
+- Brand Changer: Change brands on buildings (per building): Access any building with an active business, and instantly switch its brand (including the logo and the name) to any other brand available in the game, including those added by mods. Changes to brand is completely visual and does not affect simulation or products.
+- Property Customizer: Change building properties/component values (per save). This includes but not limited to: spawn level, upkeep, service consumption, service vehicle count, service workplace count, etc. Changes to properties are applied city wide and will affect the simulation.
+- Building Maintenance: Cleanup building's garbage, mails, crimes and damages (per building). This is a manual cleanup for now, but an auto cleanup system based on limits will be added in a future update.
+
+-# P.S.: Company Brand Changer is now Advanced Building Control.
 	</ChangeLog>
-  <ExternalLink
-    Type="Github"
-    Url="https://github.com/qstar-inc/cities2-CompanyBrandChanger/tree/ABC-main"
-  />
-  <AccessLevel Value="Unlisted" />
+  <ExternalLink Type="github" Url="https://github.com/qstar-inc/cities2-AdvancedBuildingControl" />
+  <ExternalLink Type="discord" Url="https://discord.gg/U2PSjUzUuF" />
+  <ExternalLink Type="buymeacoffee" Url="https://buymeacoffee.com/starq" />
+  <AccessLevel Value="Public" />
 </Publish>

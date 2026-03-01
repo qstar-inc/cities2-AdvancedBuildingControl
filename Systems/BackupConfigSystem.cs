@@ -28,13 +28,6 @@ namespace AdvancedBuildingControl.Systems
             selectedPrefabModifierSystem = WorldHelper.GetSystem<SelectedPrefabModifierSystem>();
         }
 
-        //protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
-        //{
-        //    base.OnGameLoadingComplete(purpose, mode);
-        //    if (mode.IsGame()) { Mod.m_Setting.InGame = true; return; }
-        //    Mod.m_Setting.InGame = false;
-        //}
-
         protected override void OnUpdate() { }
 
         public class BackupFile
@@ -54,7 +47,7 @@ namespace AdvancedBuildingControl.Systems
 
         public void BackupConfig()
         {
-            if (!bufferControlSystem.TryGetBufferCopy(out NativeArray<ModifiedPrefab_T7> array))
+            if (!bufferControlSystem.TryGetBufferCopy(out NativeArray<ModifiedPrefab> array))
                 return;
 
             if (array.Length == 0)
@@ -68,7 +61,7 @@ namespace AdvancedBuildingControl.Systems
 
             for (int i = 0; i < array.Length; i++)
             {
-                ModifiedPrefab_T7 entry = array[i];
+                ModifiedPrefab entry = array[i];
 
                 if (!EntityManager.TryGetComponent(entry.ModEntity, out PrefabRef prefabRef))
                     continue;

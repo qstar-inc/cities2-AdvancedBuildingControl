@@ -57,53 +57,8 @@ namespace AdvancedBuildingControl.Systems
 
         public void LoadAll()
         {
-            //bool skipLoad = false;
-            //if (!bufferControlSystem.TryGetBufferCopy(out var array))
-            //    skipLoad = true;
-
-            //if (skipLoad)
-            //{
-            //    selectedPrefabModifierSystem.ResetFromDict();
-            //    return;
-            //}
-
-            //for (int i = array.Length - 1; i >= 0; i--)
-            //{
-            //    var entry = array[i];
-            //    if (
-            //        !EntityManager.Exists(entry.ModEntity)
-            //        || !EntityManager.TryGetComponent(entry.ModEntity, out PrefabRef prefabRef)
-            //    )
-            //        continue;
-
-            //    if (
-            //        !selectedPrefabModifierSystem.localEntities.TryGetValue(
-            //            prefabRef.m_Prefab,
-            //            out var cd
-            //        )
-            //        || cd == null
-            //        || cd.PrefabChanges == null
-            //        || cd.PrefabChanges.Count <= 0
-            //    )
-            //        continue;
-
-            //    foreach (var kvp in cd.PrefabChanges)
-            //    {
-            //        if (!entry.Equals(kvp.Modifications))
-            //            continue;
-
-            //        ///
-            //    }
-
-            //    //selectedPrefabModifierSystem.Modify(
-            //    //    prefabRef.m_Prefab,
-            //    //    $"(long){entry.Original}",
-            //    //    entry.ValueType
-            //    //);
-            //}
-
-            var bufferMap = new Dictionary<ModKey, ModifiedPrefab_T7>();
-            var dictMap = new Dictionary<ModKey, ModifiedPrefab_T7>();
+            var bufferMap = new Dictionary<ModKey, ModifiedPrefab>();
+            var dictMap = new Dictionary<ModKey, ModifiedPrefab>();
 
             if (bufferControlSystem.TryGetBufferCopy(out var array))
             {

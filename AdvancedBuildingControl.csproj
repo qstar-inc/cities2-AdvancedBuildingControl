@@ -3,7 +3,7 @@
     <Configurations>Debug;Release</Configurations>
     <AssemblyName>AdvancedBuildingControl</AssemblyName>
     <AssemblyTitle>Advanced Building Control</AssemblyTitle>
-    <Version>1.9.930</Version>
+    <Version>2.0.0</Version>
     <Authors>StarQ</Authors>
     <!--The file where mod information which is required for publishing mod on PDX mods are stored-->
     <PublishConfigurationPath>Properties\PublishConfiguration.xml</PublishConfigurationPath>
@@ -99,14 +99,6 @@
       DestinationFiles="@(AdditionalFilesToDeploy-&gt;'$(DeployDir)\%(RecursiveDir)%(Filename)%(Extension)')"
     />
   </Target>
-  <ItemGroup>
-    <EmbeddedResource Include="Locale.json" />
-    <EmbeddedResource Include="Locale\*.json" />
-    <None Remove="Locale.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Locale\" />
-  </ItemGroup>
   <Target Name="BuildUI" AfterTargets="AfterBuild">
     <Exec Command="npm run build" WorkingDirectory="$(ProjectDir)/UI" />
   </Target>

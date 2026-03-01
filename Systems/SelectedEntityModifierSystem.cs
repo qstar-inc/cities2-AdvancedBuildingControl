@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Linq;
+using AdvancedBuildingControl.Variables;
 using Colossal.Entities;
 using Game;
 using Game.Buildings;
 using Game.Common;
 using Game.Companies;
+using Game.Objects;
 using StarQ.Shared.Extensions;
 using Unity.Entities;
 
@@ -71,6 +73,70 @@ namespace AdvancedBuildingControl.Systems
             catch (Exception ex)
             {
                 LogHelper.SendLog(ex, LogLevel.Error);
+            }
+        }
+
+        public void ChangeCleanupValue(Entity entity, string value, BldgCleanupType resetType)
+        {
+            switch (resetType)
+            {
+                case BldgCleanupType.Garbage:
+                    if (!EntityManager.TryGetComponent(entity, out GarbageProducer garbageProducer))
+                        return;
+
+                    if (!int.TryParse(value, out int garbageValue))
+                        return;
+
+                    garbageProducer.m_Garbage = Math.Min(garbageValue, 0);
+                    utils.SetAndUpdate(entity, garbageProducer);
+                    break;
+
+                case BldgCleanupType.Crime:
+                    if (!EntityManager.TryGetComponent(entity, out CrimeProducer crimeProducer))
+                        return;
+
+                    if (!float.TryParse(value, out float crimeValue))
+                        return;
+
+                    crimeProducer.m_Crime = Math.Min(crimeValue, 0f);
+                    utils.SetAndUpdate(entity, crimeProducer);
+                    break;
+
+                case BldgCleanupType.OutgoingMail:
+                    if (!EntityManager.TryGetComponent(entity, out MailProducer mailProducer))
+                        return;
+
+                    if (!ushort.TryParse(value, out ushort mailValue))
+                        return;
+
+                    mailProducer.m_SendingMail = Math.Min(mailValue, (ushort)0);
+
+                    utils.SetAndUpdate(entity, mailProducer);
+                    break;
+
+                case BldgCleanupType.PhysicalDamage:
+                case BldgCleanupType.FireDamage:
+                case BldgCleanupType.WaterDamage:
+                    if (!EntityManager.TryGetComponent(entity, out Damaged damaged))
+                        return;
+
+                    if (!float.TryParse(value, out float damageValue))
+                        return;
+
+                    damageValue = Math.Clamp(damageValue / 100f, 0f, 1f);
+
+                    if (resetType == BldgCleanupType.PhysicalDamage)
+                        damaged.m_Damage.x = damageValue;
+                    else if (resetType == BldgCleanupType.FireDamage)
+                        damaged.m_Damage.y = damageValue;
+                    else if (resetType == BldgCleanupType.WaterDamage)
+                        damaged.m_Damage.z = damageValue;
+
+                    utils.SetAndUpdate(entity, damaged);
+                    break;
+
+                default:
+                    break;
             }
         }
     }

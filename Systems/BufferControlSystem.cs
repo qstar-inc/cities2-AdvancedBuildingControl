@@ -14,25 +14,25 @@ namespace AdvancedBuildingControl.Systems
     {
         protected override void OnUpdate() { }
 
-        private bool TryGetBuffer(out DynamicBuffer<ModifiedPrefab_T7> buffer)
+        private bool TryGetBuffer(out DynamicBuffer<ModifiedPrefab> buffer)
         {
             buffer = new();
             if (!SystemAPI.TryGetSingletonEntity<Game.City.City>(out Entity city))
                 return false;
 
-            if (!EntityManager.HasBuffer<ModifiedPrefab_T7>(city))
-                EntityManager.AddBuffer<ModifiedPrefab_T7>(city);
+            if (!EntityManager.HasBuffer<ModifiedPrefab>(city))
+                EntityManager.AddBuffer<ModifiedPrefab>(city);
 
-            buffer = EntityManager.GetBuffer<ModifiedPrefab_T7>(city);
+            buffer = EntityManager.GetBuffer<ModifiedPrefab>(city);
 
             return true;
         }
 
-        public bool TryGetBufferCopy(out NativeArray<ModifiedPrefab_T7> bufferCopy)
+        public bool TryGetBufferCopy(out NativeArray<ModifiedPrefab> bufferCopy)
         {
             bufferCopy = new(0, Allocator.Temp);
 
-            if (!TryGetBuffer(out DynamicBuffer<ModifiedPrefab_T7> buffer))
+            if (!TryGetBuffer(out DynamicBuffer<ModifiedPrefab> buffer))
                 return false;
 
             bufferCopy = buffer.ToNativeArray(Allocator.Temp);
@@ -42,16 +42,16 @@ namespace AdvancedBuildingControl.Systems
         public bool TryGetEntryFromBuffer(
             Entity selectedPrefab,
             UpdateValueType valueType,
-            out ModifiedPrefab_T7 mods
+            out ModifiedPrefab mods
         )
         {
             mods = new();
-            if (!TryGetBuffer(out DynamicBuffer<ModifiedPrefab_T7> buffer))
+            if (!TryGetBuffer(out DynamicBuffer<ModifiedPrefab> buffer))
                 return false;
 
             for (int i = buffer.Length - 1; i >= 0; i--)
             {
-                ModifiedPrefab_T7 entry = buffer[i];
+                ModifiedPrefab entry = buffer[i];
 
                 if (
                     entry.ValueType == valueType
@@ -70,16 +70,16 @@ namespace AdvancedBuildingControl.Systems
 
         public bool TryGetAllEntityEntriesFromBuffer(
             Entity selectedPrefab,
-            out List<ModifiedPrefab_T7> mods
+            out List<ModifiedPrefab> mods
         )
         {
             mods = new();
-            if (!TryGetBuffer(out DynamicBuffer<ModifiedPrefab_T7> buffer))
+            if (!TryGetBuffer(out DynamicBuffer<ModifiedPrefab> buffer))
                 return false;
 
             for (int i = buffer.Length - 1; i >= 0; i--)
             {
-                ModifiedPrefab_T7 entry = buffer[i];
+                ModifiedPrefab entry = buffer[i];
 
                 if (
                     EntityManager.TryGetComponent(entry.ModEntity, out PrefabRef prefabRef)
@@ -97,12 +97,12 @@ namespace AdvancedBuildingControl.Systems
 
         public bool TryRemoveEntriesFromBuffer(Entity selectedPrefab)
         {
-            if (!TryGetBuffer(out DynamicBuffer<ModifiedPrefab_T7> buffer))
+            if (!TryGetBuffer(out DynamicBuffer<ModifiedPrefab> buffer))
                 return false;
 
             for (int i = buffer.Length - 1; i >= 0; i--)
             {
-                ModifiedPrefab_T7 entry = buffer[i];
+                ModifiedPrefab entry = buffer[i];
 
                 if (!EntityManager.Exists(entry.ModEntity))
                     continue;
@@ -117,14 +117,14 @@ namespace AdvancedBuildingControl.Systems
             return true;
         }
 
-        public bool TryAddOrReplaceToBuffer(Entity selectedPrefab, ModifiedPrefab_T7 mods)
+        public bool TryAddOrReplaceToBuffer(Entity selectedPrefab, ModifiedPrefab mods)
         {
-            if (!TryGetBuffer(out DynamicBuffer<ModifiedPrefab_T7> buffer))
+            if (!TryGetBuffer(out DynamicBuffer<ModifiedPrefab> buffer))
                 return false;
 
             for (int i = buffer.Length - 1; i >= 0; i--)
             {
-                ModifiedPrefab_T7 entry = buffer[i];
+                ModifiedPrefab entry = buffer[i];
 
                 if (!EntityManager.Exists(entry.ModEntity))
                     continue;
@@ -148,12 +148,12 @@ namespace AdvancedBuildingControl.Systems
 
         public bool TryRemoveFromBuffer(Entity selectedPrefab, UpdateValueType valueType)
         {
-            if (!TryGetBuffer(out DynamicBuffer<ModifiedPrefab_T7> buffer))
+            if (!TryGetBuffer(out DynamicBuffer<ModifiedPrefab> buffer))
                 return false;
 
             for (int i = buffer.Length - 1; i >= 0; i--)
             {
-                ModifiedPrefab_T7 entry = buffer[i];
+                ModifiedPrefab entry = buffer[i];
 
                 if (!EntityManager.Exists(entry.ModEntity))
                     continue;

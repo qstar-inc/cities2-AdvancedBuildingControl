@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using AdvancedBuildingControl.Components;
 using AdvancedBuildingControl.Extensions;
 using AdvancedBuildingControl.Variables;
 using Colossal.Entities;
@@ -10,6 +9,7 @@ using Game;
 using Game.Buildings;
 using Game.Common;
 using Game.Companies;
+using Game.Objects;
 using Game.Prefabs;
 using Game.UI;
 using Game.UI.InGame;
@@ -35,6 +35,7 @@ namespace AdvancedBuildingControl.Systems
         public static BldgBrandInfo bldgBrandInfo = new();
         public static BldgComponentInfo bldgComponentInfo = new();
         public static List<BldgModifiedInfo> bldgModifiedInfo = new();
+        public static BldgCleanupInfo bldgCleanupInfo = new();
 
         private NameSystem nameSystem;
         private PrefabSystem prefabSystem;
@@ -65,6 +66,7 @@ namespace AdvancedBuildingControl.Systems
             CreateTrigger<string, int>("ChangeComponentValue", ChangeComponentValue);
             CreateTrigger<int>("ResetComponentValue", ResetComponentValue);
             CreateTrigger("MakeSP", MakeSP);
+            CreateTrigger<string, int>("ChangeBCTValue", ChangeBCTValue);
 
             Enabled = false;
         }
@@ -84,13 +86,16 @@ namespace AdvancedBuildingControl.Systems
             writer.Write(hasMesh);
 
             writer.PropertyName("bldgBrandInfo");
-            BldgInfoJsonWriterExtensions.Write(writer, bldgBrandInfo);
+            BldgBrandInfoWriterExtensions.Write(writer, bldgBrandInfo);
 
             writer.PropertyName("bldgComponentInfo");
             BldgComponentInfoWriterExtensions.Write(writer, bldgComponentInfo);
 
             writer.PropertyName("bldgModifiedInfo");
             BldgModifiedInfoWriterExtensions.Write(writer, bldgModifiedInfo.ToArray());
+
+            writer.PropertyName("bldgCleanupInfo");
+            BldgCleanupInfoWriterExtensions.Write(writer, bldgCleanupInfo);
         }
 
         protected override void Reset()
@@ -98,6 +103,7 @@ namespace AdvancedBuildingControl.Systems
             bldgBrandInfo = new();
             bldgComponentInfo = new();
             bldgModifiedInfo = new();
+            bldgCleanupInfo = new();
 
             hasMesh = false;
 
@@ -138,6 +144,7 @@ namespace AdvancedBuildingControl.Systems
             CheckBrand();
             CheckComponents();
             CheckCurrentModifications();
+            CheckCleanupInfo();
         }
 
         public void CheckMesh()
@@ -210,6 +217,75 @@ namespace AdvancedBuildingControl.Systems
             }
         }
 
+        public void CheckCleanupInfo()
+        {
+            List<BldgCleanupTypeInfo> bldgCleanupInfoArray = new();
+            if (EntityManager.TryGetComponent(selectedEntity, out GarbageProducer garbageProducer))
+                bldgCleanupInfoArray.Add(
+                    new()
+                    {
+                        CleanupType = BldgCleanupType.Garbage,
+                        Enabled = true,
+                        CurrentValueNumber = garbageProducer.m_Garbage,
+                    }
+                );
+
+            if (EntityManager.TryGetComponent(selectedEntity, out CrimeProducer crimeProducer))
+                bldgCleanupInfoArray.Add(
+                    new()
+                    {
+                        CleanupType = BldgCleanupType.Crime,
+                        Enabled = true,
+                        CurrentValueNumber = crimeProducer.m_Crime,
+                    }
+                );
+
+            if (EntityManager.TryGetComponent(selectedEntity, out MailProducer mailProducer))
+            {
+                bldgCleanupInfoArray.Add(
+                    new()
+                    {
+                        CleanupType = BldgCleanupType.OutgoingMail,
+                        Enabled = true,
+                        CurrentValueNumber = mailProducer.m_SendingMail,
+                    }
+                );
+            }
+
+            if (EntityManager.TryGetComponent(selectedEntity, out Damaged damaged))
+            {
+                bldgCleanupInfoArray.Add(
+                    new()
+                    {
+                        CleanupType = BldgCleanupType.PhysicalDamage,
+                        Enabled = true,
+                        CurrentValueNumber = damaged.m_Damage.x * 100f,
+                    }
+                );
+                bldgCleanupInfoArray.Add(
+                    new()
+                    {
+                        CleanupType = BldgCleanupType.FireDamage,
+                        Enabled = true,
+                        CurrentValueNumber = damaged.m_Damage.y * 100f,
+                    }
+                );
+                bldgCleanupInfoArray.Add(
+                    new()
+                    {
+                        CleanupType = BldgCleanupType.WaterDamage,
+                        Enabled = true,
+                        CurrentValueNumber = damaged.m_Damage.z * 100f,
+                    }
+                );
+            }
+
+            bldgCleanupInfo.Array = bldgCleanupInfoArray.ToArray();
+
+            if (bldgCleanupInfo.Array != null && bldgCleanupInfo.Array.Length > 0)
+                bldgCleanupInfo.Enabled = true;
+        }
+
         public void RandomizeStyle()
         {
             selectedEntityModifier.RandomizeStyle(selectedEntity);
@@ -272,6 +348,27 @@ namespace AdvancedBuildingControl.Systems
                 true
             );
             EntityManager.AddComponent<Updated>(selectedEntity);
+            RequestUpdate();
+        }
+
+        public void ChangeBCTValue(string value, int valueType)
+        {
+            if (!Enum.IsDefined(typeof(BldgCleanupType), valueType))
+                return;
+            //if (
+            //    lastTrigger.Item1 == value
+            //    && lastTrigger.Item2 == valueType
+            //    && lastTrigger.Item3 == selectedPrefab
+            //)
+            //{
+            //    LogHelper.SendLog("Skipping duplicate trigger", LogLevel.DEVD);
+            //    return;
+            //}
+
+            //lastTrigger = (value, valueType, selectedPrefab);
+            BldgCleanupType resetType = (BldgCleanupType)valueType;
+            LogHelper.SendLog("Triggering ChangeCleanupValue", LogLevel.DEVD);
+            selectedEntityModifier.ChangeCleanupValue(selectedEntity, value, resetType);
             RequestUpdate();
         }
 
