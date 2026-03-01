@@ -1,26 +1,20 @@
 import {
-    ClosePanel, panelVisibleBinding, selectedEntity, SetBrand, SizeProvider, useUniformSizeProvider,
-    VanillaVirtualList
+    brandPanelVisibleBinding, Divider, selectedEntity, SetBrand, SizeProvider,
+    useUniformSizeProvider, VanillaVirtualList
 } from "bindings";
 import { useValue } from "cs2/api";
-import { Entity } from "cs2/bindings";
 import { AutoNavigationScope, FocusActivation } from "cs2/input";
-import { useLocalization } from "cs2/l10n";
-import { PanelSection, PanelSectionRow, Portal } from "cs2/ui";
+import { PanelSection, PanelSectionRow } from "cs2/ui";
 import { useCssLength } from "cs2/utils";
-import { FC, useCallback, useEffect, useMemo, useState } from "react";
-import {
-    closeButtonClass, closeButtonImageClass, styleDefault, stylePanel, wrapperClass
-} from "styleBindings";
-import { BrandDataInfo, LocaleKeys } from "types";
+import { FindTranslation, nicifyVariableName } from "functions/lang";
+import { FC, useCallback, useMemo } from "react";
+import { BldgBrandInfo, BrandDataInfo } from "types/BrandDataInfo";
 
-import styles from "./BrandPanel.module.scss";
+import { PanelBase } from "./PanelBase";
+import styles from "./style.module.scss";
 
 interface BrandPanelProps {
-  w_brand: string;
-  w_brandlist: BrandDataInfo[];
-  w_company: string;
-  w_entity: Entity;
+  bldgBrandInfo: BldgBrandInfo;
 }
 
 const BrandSection = ({
@@ -29,7 +23,6 @@ const BrandSection = ({
   BrandsArrayX,
   BrandGroupHoverText,
   SelectedBrand,
-  Entity,
   MaxHeight,
   SizeProvider,
 }: {
@@ -38,7 +31,6 @@ const BrandSection = ({
   BrandsArrayX: BrandDataInfo[];
   BrandGroupHoverText: string;
   SelectedBrand: string;
-  Entity: Entity;
   MaxHeight: number;
   SizeProvider: SizeProvider;
 }) => {
@@ -53,20 +45,19 @@ const BrandSection = ({
       return (
         <RenderRow
           brand={brand}
-          entity={Entity}
           isCurrent={isCurrent}
           brandRowClass={brandRowClass}
         />
       );
     },
-    [SelectedBrand, Entity, BrandsArrayX]
+    [SelectedBrand, BrandsArrayX],
   );
 
   return (
     <>
       <PanelSection>
         <PanelSectionRow
-          left={BrandsText}
+          left={`${BrandsText} (${BrandsArrayX.length})`}
           right={BrandGroupHoverText}
           tooltip={BrandsTooltip}
         />
@@ -87,12 +78,10 @@ const BrandSection = ({
 };
 
 export const RenderRow = ({
-  entity,
   isCurrent,
   brand,
   brandRowClass,
 }: {
-  entity: Entity;
   brand: BrandDataInfo;
   isCurrent: boolean;
   brandRowClass: string;
@@ -100,7 +89,7 @@ export const RenderRow = ({
   return (
     <div
       onClick={() => {
-        SetBrand(brand.PrefabName, entity);
+        SetBrand(brand.PrefabName);
       }}
     >
       <PanelSectionRow
@@ -134,40 +123,34 @@ export const RenderRow = ({
 };
 
 export const BrandPanel: FC<BrandPanelProps> = (props: BrandPanelProps) => {
-  const { translate } = useLocalization();
-  const visibleBindingValue = useValue(panelVisibleBinding);
+  const visibleBindingValue = useValue(brandPanelVisibleBinding);
   const sE = useValue(selectedEntity);
 
-  const [heightFull, setHeightFull] = useState(0);
-  const [panelLeft, setPanelLeft] = useState(0);
+  let bldgBrandInfo = props.bldgBrandInfo;
 
-  const headerText = translate(LocaleKeys.NAME) ?? "NAME";
-  const SelectedEntityTitleText =
-    translate(LocaleKeys.SELECTED_ENTITY) ?? "SELECTED_ENTITY";
-  const CurrentBrandTitleText =
-    translate(LocaleKeys.CURRENT_BRAND) ?? "CURRENT_BRAND";
-  const CurrentCompanyTitleText =
-    translate(LocaleKeys.CURRENT_COMPANY) ?? "CURRENT_COMPANY";
-  const SupportedBrandsText =
-    translate(LocaleKeys.SUPPORTED_BRANDS)?.toUpperCase() ?? "SUPPORTED_BRANDS";
-  const SupportedBrandsTooltip =
-    translate(LocaleKeys.SUPPORTED_BRANDS_TOOLTIP) ??
-    "SUPPORTED_BRANDS_TOOLTIP";
-  const OtherBrandsText =
-    translate(LocaleKeys.OTHER_BRANDS)?.toUpperCase() ?? "OTHER_BRANDS";
-  const OtherBrandsTooltip =
-    translate(LocaleKeys.OTHER_BRANDS_TOOLTIP) ?? "OTHER_BRANDS_TOOLTIP";
-  const BrandGroupHoverText =
-    translate(LocaleKeys.BRAND_GROUP_HOVER) ?? "BRAND_GROUP_HOVER";
+  const headerText = FindTranslation("Brand.Header");
+  const CurrentBrandTitleText = FindTranslation("Brand.CurrentBrand");
+  const CurrentCompanyTitleText = FindTranslation("Brand.CurrentCompany");
+  const SupportedBrandsText = FindTranslation(
+    "Brand.SupportedBrands",
+  )?.toUpperCase();
+  const SupportedBrandsTooltip = FindTranslation(
+    "Brand.SupportedBrands.Tooltip",
+  );
+  const OtherBrandsText = FindTranslation("Brand.OtherBrands")?.toUpperCase();
+  const OtherBrandsTooltip = FindTranslation("Brand.OtherBrands.Tooltip");
+  const BrandGroupHoverText = FindTranslation("Brand.GroupHover");
+
+  const infoText = FindTranslation("Brand.Info");
 
   const [SupportedBrandsArray, OtherBrandsArray] = useMemo(() => {
     const supported: BrandDataInfo[] = [];
     const other: BrandDataInfo[] = [];
 
-    for (const brand of props.w_brandlist ?? []) {
+    for (const brand of bldgBrandInfo.BrandList ?? []) {
       if (
         Array.isArray(brand.Companies) &&
-        brand.Companies.includes(props.w_company)
+        brand.Companies.includes(bldgBrandInfo.CompanyName)
       ) {
         supported.push(brand);
       } else {
@@ -176,131 +159,78 @@ export const BrandPanel: FC<BrandPanelProps> = (props: BrandPanelProps) => {
     }
 
     return [supported, other];
-  }, [props.w_brandlist, props.w_company]);
+  }, [bldgBrandInfo.BrandList, bldgBrandInfo.CompanyName]);
 
-  const wrapperStyle = useMemo(
-    () => ({
-      maxHeight: `${heightFull}px`,
-      left: `calc(${panelLeft}px + 20rem)`,
-    }),
-    [panelLeft, heightFull]
+  const visible = useMemo(
+    () => visibleBindingValue && bldgBrandInfo.HasBrand,
+    [visibleBindingValue],
   );
-
-  const visible = useMemo(() => visibleBindingValue, [visibleBindingValue]);
-
-  const calculateHeights = () => {
-    const wrapperElement = document.querySelector(
-      ".info-layout_BVk"
-    ) as HTMLElement | null;
-    const sipElement = document.querySelector(
-      ".selected-info-panel_gG8"
-    ) as HTMLElement | null;
-
-    const newHeightFull = wrapperElement?.offsetHeight ?? 1600;
-    if (sipElement?.offsetWidth == 0) {
-      return;
-    } else {
-      const newPanelLeft =
-        (sipElement?.offsetLeft ?? 6) + (sipElement?.offsetWidth ?? 300);
-      setPanelLeft(newPanelLeft);
-    }
-    setHeightFull(newHeightFull);
-  };
-
-  useEffect(() => {
-    calculateHeights();
-    const observer = new MutationObserver(() => {
-      calculateHeights();
-    });
-
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-    });
-
-    return () => observer.disconnect();
-  }, []);
 
   const sizeProviderSupported = useUniformSizeProvider(
     useCssLength("30rem"),
     SupportedBrandsArray.length,
-    5
+    5,
   );
   const sizeProviderOther = useUniformSizeProvider(
     useCssLength("30rem"),
     OtherBrandsArray.length,
-    5
+    5,
   );
 
   if (sE.index === 0 || !visible) return null;
 
-  const animateClass = visible ? `${styles.BrandChangerAnimate}` : ``;
-
   return (
     <>
-      <Portal>
-        <div
-          id="starq-cbc-panel"
-          className={`${wrapperClass} ${styles.BrandChangerPanel} ${animateClass}`}
-          style={wrapperStyle}
-        >
-          <div className={styleDefault.header}>
-            <div className={stylePanel.titleBar}>
-              <img
-                className={stylePanel.icon}
-                src="Media/Tools/Net Tool/Replace.svg"
-              />
-              <div className={styleDefault.title}>{headerText}</div>
-              <button className={closeButtonClass} onClick={() => ClosePanel()}>
-                <div
-                  className={closeButtonImageClass}
-                  style={{
-                    maskImage: "url(Media/Glyphs/Close.svg)",
-                  }}
-                ></div>
-              </button>
-            </div>
-          </div>
-          <div className={styleDefault.content}>
+      <PanelBase
+        header={headerText!}
+        visible={visible}
+        content={
+          <>
             <PanelSection>
               <PanelSectionRow
-                left={SelectedEntityTitleText}
-                right={`${props.w_entity.index}:${props.w_entity.version}`}
-              />
-              <PanelSectionRow
+                uppercase={true}
                 left={CurrentBrandTitleText}
-                right={props.w_brand}
+                right={bldgBrandInfo.BrandName}
               />
               <PanelSectionRow
+                uppercase={true}
                 left={CurrentCompanyTitleText}
-                right={props.w_company}
+                right={nicifyVariableName(
+                  bldgBrandInfo.CompanyName.replace("_", ": "),
+                )}
               />
             </PanelSection>
             <PanelSection>
               <BrandSection
-                BrandsText={SupportedBrandsText}
-                BrandsTooltip={SupportedBrandsTooltip}
+                BrandsText={SupportedBrandsText!}
+                BrandsTooltip={SupportedBrandsTooltip!}
                 BrandsArrayX={SupportedBrandsArray}
-                BrandGroupHoverText={BrandGroupHoverText}
-                SelectedBrand={props.w_brand}
-                Entity={props.w_entity}
+                BrandGroupHoverText={BrandGroupHoverText!}
+                SelectedBrand={bldgBrandInfo.BrandName}
                 MaxHeight={210}
                 SizeProvider={sizeProviderSupported}
               />
               <BrandSection
-                BrandsText={OtherBrandsText}
-                BrandsTooltip={OtherBrandsTooltip}
+                BrandsText={OtherBrandsText!}
+                BrandsTooltip={OtherBrandsTooltip!}
                 BrandsArrayX={OtherBrandsArray}
-                BrandGroupHoverText={BrandGroupHoverText}
-                SelectedBrand={props.w_brand}
-                Entity={props.w_entity}
-                MaxHeight={650 - Math.min(SupportedBrandsArray.length, 7) * 30}
+                BrandGroupHoverText={BrandGroupHoverText!}
+                SelectedBrand={bldgBrandInfo.BrandName}
+                MaxHeight={440 - Math.min(SupportedBrandsArray.length, 7) * 30}
                 SizeProvider={sizeProviderOther}
               />
             </PanelSection>
-          </div>
-        </div>
-      </Portal>
+            <Divider noMargin={1} />
+            <PanelSection>
+              <PanelSectionRow
+                uppercase={false}
+                disableFocus={true}
+                left={infoText}
+              />
+            </PanelSection>
+          </>
+        }
+      />
     </>
   );
 };

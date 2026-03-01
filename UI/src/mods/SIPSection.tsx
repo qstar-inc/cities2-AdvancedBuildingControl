@@ -1,39 +1,67 @@
 import {
-    panelTrigger, panelVisibleBinding, RandomizeStyle, selectedEntity, SplitTextToDiv, ToolButton
+    brandPanelVisibleBinding, componentPanelVisibleBinding, MakeSP, PanelIndex, RandomizeStyle,
+    resetPanelVisibleBinding, selectedEntity, togglePanel, ToolButton
 } from "bindings";
 import { useValue } from "cs2/api";
 import { SelectedInfoSectionBase } from "cs2/bindings";
 import { FOCUS_AUTO, FocusDisabled } from "cs2/input";
-import { useLocalization } from "cs2/l10n";
-import { FOCUS_DISABLED, PanelSection, PanelSectionRow } from "cs2/ui";
-import { BrandDataInfo, LocaleKeys } from "types";
+import { PanelSection, PanelSectionRow } from "cs2/ui";
+import { FindTranslation } from "functions/lang";
+import mod from "mod.json";
+import { abcIcons, uilStandard } from "styleBindings";
+import { BldgCleanupInfo } from "types/BldgCleanupInfo";
+import { BldgComponentInfo } from "types/BldgComponentInfo";
+import { BldgModifiedInfo } from "types/BldgModifiedInfo";
+import { BldgBrandInfo } from "types/BrandDataInfo";
 
 import { BrandPanel } from "./BrandPanel";
-import styles from "./BrandPanel.module.scss";
+import { CleanupPanel } from "./CleanupPanel";
+// import { StoragePanel } from "./StoragePanel";
+import { ComponentPanel } from "./ComponentPanel";
 
-export interface CompanyBrandSection extends SelectedInfoSectionBase {
-  w_brand: string;
-  w_brandlist: BrandDataInfo[];
-  w_company: string;
+interface SIP_ABC extends SelectedInfoSectionBase {
+  hasSP: boolean;
+  hasMesh: boolean;
+  bldgBrandInfo: BldgBrandInfo;
+  bldgComponentInfo: BldgComponentInfo;
+  bldgModifiedInfo: BldgModifiedInfo[];
+  bldgCleanupInfo: BldgCleanupInfo;
 }
 
-export const CompanyBrandChangerSystem = (componentList: any): any => {
-  componentList["CompanyBrandChanger.Systems.SIPCompanySectionBrand"] = (
-    e: CompanyBrandSection
+export const SIP_ABC = (componentList: any): any => {
+  componentList["AdvancedBuildingControl.Systems.SIP_ABC"] = (
+    props: SIP_ABC,
   ) => {
-    const { translate } = useLocalization();
+    const hasSP = props.hasSP;
+    const hasMesh = props.hasMesh;
 
-    const isPanelOpen = useValue(panelVisibleBinding);
+    const bldgBrandInfo = props.bldgBrandInfo;
+    const bldgComponentInfo = props.bldgComponentInfo;
+    const bldgModifiedInfo = props.bldgModifiedInfo;
+    const bldgCleanupInfo = props.bldgCleanupInfo;
+
+    const isBrandPanelOpen = useValue(brandPanelVisibleBinding);
+    const isComponentPanelOpen = useValue(componentPanelVisibleBinding);
+    const isCleanupPanelOpen = useValue(resetPanelVisibleBinding);
+
     const selectedEntityVal = useValue(selectedEntity);
 
-    const tooltipText = translate(LocaleKeys.TOOLTIP) ?? "TOOLTIP";
-    const modNameText = translate(LocaleKeys.NAME) ?? "NAME";
-    const tooltipRandomizeButton =
-      translate(LocaleKeys.RANDOMIZE_TOOLTIP) ?? "RANDOMIZE_TOOLTIP";
+    const modNameText = mod.name;
+
+    const tooltipRandomizer = FindTranslation("Randomize.Tooltip");
+    const tooltipBrandChanger = FindTranslation("Brand.Header");
+    const tooltipComponentOverrider = FindTranslation("Component.Header");
+    const tooltipSPSuffix = hasSP
+      ? hasMesh
+        ? ""
+        : ` (${FindTranslation("SPBuilder.Tooltip.DisabledNoMesh")})`
+      : ` (${FindTranslation("SPBuilder.Tooltip.DisabledNoSP")})`;
+    const tooltipSPBuilder = `${FindTranslation("SPBuilder.Tooltip")}${tooltipSPSuffix}`;
+    const tooltipCleanup = FindTranslation("Cleanup.Header");
 
     return (
       <>
-        <PanelSection tooltip={<SplitTextToDiv text={tooltipText} />}>
+        <PanelSection>
           <PanelSectionRow
             uppercase={true}
             disableFocus={true}
@@ -41,37 +69,87 @@ export const CompanyBrandChangerSystem = (componentList: any): any => {
             right={
               <>
                 <FocusDisabled>
+                  {
+                    <ToolButton
+                      id="starq-abc-sip-sp"
+                      focusKey={FOCUS_AUTO}
+                      tooltip={tooltipSPBuilder}
+                      disabled={!hasSP || !hasMesh}
+                      src={abcIcons + "SP_Builder.svg"}
+                      onSelect={MakeSP}
+                    />
+                  }
                   <ToolButton
-                    id="starq-cbc-dice"
-                    focusKey={FOCUS_DISABLED}
-                    tooltip={tooltipRandomizeButton}
-                    selected={false}
-                    className={styles.ToolWhite}
-                    src="Media/Glyphs/Dice.svg"
-                    onSelect={() => {
-                      RandomizeStyle(selectedEntityVal);
-                    }}
-                  />
-                  <ToolButton
+                    id="starq-abc-sip-randomize"
                     focusKey={FOCUS_AUTO}
-                    selected={isPanelOpen}
-                    src="Media/Tools/Net Tool/Replace.svg"
+                    tooltip={tooltipRandomizer}
+                    selected={false}
+                    src={uilStandard + "Dice.svg"}
+                    onSelect={RandomizeStyle}
+                  />
+                  {bldgBrandInfo.HasBrand && (
+                    <>
+                      <ToolButton
+                        id="starq-abc-sip-brand"
+                        focusKey={FOCUS_AUTO}
+                        tooltip={tooltipBrandChanger}
+                        selected={isBrandPanelOpen}
+                        src={props.bldgBrandInfo.BrandIcon}
+                        onSelect={() => {
+                          togglePanel(PanelIndex.Brand);
+                        }}
+                      />
+                      {isBrandPanelOpen && (
+                        <BrandPanel
+                          key={selectedEntityVal.index}
+                          bldgBrandInfo={bldgBrandInfo}
+                        />
+                      )}
+                    </>
+                  )}
+                  <ToolButton
+                    id="starq-abc-sip-component"
+                    focusKey={FOCUS_AUTO}
+                    tooltip={tooltipComponentOverrider}
+                    selected={isComponentPanelOpen}
+                    src={uilStandard + "Tools.svg"}
                     onSelect={() => {
-                      panelTrigger(!isPanelOpen);
+                      togglePanel(PanelIndex.Component);
                     }}
                   />
+                  {isComponentPanelOpen && (
+                    <ComponentPanel
+                      key={selectedEntityVal.index}
+                      bldgComponentInfo={bldgComponentInfo}
+                      bldgModifiedInfo={bldgModifiedInfo}
+                    />
+                  )}
+
+                  {bldgCleanupInfo.Enabled && (
+                    <>
+                      <ToolButton
+                        id="starq-abc-sip-cleanup"
+                        focusKey={FOCUS_AUTO}
+                        tooltip={tooltipCleanup}
+                        selected={isCleanupPanelOpen}
+                        src={abcIcons + "Cleanup.svg"}
+                        onSelect={() => {
+                          togglePanel(PanelIndex.Cleanup);
+                        }}
+                      />
+                      {isCleanupPanelOpen && (
+                        <CleanupPanel
+                          key={selectedEntityVal.index}
+                          bldgCleanupInfo={bldgCleanupInfo}
+                        />
+                      )}
+                    </>
+                  )}
                 </FocusDisabled>
               </>
             }
           />
         </PanelSection>
-        <BrandPanel
-          key={selectedEntityVal.index}
-          w_brand={e.w_brand}
-          w_brandlist={e.w_brandlist}
-          w_company={e.w_company}
-          w_entity={selectedEntityVal}
-        />
       </>
     );
   };

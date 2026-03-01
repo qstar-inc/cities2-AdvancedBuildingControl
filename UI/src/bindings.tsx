@@ -1,60 +1,101 @@
 import engine from "cohtml/cohtml";
 import { bindLocalValue, bindValue, trigger } from "cs2/api";
-import { Entity } from "cs2/bindings";
+import { Entity, ToggleField, UISound } from "cs2/bindings";
+import { StyleProps } from "cs2/input";
 import { getModule } from "cs2/modding";
-import { ButtonProps, ScrollController } from "cs2/ui";
+import { ButtonProps, FocusKey, ScrollController } from "cs2/ui";
 import mod from "mod.json";
 import { ReactElement } from "react";
-
-import styles from "./mods/BrandPanel.module.scss";
+import { BldgCleanupType as BldgCleanupType } from "types/BldgCleanupInfo";
+import { UpdateValueType } from "types/UpdateValueType";
 
 export const selectedEntity = bindValue<Entity>(
   "selectedInfo",
-  "selectedEntity"
+  "selectedEntity",
 );
 
-export const SetBrand = (replaceBrand: string, entity: Entity) => {
-  trigger(mod.id, "SetBrand", replaceBrand, entity);
+export const SetBrand = (replaceBrand: string) => {
+  trigger(mod.id, "SetBrand", replaceBrand);
   engine.trigger("audio.playSound", "select-toggle", 1);
 };
 
-export const RandomizeStyle = (entity: Entity) => {
-  trigger(mod.id, "RandomizeStyle", entity);
+export const RandomizeStyle = () => {
+  trigger(mod.id, "RandomizeStyle");
+};
+
+export const MakeSP = () => {
+  trigger(mod.id, "MakeSP");
+};
+
+export const ChangeUVTValueString = (
+  value: string,
+  valueType: UpdateValueType,
+) => {
+  trigger(mod.id, "ChangeComponentValue", value, valueType);
+};
+
+export const ChangeUVTValue = (value: number, valueType: UpdateValueType) => {
+  trigger(mod.id, "ChangeComponentValue", `${value}`, valueType);
+};
+
+export const ResetUVTValue = (valueType: UpdateValueType) => {
+  trigger(mod.id, "ResetComponentValue", valueType);
+};
+
+export const ChangeBCTValue = (value: number, valueType: BldgCleanupType) => {
+  trigger(mod.id, "ChangeBCTValue", `${value}`, valueType);
 };
 
 export const ClosePanel = () => {
-  panelVisibleBinding.update(false);
+  brandPanelVisibleBinding.update(false);
+  componentPanelVisibleBinding.update(false);
+  resetPanelVisibleBinding.update(false);
+  storagePanelVisibleBinding.update(false);
   engine.trigger("audio.playSound", "select-item", 1);
 };
 
-export const SplitTextToDiv = ({ text }: { text: string }) => {
-  const lines = text.split("\r\n");
+export const brandPanelVisibleBinding = bindLocalValue(false);
+export const componentPanelVisibleBinding = bindLocalValue(false);
+export const resetPanelVisibleBinding = bindLocalValue(false);
+export const storagePanelVisibleBinding = bindLocalValue(false);
 
-  if (lines.length === 1) {
-    return <>{text}</>;
-  }
+export const visibleBindings = [
+  brandPanelVisibleBinding,
+  componentPanelVisibleBinding,
+  resetPanelVisibleBinding,
+  storagePanelVisibleBinding,
+];
 
-  return (
-    <>
-      {lines.map((line, index) => (
-        <div
-          className={
-            index !== lines.length - 1 ? styles.TooltipMarginBottom : undefined
-          }
-        >
-          {line}
-        </div>
-      ))}
-    </>
-  );
+export enum PanelIndex {
+  Brand = 0,
+  Component = 1,
+  Cleanup = 2,
+  Storage = 3,
+}
+
+export const togglePanel = (indexToToggle: number) => {
+  const currentlyOpen = visibleBindings[indexToToggle].value;
+
+  visibleBindings.forEach((binding, i) => {
+    binding.update(i === indexToToggle ? !currentlyOpen : false);
+  });
 };
 
-export const panelVisibleBinding = bindLocalValue(false);
-export const manageVisibleBinding = bindLocalValue(false);
+interface InfoButtonProps extends ButtonProps {
+  label: string;
+}
 
-export const panelTrigger = (state: boolean) => {
-  panelVisibleBinding.update(state);
-};
+export const InfoButton = getModule(
+  "game-ui/game/components/selected-info-panel/shared-components/info-button/info-button.tsx",
+  "InfoButton",
+) as React.FC<InfoButtonProps>;
+
+// export const A = getModule(
+//   "game-ui/common/localization/loc.generated.ts",
+//   "Loc"
+// );
+
+// console.log(A.SelectedInfoPanel.RAW_MATERIALS);
 
 interface ToolButtonProps extends ButtonProps {
   src: string;
@@ -63,8 +104,13 @@ interface ToolButtonProps extends ButtonProps {
 
 export const ToolButton = getModule(
   "game-ui/game/components/tool-options/tool-button/tool-button.tsx",
-  "ToolButton"
+  "ToolButton",
 ) as React.FC<ToolButtonProps>;
+
+export const Divider: any = getModule(
+  "game-ui/editor/widgets/divider/divider.tsx",
+  "Divider",
+);
 
 export type SizeProvider = {
   getRenderedRange: () => {
@@ -75,13 +121,14 @@ export type SizeProvider = {
   };
   getTotalSize: () => number;
 };
+
 export type RenderItemFn = (
   itemIndex: number,
-  indexInRange: number
+  indexInRange: number,
 ) => ReactElement | null;
 type RenderedRangeChangedCallback = (
   startIndex: number,
-  endIndex: number
+  endIndex: number,
 ) => void;
 
 interface VirtualListProps {
@@ -97,14 +144,63 @@ interface VirtualListProps {
 
 export const VanillaVirtualList = getModule(
   "game-ui/common/scrolling/virtual-list/virtual-list.tsx",
-  "VirtualList"
+  "VirtualList",
 ) as React.FC<VirtualListProps>;
 
 export const useUniformSizeProvider: (
   height: number,
   visible: number,
-  extents: number
+  extents: number,
 ) => SizeProvider = getModule(
   "game-ui/common/scrolling/virtual-list/virtual-list-size-provider.ts",
-  "useUniformSizeProvider"
+  "useUniformSizeProvider",
+);
+
+export const BooleanInput = getModule(
+  "game-ui/game/widgets/toggle-field/toggle-field.tsx",
+  "BoundToggleField",
+) as React.FC<ToggleField>;
+
+interface ToggleProps extends StyleProps {
+  focusKey?: FocusKey;
+  debugName?: string;
+  checked?: boolean;
+  disabled?: boolean;
+  toggleSound?: UISound | string | null;
+  children?: any;
+  showHint?: boolean;
+  multistate?: boolean;
+  onChange?: () => void;
+  onMultistateChange?: () => void;
+  onMouseOver?: () => void;
+  onMouseLeave?: () => void;
+}
+
+interface CheckBoxProps extends ToggleProps {
+  theme?: any;
+}
+
+export const CheckBox = getModule(
+  "game-ui/common/input/toggle/checkbox/checkbox.tsx",
+  "Checkbox",
+) as React.FC<CheckBoxProps>;
+
+export const IntSliderField = getModule(
+  "game-ui/editor/widgets/fields/number-slider-field.tsx",
+  "IntSliderField",
+);
+
+export const IntSlider = getModule(
+  "game-ui/common/input/slider/slider.tsx",
+  "Slider",
+);
+
+export const IntTransformer = getModule(
+  "game-ui/common/input/slider/slider.tsx",
+  "intTransformer",
+);
+
+export const DropdownMultiSection = getModule(
+  "game-ui/common/input/dropdown/dropdown.tsx",
+  "Dropdown",
 );

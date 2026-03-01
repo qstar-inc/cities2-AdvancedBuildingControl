@@ -1,0 +1,59 @@
+{
+    "$id": 0,
+    "$type": "0|Game.Prefabs.AssetPackPrefab, Game",
+    "name": "StarQ SP00-ABC Pack",
+    "active": true,
+    "version": 1,
+    "components": {
+        "$id": 1,
+        "$type": "1|System.Collections.Generic.List`1[[Game.Prefabs.ComponentBase, Game]], mscorlib",
+        "$rlength": 3,
+        "$rcontent": [
+            {
+                "$id": 2,
+                "$type": "2|Game.Prefabs.UIObject, Game",
+                "name": "UIObject",
+                "active": true,
+                "m_Group": null,
+                "m_Priority": 2147483647,
+                "m_Icon": "assetdb://global/011c1d4fdb1264cb7a754f613a498cb9",
+                "m_IsDebugObject": false
+            },
+            {
+                "$id": 3,
+                "$type": "3|Game.Prefabs.EditorAssetCategoryOverride, Game",
+                "name": "EditorAssetCategoryOverride",
+                "active": true,
+                "m_IncludeCategories": {
+                    "$id": 4,
+                    "$type": "4|System.String[], mscorlib",
+                    "$rlength": 1,
+                    "$rcontent": [
+                        "StarQ/_Utils/AdvancedBuildingControl"
+                    ]
+                },
+                "m_ExcludeCategories": null
+            },
+            {
+                "$id": 5,
+                "$type": "5|Game.Prefabs.ObsoleteIdentifiers, Game",
+                "name": "ObsoleteIdentifiers",
+                "active": true,
+                "m_PrefabIdentifiers": {
+                    "$id": 6,
+                    "$type": "6|Game.Prefabs.PrefabIdentifierInfo[], Game",
+                    "$rlength": 1,
+                    "$rcontent": [
+                        {
+                            "$id": 7,
+                            "$type": "7|Game.Prefabs.PrefabIdentifierInfo, Game",
+                            "m_Name": "StarQ SP00-ABC Pack",
+                            "m_Type": "AssetPackPrefab",
+                            "m_Hash": "b013d44fa0b11e4c2da89043f3a7aaae"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}

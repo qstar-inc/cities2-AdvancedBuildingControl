@@ -1,0 +1,338 @@
+$boxSize: 15rem;
+
+// :global(:root) {
+//   :global(.overwrite-legacy) {
+//     // --highlightBrightBlue: rgb(255, 0, 153);
+//     // --toolbarBottomBgColor: rgb(107, 0, 64);
+//     // --normalColor: rgb(255, 0, 153);
+//     // --gradientDarkBlueStart: rgba(255, 0, 153, 0.729);
+//     // --gradientDarkBlueMiddle: rgba(255, 0, 153, 0.465);
+//     // --gradientDarkBlueEnd: rgba(255, 0, 153, 0.3);
+//     // --accentColorNormal: rgb(255, 0, 153);
+//     // --accentColorLight: rgb(255, 93, 190);
+//     // --menuControlBorder: rgb(255, 0, 153);
+//     // --iconColor: rgb(255, 0, 153);
+//     // --panelColorDark: rgba(85, 0, 88, 0.442);
+//     // --gradientHighlightStart: rgb(255, 61, 164);
+//     // --gradientHighlightMiddle: rgb(255, 86, 176);
+//     // --gradientHighlightEnd: rgb(255, 131, 197);
+
+//     // --highlightBrightBlue: rgb(0, 255, 47);
+//     // --toolbarBottomBgColor: rgb(0, 154, 36);
+//     // --normalColor: rgba(12, 78, 0, 0.608);
+//     // --gradientDarkBlueStart: rgb(0, 80, 20);
+//     // --gradientDarkBlueMiddle: rgb(0, 100, 30);
+//     // --gradientDarkBlueEnd: rgb(0, 120, 40);
+//     // --accentColorDark: rgb(0, 91, 44);
+//     // --accentColorNormal: rgb(0, 176, 85);
+//     // --accentColorLight: rgb(0, 215, 104);
+//     // --menuControlBorder: rgb(0, 255, 51);
+//     // --iconColor: rgb(62, 192, 116);
+//     // --panelColorDark: rgba(0, 83, 51, 0.442);
+//     // --gradientHighlightStart: rgb(0, 255, 72);
+//     // --gradientHighlightMiddle: rgb(0, 168, 48);
+//     // --gradientHighlightEnd: rgb(0, 72, 20);
+
+//     // --highlightBrightBlue: rgb(174, 0, 255);
+//     // --toolbarBottomBgColor: rgb(131, 0, 154);
+//     // --normalColor: rgba(74, 0, 78, 0.608);
+//     // --gradientDarkBlueStart: rgb(60, 0, 80);
+//     // --gradientDarkBlueMiddle: rgb(80, 0, 98);
+//     // --gradientDarkBlueEnd: rgb(90, 0, 120);
+//     // --accentColorDark: rgb(70, 0, 91);
+//     // --accentColorNormal: rgb(234, 115, 255);
+//     // --accentColorLight: rgb(215, 0, 215);
+//     // --menuControlBorder: rgb(242, 0, 255);
+//     // --iconColor: rgb(181, 62, 192);
+//     // --panelColorDark: rgb(45, 0, 84);
+//     // --gradientHighlightStart: rgb(238, 0, 255);
+//     // --gradientHighlightMiddle: rgb(168, 0, 129);
+//     // --gradientHighlightEnd: rgb(72, 0, 50);
+
+//     // --highlightBrightBlue: rgb(255, 215, 0);
+//     // --toolbarBottomBgColor: rgb(204, 153, 0);
+//     // --normalColor: rgb(255, 223, 0);
+//     // --gradientDarkBlueStart: rgba(255, 204, 0, 0.729);
+//     // --gradientDarkBlueMiddle: rgba(255, 223, 51, 0.465);
+//     // --gradientDarkBlueEnd: rgba(255, 240, 102, 0.3);
+//     // --accentColorNormal: rgb(255, 223, 0);
+//     // --accentColorLight: rgb(255, 243, 85);
+//     // --menuControlBorder: rgb(255, 223, 0);
+//     // --iconColor: rgb(255, 223, 0);
+//     // --panelColorDark: rgba(153, 102, 0, 0.442);
+//     // --gradientHighlightStart: rgb(255, 179, 51);
+//     // --gradientHighlightMiddle: rgb(255, 195, 77);
+//     // --gradientHighlightEnd: rgb(255, 213, 102);
+//   }
+// }
+
+// :global(.pause-overlay_rOw.paused_kMX) {
+//   border-color: rgba(255, 0, 0, 0.85);
+//   border-width: 6rem;
+// }
+
+// :global(.pause-text-field_tmV) {
+//   background-color: rgba(255, 0, 0, 0.85);
+// }
+
+.ABCPanel {
+  position: absolute;
+  top: calc(var(--screenPadding) * 2 + var(--floatingToggleSize));
+  // z-index: calc(var(--tooltipIndex) - 1);
+  overflow: hidden;
+  transform: scale(0.9);
+  opacity: 0.5;
+  max-height: 70vh;
+}
+
+.ABCAnimateIn {
+  animation: animateIn 0.25s ease-in forwards;
+  transform-origin: top center;
+  transition-property: all;
+}
+
+.ABCAnimateOut {
+  animation: animateOut 0.25s ease-in forwards;
+  transform-origin: center center;
+  transition-property: all;
+}
+
+@keyframes animateIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0.5;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes animateOut {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.9);
+    opacity: 0;
+    display: none;
+  }
+}
+
+.BrandColorBox {
+  width: $boxSize;
+  height: $boxSize;
+}
+
+.BrandCurrent {
+  font-weight: bold !important;
+  text-transform: uppercase;
+}
+
+.BrandCurrentRow {
+  background-color: var(--accentColorNormal);
+}
+
+.BrandCurrentRow > div {
+  color: white;
+}
+
+.BrandRow:hover {
+  background-color: var(--accentColorNormal-hover);
+  color: var(--menuControl1) !important;
+}
+
+.BrandRow:hover * {
+  color: var(--menuControl1) !important;
+}
+
+.BrandImage {
+  width: 20rem;
+  height: 20rem;
+  margin-right: 4rem;
+  border-radius: 100rem;
+}
+
+.TooltipMarginBottom {
+  margin-bottom: 5rem;
+}
+
+.ToolWhite img {
+  filter: brightness(0) invert(1) !important;
+}
+
+.ToolWhite img:hover {
+  filter: saturate(1) brightness(0.85) invert(1) !important;
+}
+
+.ResourceActive {
+  --textColorDimmer: var(--accentColorNormal) !important;
+  border-top-color: var(--accentColorNormal) !important;
+  border-left-color: var(--accentColorNormal) !important;
+  border-bottom-color: var(--accentColorNormal) !important;
+  border-right-color: var(--accentColorNormal) !important;
+}
+
+.NoMargin {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.NoMarginSide {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.NoMarginVertical {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.MarginRight3r {
+  margin-right: 3rem !important;
+  padding-right: 3rem !important;
+}
+
+.MarginLeft3r {
+  margin-left: 3rem !important;
+  padding-left: 3rem !important;
+}
+
+.AlignCenter {
+  align-content: center !important;
+}
+
+.LevelSegment {
+  border: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.LevelBox {
+  margin: auto !important;
+  text-align: center !important;
+  width: 100% !important;
+}
+
+.DisabledToolButton {
+  background-color: rgb(208, 208, 208) !important;
+  filter: saturate(1) brightness(0.85) invert(1) !important;
+}
+
+// .InputBoxCustom {
+//   //   display: flex !important;
+//   //   width: 100% !important;
+
+//   & > input:focus,
+//   &:hover > div {
+//     border-top-color: var(--accentColorLight) !important;
+//     border-bottom-color: var(--accentColorLight) !important;
+//   }
+// }
+
+.DropdownToggleCustom {
+  display: flex !important;
+  width: 100% !important;
+  padding-left: 8rem !important;
+  padding-right: 8rem !important;
+  // border: 0.5rem solid transparent !important;
+
+  background-color: transparent !important;
+  color: var(--textColorHighlight) !important;
+  & > * {
+    width: 100% !important;
+    text-align: right !important;
+  }
+}
+
+.DropdownToggleCustom:hover {
+  // border: 0.5rem solid red !important;
+  padding-left: 6.5rem !important;
+  padding-right: 6.5rem !important;
+  border-color: rgb(150, 150, 150, 1) !important;
+  border-width: 0.75rem !important;
+  border-style: solid !important;
+  background-color: rgba(28, 37, 52, 0.209) !important;
+}
+
+:global(.active).DropdownToggleCustom {
+  background-color: var(--textColorHighlight) !important;
+  color: black !important;
+}
+
+.DropdownItemCustomRight {
+  text-align: right !important;
+}
+
+.DropdownLabelWithCheckbox {
+  display: flex !important;
+  justify-content: space-between !important;
+  margin: auto !important;
+  align-items: center !important;
+  width: inherit !important;
+  border-radius: 0 !important;
+}
+
+.DropdownLabelWithCheckbox + .DropdownLabelWithCheckbox {
+  border-top: 0.5rem solid red !important;
+  border-top-color: var(--accentColorLighter) !important;
+}
+
+:global(.selected).DropdownItemCustomRight {
+  background-color: var(--textColorHighlight) !important;
+  color: black !important;
+}
+
+.CheckboxCustom {
+  width: 26rem !important;
+  height: 26rem !important;
+  background-color: transparent !important;
+
+  & > * {
+    padding: 2rem !important;
+  }
+}
+
+.ToggleSwitchCustom {
+  padding: 0;
+  border-radius: 100rem;
+  border: none;
+  background-color: var(--hoverColorNormal);
+  cursor: pointer;
+  position: relative;
+  transition: background-color 0.5s ease-out;
+  height: 20rem;
+  width: 56rem;
+}
+
+.ToggleSwitchCustom.on {
+  background-color: var(--textColorHighlight);
+}
+
+.ToggleSwitchCustom.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ToggleSwitchCustomCircle {
+  width: 14rem;
+  height: 14rem;
+  border-radius: 50%;
+  background-color: var(--accentColorNormal);
+  position: absolute;
+  top: 3rem;
+  left: 3rem;
+  transition:
+    transform 0.25s cubic-bezier(0.5, 0, 0.35, 0.5),
+    background-color 0.5s ease-out;
+}
+
+.ToggleSwitchCustom.on .ToggleSwitchCustomCircle {
+  transform: translateX(calc(36rem));
+  background-color: var(--accentColorLighter);
+}

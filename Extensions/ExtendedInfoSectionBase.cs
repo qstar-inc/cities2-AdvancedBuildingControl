@@ -3,15 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Colossal.Reflection;
 using Colossal.UI.Binding;
 using Game.UI.InGame;
 using Unity.Entities;
 using UnityEngine;
 
-namespace CompanyBrandChanger.Extensions
+namespace AdvancedBuildingControl.Extensions
 {
     public abstract partial class ExtendedInfoSectionBase : InfoSectionBase
     {

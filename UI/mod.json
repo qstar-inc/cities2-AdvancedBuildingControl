@@ -1,6 +1,7 @@
 {
-  "id": "CompanyBrandChanger",
+  "id": "AdvancedBuildingControl",
+  "name": "Advanced Building Control",
   "author": "StarQ",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "dependencies": []
 }
