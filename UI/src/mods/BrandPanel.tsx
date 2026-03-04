@@ -1,6 +1,11 @@
 import {
-    brandPanelVisibleBinding, Divider, selectedEntity, SetBrand, SizeProvider,
-    useUniformSizeProvider, VanillaVirtualList
+  brandPanelVisibleBinding,
+  Divider,
+  selectedEntity,
+  SetBrand,
+  SizeProvider,
+  useUniformSizeProvider,
+  VanillaVirtualList,
 } from "bindings";
 import { useValue } from "cs2/api";
 import { AutoNavigationScope, FocusActivation } from "cs2/input";

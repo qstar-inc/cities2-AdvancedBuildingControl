@@ -15,7 +15,7 @@ Modify buildings to your heart's content (within limits).
 
 ## Requirements:
 - Unified Icon Library (ID: 74417) - Required for the icons used in the mod. Make sure to subscribe to it before using the mod.
-- Static Ploppables 01: Base Game (ID: 128043) - Required to enable Static Ploppable Builder.
+- Static Ploppables 01: Base Game (ID: 128043) - Optionally required to enable Static Ploppable Builder.
 
 ## Planned Features for Future Updates:
 - Property Customizer: Add support for changing resources being sold, consumed, manufactured or stored in the building.
@@ -45,7 +45,7 @@ Last week of February 2026, I added the final feature for the release verion of 
 
 The mod is now in a very good state, and I am very happy with it. I have tested it extensively and I have not found any major issues. After months of work, I was finally ready to update CBC to become AC Yon 1st March 2026. This is by far the one of the most ambitious mods I have ever worked on and hoping players will enjoy it as much as I enjoyed working on it, through it's ups and downs.
 
-Last but not least, I also want to thank everyone who helped me with the mod, especially the legend YenYang and Krzychu124 for their help with the UI; BruceyBoy and Mimonsi for the being bros; HarbourMasterJay, River-Mochi, GagaXM, MayorCheeks, elGendo for supporting the mods in various ways. I also want to thank the traslators, contributors and testers for their feedback and support, notably Kyodra, Modus, Sam and more; and all the well wishers of the project, notably Sully, Sunny Scunny, Const Builds, rzzirrah, Shane, Skilz, and everyone who interacted with my silly posts. This mod would not be possible without all of you. Thank you!
+Last but not least, I also want to thank everyone who helped me with the mod, especially the legend YenYang and Krzychu124 for their help with the UI; BruceyBoy and Mimonsi for the being bros; HarbourMasterJay, River-Mochi, GagaXM, MayorCheeks, elGendo for supporting the mods in various ways. I also want to thank the traslators, contributors and testers for their feedback and support, notably Kyodra, Modus, Sam and more; and all the well wishers of the project, notably Sully, Sunny Scunny, Const, rzzirrah, Shane, Skilz, and everyone who interacted with my silly posts. This mod would not be possible without all of you. Thank you!
 
 Writing this devlog was a very fun experience for me, and I hope you enjoyed reading it as much as I enjoyed writing it. I will try to keep it updated with any future updates or major changes to the mod. If you have any reports, questions or suggestions, feel free to reach out to me on Discord. I am always open to feedback and ideas for improving the mod. Thank you again for your support, and I hope you enjoy the mod!
 
@@ -59,24 +59,16 @@ Writing this devlog was a very fun experience for me, and I hope you enjoyed rea
   <Screenshot Value="Properties/Screenshot06.png" />
   <Tag Value="Code Mod" />
   <ForumLink Value="" />
-  <ModVersion Value="2.0.0" />
+  <ModVersion Value="2.0.1" />
   <GameVersion Value="1.5.*" />
   <Dependency Id="74417" />
-  <ChangeLog># Advanced Building Control
-
-Modify buildings to your heart's content (within limits).
-
-## Features:
-- Static Ploppable Builder: Create Static Ploppable variants of any buildings in-game. Requires **[Static Ploppables 01: Base Game](https://mods.paradoxplaza.com/mods/128043/Any)**. If the asset pack is missing, the feature will be disabled but the rest of the mod will work fine.
-- Visual Randomizer: Randomize building's pseudo-random properties (per building). Let's players randomize the building's seed - reshuffling the colours and props like trees, fences, and billboards.
-- Brand Changer: Change brands on buildings (per building): Access any building with an active business, and instantly switch its brand (including the logo and the name) to any other brand available in the game, including those added by mods. Changes to brand is completely visual and does not affect simulation or products.
-- Property Customizer: Change building properties/component values (per save). This includes but not limited to: spawn level, upkeep, service consumption, service vehicle count, service workplace count, etc. Changes to properties are applied city wide and will affect the simulation.
-- Building Maintenance: Cleanup building's garbage, mails, crimes and damages (per building). This is a manual cleanup for now, but an auto cleanup system based on limits will be added in a future update.
-
--# P.S.: Company Brand Changer is now Advanced Building Control.
-	</ChangeLog>
+  <ChangeLog>
+- Simplified tooltip for the Building Properties Space Multiplier.
+- Added localization: German, Spanish, Polish, Portuguese
+  </ChangeLog>
   <ExternalLink Type="github" Url="https://github.com/qstar-inc/cities2-AdvancedBuildingControl" />
   <ExternalLink Type="discord" Url="https://discord.gg/U2PSjUzUuF" />
   <ExternalLink Type="buymeacoffee" Url="https://buymeacoffee.com/starq" />
+  <ExternalLink Type="crowdin" Url="https://crowdin.com/project/starq-cities2" />
   <AccessLevel Value="Public" />
 </Publish>

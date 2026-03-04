@@ -1,25 +1,47 @@
 import {
-    ChangeUVTValue, ChangeUVTValueString, CheckBox, componentPanelVisibleBinding, Divider,
-    ResetUVTValue, ToolButton
+  ChangeUVTValue,
+  ChangeUVTValueString,
+  CheckBox,
+  componentPanelVisibleBinding,
+  Divider,
+  ResetUVTValue,
+  ToolButton,
 } from "bindings";
 import { useValue } from "cs2/api";
 import { Number2 } from "cs2/bindings";
 import { FOCUS_AUTO, FOCUS_DISABLED, FocusDisabled } from "cs2/input";
 import { LocalizedNumber, Unit } from "cs2/l10n";
 import {
-    Button, Dropdown, DropdownItem, DropdownToggle, PanelFoldout, PanelSection, PanelSectionRow,
-    Scrollable
+  Button,
+  Dropdown,
+  DropdownItem,
+  DropdownToggle,
+  PanelFoldout,
+  PanelSection,
+  PanelSectionRow,
+  Scrollable,
 } from "cs2/ui";
 import { hasFlag, toggleFlag } from "functions/enum";
 import {
-    FindTranslation, GetAlternateDropdownText, GetComponentTooltip, nicifyVariableName
+  FindTranslation,
+  GetAlternateDropdownText,
+  GetComponentTooltip,
+  nicifyVariableName,
 } from "functions/lang";
 import { GetFlags, isMultiSelect as isSingleSelect } from "functions/uvt";
 import { FC, useEffect, useMemo, useState } from "react";
 import {
-    baseGameIcons, dropdownModule, infoRowModule, sipTextInputModule, styleLevelProgress,
-    styleLevelSection, styleProgress, styleSIP, textElipsisInputModule, textElipsisInputThemeModule,
-    uilStandard
+  baseGameIcons,
+  dropdownModule,
+  infoRowModule,
+  sipTextInputModule,
+  styleLevelProgress,
+  styleLevelSection,
+  styleProgress,
+  styleSIP,
+  textElipsisInputModule,
+  textElipsisInputThemeModule,
+  uilStandard,
 } from "styleBindings";
 import { BldgComponentInfo } from "types/BldgComponentInfo";
 import { BldgModifiedInfo } from "types/BldgModifiedInfo";

@@ -1,6 +1,13 @@
 import {
-    brandPanelVisibleBinding, componentPanelVisibleBinding, MakeSP, PanelIndex, RandomizeStyle,
-    resetPanelVisibleBinding, selectedEntity, togglePanel, ToolButton
+  brandPanelVisibleBinding,
+  componentPanelVisibleBinding,
+  MakeSP,
+  PanelIndex,
+  RandomizeStyle,
+  resetPanelVisibleBinding,
+  selectedEntity,
+  togglePanel,
+  ToolButton,
 } from "bindings";
 import { useValue } from "cs2/api";
 import { SelectedInfoSectionBase } from "cs2/bindings";
