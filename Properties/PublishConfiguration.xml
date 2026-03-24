@@ -59,12 +59,14 @@ Writing this devlog was a very fun experience for me, and I hope you enjoyed rea
   <Screenshot Value="Properties/Screenshot06.png" />
   <Tag Value="Code Mod" />
   <ForumLink Value="" />
-  <ModVersion Value="2.0.1" />
+  <ModVersion Value="2.0.2" />
   <GameVersion Value="1.5.*" />
   <Dependency Id="74417" />
   <ChangeLog>
-- Simplified tooltip for the Building Properties Space Multiplier.
-- Added localization: German, Spanish, Polish, Portuguese
+- Added missing tooltips for Property Customizer panel.
+- Fixed UI crash when changing fuel type on transport depots (thanks to BugsyG for reporting).
+- Fix auto SP creation in some cases when SP is unsubscribed after the mod starts.
+- Auto clear building notification when garbage, crime or damage is cleared from a building (thanks to Obelix and River-Mochi for reporting).
   </ChangeLog>
   <ExternalLink Type="github" Url="https://github.com/qstar-inc/cities2-AdvancedBuildingControl" />
   <ExternalLink Type="discord" Url="https://discord.gg/U2PSjUzUuF" />

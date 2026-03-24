@@ -28,7 +28,7 @@ import {
   GetComponentTooltip,
   nicifyVariableName,
 } from "functions/lang";
-import { GetFlags, isMultiSelect as isSingleSelect } from "functions/uvt";
+import { GetFlags, isSingleSelect } from "functions/uvt";
 import { FC, useEffect, useMemo, useState } from "react";
 import {
   baseGameIcons,
@@ -61,30 +61,27 @@ const DropDownItemSnippet = ({
   selectedVal,
   valueType,
   setVal,
+  label,
 }: {
   current: number;
   selectedVal: number;
   valueType: UpdateValueType;
   setVal: (e: number) => void;
+  label: string;
 }) => {
   return (
-    <>
-      <DropdownItem
-        key={`abc-${valueType}-${current}`}
-        value={current}
-        focusKey={FOCUS_DISABLED}
-        selected={current === selectedVal}
-        closeOnSelect={false}
-        theme={dropdownModule}
-        onChange={e => {
-          setVal(e);
-          ChangeUVTValue(e, valueType);
-        }}
-        className={styles.DropdownItemCustomRight}
-      >
-        {GetAlternateDropdownText(current, valueType)}
-      </DropdownItem>
-    </>
+    <DropdownItem
+      // key={`abc-${valueType}-${current}`}
+      value={current}
+      focusKey={FOCUS_DISABLED}
+      selected={current === selectedVal}
+      closeOnSelect={false}
+      theme={dropdownModule}
+      onChange={() => setVal(current)}
+      className={styles.DropdownItemCustomRight}
+    >
+      {label}
+    </DropdownItem>
   );
 };
 
@@ -93,22 +90,24 @@ const MultiSelectDropdownItemSnippet = ({
   selectedFlags,
   valueType,
   setFlags,
+  label,
 }: {
   current: number;
   selectedFlags: number;
   valueType: UpdateValueType;
   setFlags: (v: number) => void;
+  label: string;
 }) => {
   const isSelected = hasFlag(selectedFlags, current);
   const valFunc = () => {
     const newValue = toggleFlag(selectedFlags, current);
-    setFlags(newValue);
-    ChangeUVTValue(newValue, valueType);
+    if (newValue !== selectedFlags) setFlags(newValue);
+    // ChangeUVTValue(newValue, valueType);
   };
 
   return (
     <DropdownItem
-      key={`abc-${valueType}-${current}`}
+      // key={`abc-${valueType}-${current}`}
       value={current}
       focusKey={FOCUS_DISABLED}
       selected={isSelected}
@@ -123,7 +122,7 @@ const MultiSelectDropdownItemSnippet = ({
         focusKey={FOCUS_DISABLED}
         className={`${styles.CheckboxCustom}`}
       />
-      {GetAlternateDropdownText(current, valueType)}
+      {label}
     </DropdownItem>
   );
 };
@@ -380,63 +379,102 @@ const Section = ({
     );
 
   const [flags, haveFlags] = GetFlags(valueType) as [number[], boolean];
+  const safeFlags = flags ?? [];
+
+  const valForFlags = value;
+  const setValForFlags = (v: number) => ChangeUVTValue(v, valueType);
+
+  const flagLabels = useMemo(
+    () =>
+      safeFlags.map(flag => ({
+        flag,
+        label: GetAlternateDropdownText(flag, valueType),
+      })),
+    [safeFlags, valueType], // if flags never change
+  );
+
+  const flagLabelMap = useMemo(() => {
+    const map = new Map<number, string>();
+    safeFlags.forEach(flag => {
+      map.set(flag, GetAlternateDropdownText(flag, valueType));
+    });
+    return map;
+  }, [safeFlags, valueType]);
+
+  const multiSelectItems = useMemo(
+    () =>
+      safeFlags.map(flag => (
+        <MultiSelectDropdownItemSnippet
+          key={flag}
+          current={flag}
+          selectedFlags={valForFlags}
+          setFlags={setValForFlags}
+          valueType={valueType}
+          label={flagLabelMap.get(flag) ?? ""}
+        />
+      )),
+    [safeFlags, valForFlags, flagLabels],
+  );
 
   if (haveFlags) {
     const singleSelect = isSingleSelect(valueType);
 
-    const val = value;
-    const setVal = (v: number) => ChangeUVTValue(v, valueType);
-
     if (singleSelect) {
       return (
-        <>
-          <PanelSectionRow
-            className={styles.NoMarginVertical}
-            disableFocus={true}
-            subRow={true}
-            tooltip={tooltip}
-            left={nicifyVariableName(field)}
-            right={
-              <>
-                <div style={{ width: "150rem" }}>
-                  <Dropdown
-                    focusKey={FOCUS_DISABLED}
+        <PanelSectionRow
+          className={styles.NoMarginVertical}
+          disableFocus={true}
+          subRow={true}
+          tooltip={tooltip}
+          left={nicifyVariableName(field)}
+          right={
+            <>
+              <div style={{ width: "150rem" }}>
+                <Dropdown
+                  focusKey={FOCUS_DISABLED}
+                  theme={dropdownModule}
+                  content={safeFlags.map(flag => (
+                    <DropDownItemSnippet
+                      key={flag}
+                      current={flag}
+                      selectedVal={valForFlags}
+                      setVal={setValForFlags}
+                      valueType={valueType}
+                      label={
+                        flagLabels.find(x => x.flag == flag)?.label as string
+                      }
+                    />
+                  ))}
+                >
+                  <DropdownToggle
+                    className={`${styles.DropdownToggleCustom}`}
                     theme={dropdownModule}
-                    content={flags.map(flag => (
-                      <DropDownItemSnippet
-                        current={flag}
-                        selectedVal={val}
-                        setVal={setVal}
-                        valueType={valueType}
-                      />
-                    ))}
                   >
-                    <DropdownToggle
-                      className={`${styles.DropdownToggleCustom}`}
-                      theme={dropdownModule}
-                    >
-                      {GetAlternateDropdownText(val, valueType)}
-                    </DropdownToggle>
-                  </Dropdown>
-                </div>
-                <ResetButtonSnippet
-                  valueType={valueType}
-                  isCustom={isCustom}
-                  originalText={originalText}
-                />
-              </>
-            }
-          />
-        </>
+                    {
+                      flagLabels.find(x => x.flag == valForFlags)
+                        ?.label as string
+                    }
+                  </DropdownToggle>
+                </Dropdown>
+              </div>
+              <ResetButtonSnippet
+                valueType={valueType}
+                isCustom={isCustom}
+                originalText={originalText}
+              />
+            </>
+          }
+        />
       );
     }
 
-    const flagLabels = useMemo(() => {
-      return flags.map(flag => ({
-        flag,
-        label: GetAlternateDropdownText(flag, valueType),
-      }));
-    }, [flags, valueType]);
+    // const flagLabels = useMemo(() => {
+    //   return flags.map(flag => ({
+    //     flag,
+    //     label: GetAlternateDropdownText(flag, valueType),
+    //   }));
+    // }, [flags, valueType]);
+
     return (
       <>
         <PanelSectionRow
@@ -451,22 +489,24 @@ const Section = ({
                 <Dropdown
                   focusKey={FOCUS_DISABLED}
                   theme={dropdownModule}
-                  content={flags.map(flag => (
-                    <MultiSelectDropdownItemSnippet
-                      key={flag}
-                      current={flag}
-                      selectedFlags={val}
-                      setFlags={setVal}
-                      valueType={valueType}
-                    />
-                  ))}
+                  content={multiSelectItems}
+                  // content={flags.map(flag => (
+                  //   <MultiSelectDropdownItemSnippet
+                  //     key={flag}
+                  //     current={flag}
+                  //     selectedFlags={val}
+                  //     setFlags={setVal}
+                  //     valueType={valueType}
+                  //     label={flagLabels.find(x => x.flag === flag)?.label ?? ""}
+                  //   />
+                  // ))}
                 >
                   <DropdownToggle
                     className={`${styles.DropdownToggleCustom}`}
                     theme={dropdownModule}
                   >
                     {flagLabels
-                      .filter(x => hasFlag(val, x.flag))
+                      .filter(x => hasFlag(valForFlags, x.flag))
                       .map(x => x.label)
                       .join(", ") || "None"}
                   </DropdownToggle>

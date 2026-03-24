@@ -27,7 +27,7 @@ export function GetFlags(valueType: UpdateValueType) {
   }
 }
 
-export function isMultiSelect(valueType: UpdateValueType) {
+export function isSingleSelect(valueType: UpdateValueType) {
   switch (valueType) {
     case UpdateValueType.MaintenanceDepotData_MaintenanceType:
     case UpdateValueType.ParkingFacilityData_RoadTypes:

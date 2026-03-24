@@ -156,6 +156,10 @@ namespace AdvancedBuildingControl.Systems
         public bool TryMakeSP(Entity entity, bool log, out PrefabBase createdPrefab)
         {
             createdPrefab = null;
+
+            if (!hasSP)
+                return false;
+
             try
             {
                 string entityName = prefabSystem.GetPrefabName(entity);
@@ -619,6 +623,9 @@ namespace AdvancedBuildingControl.Systems
 
         public void FindAndCreateMissingSP()
         {
+            if (!hasSP)
+                return;
+
             string prefName = string.Empty;
             int spCount = 0;
             try
