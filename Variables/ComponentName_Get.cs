@@ -1,18 +1,162 @@
-
 namespace AdvancedBuildingControl.Variables
+{
+    public partial class UVTHelper
     {
-        public partial class UVTHelper
+        public static ComponentName GetComponentName(UpdateValueType updateValueType)
         {
-            public static ComponentName GetComponentName(UpdateValueType updateValueType)
+            switch (updateValueType)
             {
-                switch (updateValueType)
-                {
-                    case UpdateValueType._None:
-                    case UpdateValueType._All:
-                        break;
+                case UpdateValueType._None:
+                case UpdateValueType._All:
+                    break;
 
-                    // start
-case UpdateValueType.AttractionData_Attractiveness: return ComponentName.AttractionData;case UpdateValueType.BatteryData_Capacity:case UpdateValueType.BatteryData_PowerOutput: return ComponentName.BatteryData;case UpdateValueType.BuildingPropertyData_ResidentialProperties:case UpdateValueType.BuildingPropertyData_AllowedSold:case UpdateValueType.BuildingPropertyData_AllowedInput:case UpdateValueType.BuildingPropertyData_AllowedManufactured:case UpdateValueType.BuildingPropertyData_AllowedStored:case UpdateValueType.BuildingPropertyData_SpaceMultiplier: return ComponentName.BuildingPropertyData;case UpdateValueType.CargoTransportStationData_WorkMultiplier: return ComponentName.CargoTransportStationData;case UpdateValueType.ConsumptionData_Upkeep:case UpdateValueType.ConsumptionData_ElectricityConsumption:case UpdateValueType.ConsumptionData_WaterConsumption:case UpdateValueType.ConsumptionData_GarbageAccumulation:case UpdateValueType.ConsumptionData_TelecomNeed: return ComponentName.ConsumptionData;case UpdateValueType.CoverageData_Range:case UpdateValueType.CoverageData_Capacity:case UpdateValueType.CoverageData_Magnitude: return ComponentName.CoverageData;case UpdateValueType.DeathcareFacilityData_HearseCapacity:case UpdateValueType.DeathcareFacilityData_StorageCapacity:case UpdateValueType.DeathcareFacilityData_ProcessingRate:case UpdateValueType.DeathcareFacilityData_LongTermStorage: return ComponentName.DeathcareFacilityData;case UpdateValueType.DestructibleObjectData_FireHazard:case UpdateValueType.DestructibleObjectData_StructuralIntegrity: return ComponentName.DestructibleObjectData;case UpdateValueType.EmergencyGeneratorData_ElectricityProduction: return ComponentName.EmergencyGeneratorData;case UpdateValueType.EmergencyShelterData_ShelterCapacity:case UpdateValueType.EmergencyShelterData_VehicleCapacity: return ComponentName.EmergencyShelterData;case UpdateValueType.FireStationData_FireEngineCapacity:case UpdateValueType.FireStationData_FireHelicopterCapacity:case UpdateValueType.FireStationData_DisasterResponseCapacity:case UpdateValueType.FireStationData_VehicleEfficiency: return ComponentName.FireStationData;case UpdateValueType.GarbageFacilityData_GarbageCapacity:case UpdateValueType.GarbageFacilityData_VehicleCapacity:case UpdateValueType.GarbageFacilityData_TransportCapacity:case UpdateValueType.GarbageFacilityData_ProcessingSpeed:case UpdateValueType.GarbageFacilityData_IndustrialWasteOnly:case UpdateValueType.GarbageFacilityData_LongTermStorage: return ComponentName.GarbageFacilityData;case UpdateValueType.GarbagePoweredData_Capacity:case UpdateValueType.GarbagePoweredData_ProductionPerUnit: return ComponentName.GarbagePoweredData;case UpdateValueType.GroundWaterPoweredData_Production:case UpdateValueType.GroundWaterPoweredData_MaximumGroundWater: return ComponentName.GroundWaterPoweredData;case UpdateValueType.HospitalData_AmbulanceCapacity:case UpdateValueType.HospitalData_MedicalHelicopterCapacity:case UpdateValueType.HospitalData_PatientCapacity:case UpdateValueType.HospitalData_TreatmentBonus:case UpdateValueType.HospitalData_HealthRange:case UpdateValueType.HospitalData_TreatDiseases:case UpdateValueType.HospitalData_TreatInjuries: return ComponentName.HospitalData;case UpdateValueType.MaintenanceDepotData_MaintenanceType:case UpdateValueType.MaintenanceDepotData_VehicleCapacity:case UpdateValueType.MaintenanceDepotData_VehicleEfficiency: return ComponentName.MaintenanceDepotData;case UpdateValueType.ParkData_MaintenancePool:case UpdateValueType.ParkData_AllowHomeless: return ComponentName.ParkData;case UpdateValueType.ParkingFacilityData_RoadTypes:case UpdateValueType.ParkingFacilityData_ComfortFactor:case UpdateValueType.ParkingFacilityData_GarageMarkerCapacity: return ComponentName.ParkingFacilityData;case UpdateValueType.PoliceStationData_PatrolCarCapacity:case UpdateValueType.PoliceStationData_PoliceHelicopterCapacity:case UpdateValueType.PoliceStationData_JailCapacity:case UpdateValueType.PoliceStationData_PurposeMask: return ComponentName.PoliceStationData;case UpdateValueType.PostFacilityData_PostVanCapacity:case UpdateValueType.PostFacilityData_PostTruckCapacity:case UpdateValueType.PostFacilityData_MailCapacity:case UpdateValueType.PostFacilityData_SortingRate: return ComponentName.PostFacilityData;case UpdateValueType.PowerPlantData_ElectricityProduction: return ComponentName.PowerPlantData;case UpdateValueType.PrisonData_PrisonVanCapacity:case UpdateValueType.PrisonData_PrisonerCapacity:case UpdateValueType.PrisonData_PrisonerWellbeing:case UpdateValueType.PrisonData_PrisonerHealth: return ComponentName.PrisonData;case UpdateValueType.SchoolData_StudentCapacity:case UpdateValueType.SchoolData_GraduationModifier:case UpdateValueType.SchoolData_EducationLevel:case UpdateValueType.SchoolData_StudentWellbeing:case UpdateValueType.SchoolData_StudentHealth: return ComponentName.SchoolData;case UpdateValueType.SewageOutletData_Capacity:case UpdateValueType.SewageOutletData_Purification: return ComponentName.SewageOutletData;case UpdateValueType.SolarPoweredData_Production: return ComponentName.SolarPoweredData;case UpdateValueType.SpawnableBuildingData_Level: return ComponentName.SpawnableBuildingData;case UpdateValueType.StorageCompanyData_StoredResources:case UpdateValueType.StorageCompanyData_TransportInterval: return ComponentName.StorageCompanyData;case UpdateValueType.TelecomFacilityData_Range:case UpdateValueType.TelecomFacilityData_NetworkCapacity:case UpdateValueType.TelecomFacilityData_PenetrateTerrain: return ComponentName.TelecomFacilityData;case UpdateValueType.TransportDepotData_TransportType:case UpdateValueType.TransportDepotData_EnergyTypes:case UpdateValueType.TransportDepotData_SizeClass:case UpdateValueType.TransportDepotData_DispatchCenter:case UpdateValueType.TransportDepotData_VehicleCapacity:case UpdateValueType.TransportDepotData_ProductionDuration:case UpdateValueType.TransportDepotData_MaintenanceDuration: return ComponentName.TransportDepotData;case UpdateValueType.TransportStationData_ComfortFactor:case UpdateValueType.TransportStationData_LoadingFactor:case UpdateValueType.TransportStationData_CarRefuelTypes:case UpdateValueType.TransportStationData_TrainRefuelTypes:case UpdateValueType.TransportStationData_WatercraftRefuelTypes:case UpdateValueType.TransportStationData_AircraftRefuelTypes: return ComponentName.TransportStationData;case UpdateValueType.WaterPoweredData_ProductionFactor:case UpdateValueType.WaterPoweredData_CapacityFactor: return ComponentName.WaterPoweredData;case UpdateValueType.WaterPumpingStationData_Types:case UpdateValueType.WaterPumpingStationData_Capacity:case UpdateValueType.WaterPumpingStationData_Purification: return ComponentName.WaterPumpingStationData;case UpdateValueType.WindPoweredData_MaximumWind:case UpdateValueType.WindPoweredData_Production: return ComponentName.WindPoweredData;case UpdateValueType.WorkplaceData_Complexity:case UpdateValueType.WorkplaceData_MaxWorkers:case UpdateValueType.WorkplaceData_EveningShiftProbability:case UpdateValueType.WorkplaceData_NightShiftProbability:case UpdateValueType.WorkplaceData_MinimumWorkersLimit:case UpdateValueType.WorkplaceData_WorkConditions: return ComponentName.WorkplaceData;
+                // start
+                case UpdateValueType.AttractionData_Attractiveness:
+                    return ComponentName.AttractionData;
+                case UpdateValueType.BatteryData_Capacity:
+                case UpdateValueType.BatteryData_PowerOutput:
+                    return ComponentName.BatteryData;
+                case UpdateValueType.BuildingPropertyData_ResidentialProperties:
+                case UpdateValueType.BuildingPropertyData_AllowedSold:
+                case UpdateValueType.BuildingPropertyData_AllowedInput:
+                case UpdateValueType.BuildingPropertyData_AllowedManufactured:
+                case UpdateValueType.BuildingPropertyData_AllowedStored:
+                case UpdateValueType.BuildingPropertyData_SpaceMultiplier:
+                    return ComponentName.BuildingPropertyData;
+                case UpdateValueType.BuildingTerraformData_DontRaise:
+                case UpdateValueType.BuildingTerraformData_DontLower:
+                    return ComponentName.BuildingTerraformData;
+                case UpdateValueType.CargoTransportStationData_WorkMultiplier:
+                    return ComponentName.CargoTransportStationData;
+                case UpdateValueType.ConsumptionData_Upkeep:
+                case UpdateValueType.ConsumptionData_ElectricityConsumption:
+                case UpdateValueType.ConsumptionData_WaterConsumption:
+                case UpdateValueType.ConsumptionData_GarbageAccumulation:
+                case UpdateValueType.ConsumptionData_TelecomNeed:
+                    return ComponentName.ConsumptionData;
+                case UpdateValueType.CoverageData_Range:
+                case UpdateValueType.CoverageData_Capacity:
+                case UpdateValueType.CoverageData_Magnitude:
+                    return ComponentName.CoverageData;
+                case UpdateValueType.DeathcareFacilityData_HearseCapacity:
+                case UpdateValueType.DeathcareFacilityData_StorageCapacity:
+                case UpdateValueType.DeathcareFacilityData_ProcessingRate:
+                case UpdateValueType.DeathcareFacilityData_LongTermStorage:
+                    return ComponentName.DeathcareFacilityData;
+                case UpdateValueType.DestructibleObjectData_FireHazard:
+                case UpdateValueType.DestructibleObjectData_StructuralIntegrity:
+                    return ComponentName.DestructibleObjectData;
+                case UpdateValueType.EmergencyGeneratorData_ElectricityProduction:
+                    return ComponentName.EmergencyGeneratorData;
+                case UpdateValueType.EmergencyShelterData_ShelterCapacity:
+                case UpdateValueType.EmergencyShelterData_VehicleCapacity:
+                    return ComponentName.EmergencyShelterData;
+                case UpdateValueType.FireStationData_FireEngineCapacity:
+                case UpdateValueType.FireStationData_FireHelicopterCapacity:
+                case UpdateValueType.FireStationData_DisasterResponseCapacity:
+                case UpdateValueType.FireStationData_VehicleEfficiency:
+                    return ComponentName.FireStationData;
+                case UpdateValueType.GarbageFacilityData_GarbageCapacity:
+                case UpdateValueType.GarbageFacilityData_VehicleCapacity:
+                case UpdateValueType.GarbageFacilityData_TransportCapacity:
+                case UpdateValueType.GarbageFacilityData_ProcessingSpeed:
+                case UpdateValueType.GarbageFacilityData_IndustrialWasteOnly:
+                case UpdateValueType.GarbageFacilityData_LongTermStorage:
+                    return ComponentName.GarbageFacilityData;
+                case UpdateValueType.GarbagePoweredData_Capacity:
+                case UpdateValueType.GarbagePoweredData_ProductionPerUnit:
+                    return ComponentName.GarbagePoweredData;
+                case UpdateValueType.GroundWaterPoweredData_Production:
+                case UpdateValueType.GroundWaterPoweredData_MaximumGroundWater:
+                    return ComponentName.GroundWaterPoweredData;
+                case UpdateValueType.HospitalData_AmbulanceCapacity:
+                case UpdateValueType.HospitalData_MedicalHelicopterCapacity:
+                case UpdateValueType.HospitalData_PatientCapacity:
+                case UpdateValueType.HospitalData_TreatmentBonus:
+                case UpdateValueType.HospitalData_HealthRange:
+                case UpdateValueType.HospitalData_TreatDiseases:
+                case UpdateValueType.HospitalData_TreatInjuries:
+                    return ComponentName.HospitalData;
+                case UpdateValueType.MaintenanceDepotData_MaintenanceType:
+                case UpdateValueType.MaintenanceDepotData_VehicleCapacity:
+                case UpdateValueType.MaintenanceDepotData_VehicleEfficiency:
+                    return ComponentName.MaintenanceDepotData;
+                case UpdateValueType.ParkData_MaintenancePool:
+                case UpdateValueType.ParkData_AllowHomeless:
+                    return ComponentName.ParkData;
+                case UpdateValueType.ParkingFacilityData_RoadTypes:
+                case UpdateValueType.ParkingFacilityData_ComfortFactor:
+                case UpdateValueType.ParkingFacilityData_GarageMarkerCapacity:
+                    return ComponentName.ParkingFacilityData;
+                case UpdateValueType.PoliceStationData_PatrolCarCapacity:
+                case UpdateValueType.PoliceStationData_PoliceHelicopterCapacity:
+                case UpdateValueType.PoliceStationData_JailCapacity:
+                case UpdateValueType.PoliceStationData_PurposeMask:
+                    return ComponentName.PoliceStationData;
+                case UpdateValueType.PostFacilityData_PostVanCapacity:
+                case UpdateValueType.PostFacilityData_PostTruckCapacity:
+                case UpdateValueType.PostFacilityData_MailCapacity:
+                case UpdateValueType.PostFacilityData_SortingRate:
+                    return ComponentName.PostFacilityData;
+                case UpdateValueType.PowerPlantData_ElectricityProduction:
+                    return ComponentName.PowerPlantData;
+                case UpdateValueType.PrisonData_PrisonVanCapacity:
+                case UpdateValueType.PrisonData_PrisonerCapacity:
+                case UpdateValueType.PrisonData_PrisonerWellbeing:
+                case UpdateValueType.PrisonData_PrisonerHealth:
+                    return ComponentName.PrisonData;
+                case UpdateValueType.SchoolData_StudentCapacity:
+                case UpdateValueType.SchoolData_GraduationModifier:
+                case UpdateValueType.SchoolData_EducationLevel:
+                case UpdateValueType.SchoolData_StudentWellbeing:
+                case UpdateValueType.SchoolData_StudentHealth:
+                    return ComponentName.SchoolData;
+                case UpdateValueType.SewageOutletData_Capacity:
+                case UpdateValueType.SewageOutletData_Purification:
+                    return ComponentName.SewageOutletData;
+                case UpdateValueType.SolarPoweredData_Production:
+                    return ComponentName.SolarPoweredData;
+                case UpdateValueType.SpawnableBuildingData_Level:
+                    return ComponentName.SpawnableBuildingData;
+                case UpdateValueType.StorageCompanyData_StoredResources:
+                case UpdateValueType.StorageCompanyData_TransportInterval:
+                    return ComponentName.StorageCompanyData;
+                case UpdateValueType.TelecomFacilityData_Range:
+                case UpdateValueType.TelecomFacilityData_NetworkCapacity:
+                case UpdateValueType.TelecomFacilityData_PenetrateTerrain:
+                    return ComponentName.TelecomFacilityData;
+                case UpdateValueType.TransportDepotData_TransportType:
+                case UpdateValueType.TransportDepotData_EnergyTypes:
+                case UpdateValueType.TransportDepotData_SizeClass:
+                case UpdateValueType.TransportDepotData_DispatchCenter:
+                case UpdateValueType.TransportDepotData_VehicleCapacity:
+                case UpdateValueType.TransportDepotData_ProductionDuration:
+                case UpdateValueType.TransportDepotData_MaintenanceDuration:
+                    return ComponentName.TransportDepotData;
+                case UpdateValueType.TransportStationData_ComfortFactor:
+                case UpdateValueType.TransportStationData_LoadingFactor:
+                case UpdateValueType.TransportStationData_CarRefuelTypes:
+                case UpdateValueType.TransportStationData_TrainRefuelTypes:
+                case UpdateValueType.TransportStationData_WatercraftRefuelTypes:
+                case UpdateValueType.TransportStationData_AircraftRefuelTypes:
+                    return ComponentName.TransportStationData;
+                case UpdateValueType.WaterPoweredData_ProductionFactor:
+                case UpdateValueType.WaterPoweredData_CapacityFactor:
+                    return ComponentName.WaterPoweredData;
+                case UpdateValueType.WaterPumpingStationData_Types:
+                case UpdateValueType.WaterPumpingStationData_Capacity:
+                case UpdateValueType.WaterPumpingStationData_Purification:
+                    return ComponentName.WaterPumpingStationData;
+                case UpdateValueType.WindPoweredData_MaximumWind:
+                case UpdateValueType.WindPoweredData_Production:
+                    return ComponentName.WindPoweredData;
+                case UpdateValueType.WorkplaceData_Complexity:
+                case UpdateValueType.WorkplaceData_MaxWorkers:
+                case UpdateValueType.WorkplaceData_EveningShiftProbability:
+                case UpdateValueType.WorkplaceData_NightShiftProbability:
+                case UpdateValueType.WorkplaceData_MinimumWorkersLimit:
+                case UpdateValueType.WorkplaceData_WorkConditions:
+                    return ComponentName.WorkplaceData;
                 //end
             }
 

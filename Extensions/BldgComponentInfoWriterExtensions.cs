@@ -34,6 +34,12 @@ namespace AdvancedBuildingControl.Extensions
             writer.Write(((ulong)value.BuildingPropertyData_AllowedStored).ToString());
             writer.PropertyName(nameof(value.BuildingPropertyData_SpaceMultiplier));
             writer.Write(value.BuildingPropertyData_SpaceMultiplier);
+            writer.PropertyName(nameof(value.BuildingTerraformData));
+            writer.Write(value.BuildingTerraformData);
+            writer.PropertyName(nameof(value.BuildingTerraformData_DontRaise));
+            writer.Write(value.BuildingTerraformData_DontRaise);
+            writer.PropertyName(nameof(value.BuildingTerraformData_DontLower));
+            writer.Write(value.BuildingTerraformData_DontLower);
             writer.PropertyName(nameof(value.CargoTransportStationData));
             writer.Write(value.CargoTransportStationData);
             writer.PropertyName(nameof(value.CargoTransportStationData_WorkMultiplier));

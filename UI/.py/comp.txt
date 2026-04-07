@@ -7,6 +7,8 @@ BuildingPropertyData	m_AllowedInput	Resource	ulong		103
 BuildingPropertyData	m_AllowedManufactured	Resource	ulong		104				
 BuildingPropertyData	m_AllowedStored	Resource	ulong		105				
 BuildingPropertyData	m_SpaceMultiplier	float			106		0		
+BuildingTerraformData	m_DontRaise	bool			13107				
+BuildingTerraformData	m_DontLower	bool			13108				
 CargoTransportStationData	m_WorkMultiplier	float			9301		0		
 ConsumptionData	m_Upkeep	int			401	1	0		
 ConsumptionData	m_ElectricityConsumption	float			402		0		

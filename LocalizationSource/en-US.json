@@ -42,6 +42,8 @@
   "AdvancedBuildingControl.CompTooltip.104": "Manufacturable resource types",
   "AdvancedBuildingControl.CompTooltip.105": "Storable resource types",
   "AdvancedBuildingControl.CompTooltip.106": "Floor count (abstract)",
+  "AdvancedBuildingControl.CompTooltip.13107": "Allow the terrain to be lower than the lot area",
+  "AdvancedBuildingControl.CompTooltip.13108": "Allow the terrain to be higher than the lot area",
   "AdvancedBuildingControl.CompTooltip.9301": "Cargo handling speed multiplier",
   "AdvancedBuildingControl.CompTooltip.401": "Monthly upkeep",
   "AdvancedBuildingControl.CompTooltip.402": "Electricity usage (MW)",

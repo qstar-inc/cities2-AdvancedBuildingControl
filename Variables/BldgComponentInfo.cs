@@ -21,6 +21,9 @@ namespace AdvancedBuildingControl.Variables
         public Resource BuildingPropertyData_AllowedManufactured { get; set; } = 0;
         public Resource BuildingPropertyData_AllowedStored { get; set; } = 0;
         public float BuildingPropertyData_SpaceMultiplier { get; set; } = 0;
+        public bool BuildingTerraformData { get; set; } = false;
+        public bool BuildingTerraformData_DontRaise { get; set; } = false;
+        public bool BuildingTerraformData_DontLower { get; set; } = false;
         public bool CargoTransportStationData { get; set; } = false;
         public float CargoTransportStationData_WorkMultiplier { get; set; } = 0;
         public bool ConsumptionData { get; set; } = false;

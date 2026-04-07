@@ -293,8 +293,9 @@ import {
     hover?: UISound | string | null;
     focus?: UISound | string | null;
   }
-  export interface ButtonProps
-    extends React.ButtonHTMLAttributes<HTMLButtonElement | HTMLDivElement> {
+  export interface ButtonProps extends React.ButtonHTMLAttributes<
+    HTMLButtonElement | HTMLDivElement
+  > {
     focusKey?: FocusKey;
     debugName?: string;
     selected?: boolean;
@@ -341,14 +342,12 @@ import {
     };
   export const Button: (props: ButtonProps$1) => JSX.Element;
   export const MenuButton: (
-    props: Partial<LabeledIconButtonProps>
+    props: Partial<LabeledIconButtonProps>,
   ) => JSX.Element;
   export const FloatingButton: (props: Partial<IconButtonProps>) => JSX.Element;
   export type AnchoredPopupAlignment = "left" | "right";
   export interface DropdownTheme
-    extends DropdownToggleTheme,
-      DropdownMenuTheme,
-      DropdownItemTheme {}
+    extends DropdownToggleTheme, DropdownMenuTheme, DropdownItemTheme {}
   export interface DropdownToggleTheme {
     dropdownToggle: string;
     label: string;
@@ -382,8 +381,7 @@ import {
     onToggle,
   }: PropsWithChildren<DropdownProps>) => JSX.Element;
   export interface DropdownToggleProps
-    extends DropdownToggleBaseProps,
-      ClassProps {
+    extends DropdownToggleBaseProps, ClassProps {
     theme?: DropdownToggleTheme;
     openIconComponent?: ReactNode;
     closeIconComponent?: ReactNode;
@@ -395,8 +393,7 @@ import {
     children,
     ...props
   }: PropsWithChildren<DropdownToggleProps>) => JSX.Element;
-  export interface DropdownToggleBaseProps
-    extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  export interface DropdownToggleBaseProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     tooltip?: ReactNode;
     showHint?: boolean;
     theme?: Partial<DropdownToggleTheme>;
@@ -586,7 +583,7 @@ import {
   export const Scrollable: (
     props: ScrollableProps & {
       children?: import("react").ReactNode;
-    } & import("react").RefAttributes<HTMLDivElement>
+    } & import("react").RefAttributes<HTMLDivElement>,
   ) =>
     | import("react").ReactElement<
         any,
@@ -622,8 +619,7 @@ import {
     link: string;
     listItem: string;
   }
-  export interface FormattedTextProps
-    extends HTMLAttributes<HTMLParagraphElement> {
+  export interface FormattedTextProps extends HTMLAttributes<HTMLParagraphElement> {
     focusKey?: FocusKey;
     text?: LocReactNode;
     theme?: Partial<FormattedTextTheme>;
@@ -644,8 +640,7 @@ import {
   export interface FormattedParagraphsTheme extends FormattedTextTheme {
     paragraphs: string;
   }
-  export interface FormattedParagraphsProps
-    extends HTMLAttributes<HTMLDivElement> {
+  export interface FormattedParagraphsProps extends HTMLAttributes<HTMLDivElement> {
     focusKey?: FocusKey;
     /** @deprecated */
     text?: string | string[];
@@ -675,7 +670,7 @@ import {
   export type LinkRenderer = (
     data: string,
     text: ReactNode[],
-    key?: string | number | null | undefined
+    key?: string | number | null | undefined,
   ) => ReactNode | undefined;
   export class MarkupRenderer implements FormattedTextRenderer {
     private linkRenderer?;
@@ -699,7 +694,7 @@ import {
     playFromTo(
       playTime: number,
       pauseTime: number,
-      callback?: () => void
+      callback?: () => void,
     ): void;
   }
 

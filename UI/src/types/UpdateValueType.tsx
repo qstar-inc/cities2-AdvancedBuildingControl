@@ -10,6 +10,8 @@ export enum UpdateValueType {
   BuildingPropertyData_AllowedManufactured = 104,
   BuildingPropertyData_AllowedStored = 105,
   BuildingPropertyData_SpaceMultiplier = 106,
+  BuildingTerraformData_DontRaise = 13107,
+  BuildingTerraformData_DontLower = 13108,
   CargoTransportStationData_WorkMultiplier = 9301,
   ConsumptionData_Upkeep = 401,
   ConsumptionData_ElectricityConsumption = 402,

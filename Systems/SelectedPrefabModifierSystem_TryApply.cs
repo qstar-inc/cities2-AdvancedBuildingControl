@@ -27,6 +27,7 @@ namespace AdvancedBuildingControl.Systems
             AttractionData attractionData = default;
             BatteryData batteryData = default;
             BuildingPropertyData buildingPropertyData = default;
+            BuildingTerraformData buildingTerraformData = default;
             CargoTransportStationData cargoTransportStationData = default;
             ConsumptionData consumptionData = default;
             CoverageData coverageData = default;
@@ -76,6 +77,10 @@ namespace AdvancedBuildingControl.Systems
                     break;
                 case ComponentName.BuildingPropertyData:
                     if (!EntityManager.TryGetComponent(selectedPrefab, out buildingPropertyData))
+                        return false;
+                    break;
+                case ComponentName.BuildingTerraformData:
+                    if (!EntityManager.TryGetComponent(selectedPrefab, out buildingTerraformData))
                         return false;
                     break;
                 case ComponentName.CargoTransportStationData:
@@ -303,6 +308,20 @@ namespace AdvancedBuildingControl.Systems
                         modifiedValue
                     );
                     utils.SetOrAdd(selectedPrefab, buildingPropertyData);
+                    return true;
+
+                case UpdateValueType.BuildingTerraformData_DontRaise:
+                    bool orig_BuildingTerraformData_DontRaise = buildingTerraformData.m_DontRaise;
+                    originalValue = UVTHelper.ConvertToLong(orig_BuildingTerraformData_DontRaise);
+                    buildingTerraformData.m_DontRaise = UVTHelper.ConvertToBool(modifiedValue);
+                    utils.SetOrAdd(selectedPrefab, buildingTerraformData);
+                    return true;
+
+                case UpdateValueType.BuildingTerraformData_DontLower:
+                    bool orig_BuildingTerraformData_DontLower = buildingTerraformData.m_DontLower;
+                    originalValue = UVTHelper.ConvertToLong(orig_BuildingTerraformData_DontLower);
+                    buildingTerraformData.m_DontLower = UVTHelper.ConvertToBool(modifiedValue);
+                    utils.SetOrAdd(selectedPrefab, buildingTerraformData);
                     return true;
 
                 case UpdateValueType.CargoTransportStationData_WorkMultiplier:

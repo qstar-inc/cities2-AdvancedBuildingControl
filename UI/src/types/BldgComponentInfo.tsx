@@ -13,6 +13,9 @@ export interface BldgComponentInfo {
   BuildingPropertyData_AllowedManufactured: string;
   BuildingPropertyData_AllowedStored: string;
   BuildingPropertyData_SpaceMultiplier: number;
+  BuildingTerraformData: boolean;
+  BuildingTerraformData_DontRaise: boolean;
+  BuildingTerraformData_DontLower: boolean;
   CargoTransportStationData: boolean;
   CargoTransportStationData_WorkMultiplier: number;
   ConsumptionData: boolean;

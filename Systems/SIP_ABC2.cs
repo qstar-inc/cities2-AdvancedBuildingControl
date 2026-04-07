@@ -42,6 +42,17 @@ namespace AdvancedBuildingControl.Systems
             if (
                 EntityManager.TryGetComponent(
                     selectedPrefab,
+                    out BuildingTerraformData buildingTerraformData
+                )
+            )
+            {
+                c.BuildingTerraformData = true;
+                c.BuildingTerraformData_DontRaise = buildingTerraformData.m_DontRaise;
+                c.BuildingTerraformData_DontLower = buildingTerraformData.m_DontLower;
+            }
+            if (
+                EntityManager.TryGetComponent(
+                    selectedPrefab,
                     out CargoTransportStationData cargoTransportStationData
                 )
             )
