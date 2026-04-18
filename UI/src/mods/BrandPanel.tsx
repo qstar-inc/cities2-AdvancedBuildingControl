@@ -26,7 +26,6 @@ const BrandSection = ({
   BrandsText,
   BrandsTooltip,
   BrandsArrayX,
-  BrandGroupHoverText,
   SelectedBrand,
   MaxHeight,
   SizeProvider,
@@ -34,7 +33,6 @@ const BrandSection = ({
   BrandsText: string;
   BrandsTooltip: string;
   BrandsArrayX: BrandDataInfo[];
-  BrandGroupHoverText: string;
   SelectedBrand: string;
   MaxHeight: number;
   SizeProvider: SizeProvider;
@@ -63,7 +61,7 @@ const BrandSection = ({
       <PanelSection>
         <PanelSectionRow
           left={`${BrandsText} (${BrandsArrayX.length})`}
-          right={BrandGroupHoverText}
+          right={"[?]"}
           tooltip={BrandsTooltip}
         />
         <AutoNavigationScope activation={FocusActivation.AnyChildren}>
@@ -144,7 +142,6 @@ export const BrandPanel: FC<BrandPanelProps> = (props: BrandPanelProps) => {
   );
   const OtherBrandsText = FindTranslation("Brand.OtherBrands")?.toUpperCase();
   const OtherBrandsTooltip = FindTranslation("Brand.OtherBrands.Tooltip");
-  const BrandGroupHoverText = FindTranslation("Brand.GroupHover");
 
   const infoText = FindTranslation("Brand.Info");
 
@@ -210,7 +207,6 @@ export const BrandPanel: FC<BrandPanelProps> = (props: BrandPanelProps) => {
                 BrandsText={SupportedBrandsText!}
                 BrandsTooltip={SupportedBrandsTooltip!}
                 BrandsArrayX={SupportedBrandsArray}
-                BrandGroupHoverText={BrandGroupHoverText!}
                 SelectedBrand={bldgBrandInfo.BrandName}
                 MaxHeight={210}
                 SizeProvider={sizeProviderSupported}
@@ -219,7 +215,6 @@ export const BrandPanel: FC<BrandPanelProps> = (props: BrandPanelProps) => {
                 BrandsText={OtherBrandsText!}
                 BrandsTooltip={OtherBrandsTooltip!}
                 BrandsArrayX={OtherBrandsArray}
-                BrandGroupHoverText={BrandGroupHoverText!}
                 SelectedBrand={bldgBrandInfo.BrandName}
                 MaxHeight={440 - Math.min(SupportedBrandsArray.length, 7) * 30}
                 SizeProvider={sizeProviderOther}

@@ -1,15 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Security.Policy;
 using Colossal.Entities;
-using Colossal.IO.AssetDatabase;
 using Colossal.PSI.Environment;
 using Game;
 using Game.Economy;
 using Game.Prefabs;
-using Game.UI.Menu;
 using Game.Zones;
 using Newtonsoft.Json;
 using StarQ.Shared.Extensions;

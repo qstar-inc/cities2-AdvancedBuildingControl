@@ -258,7 +258,7 @@ namespace AdvancedBuildingControl.Systems
                         )
                         {
                             LogHelper.SendLog($"Found existing: {nonMeshName}", LogLevel.DEVD);
-                            return true;
+                            continue;
                         }
                         LogHelper.SendLog(
                             $"Existing not found, creating: {nonMeshName}",

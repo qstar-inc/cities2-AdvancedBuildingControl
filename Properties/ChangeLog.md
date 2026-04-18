@@ -1,1 +1,1 @@
-- New Property Customizer option: Building Terraform Data (only Don't Raise and Don't Lower)
+- Fix issues with Static Ploppable Builder for multi mesh assets.
