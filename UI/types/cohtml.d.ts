@@ -1,6 +1,4 @@
 declare module "cohtml/cohtml" {
-  // There are minor edits here to make cohtml.d.ts valid with more strict tscofnig setup denoted with - // modified by Colossal - comment
-
   interface SingleArgumentCallback<T> {
     (result: T): any;
   }
@@ -10,6 +8,7 @@ declare module "cohtml/cohtml" {
   }
 
   export interface EventHandle {
+    // modified by Colossal
     /**
      * Detach this handler from the event
      **/
@@ -148,8 +147,22 @@ declare module "cohtml/cohtml" {
      **/
     registerBindingAttribute(
       attributeName: string,
-      attributeHandler: AttributeHandlerConstructor
+      attributeHandler: AttributeHandlerConstructor,
     ): void;
+
+    /**
+     * Enable or disable safe data binding by reference of properties of exposed models. Enabled by default.
+     * @param enable
+     * @warning Changing this setting doesn't affect already exposed properties
+     **/
+    enableSafeDataBinding(enable: boolean): void;
+
+    /**
+     * Returns an unsafe reference to a property of an exposed model in JavaScript
+     * @param property Property of an exposed model, e.g. model.property1.property2
+     * @return An unsafe reference to the specified property. The C++ is responsible to call View::DestroyExposedObject() when the pointer to that C++ object is no longer valid
+     **/
+    pinUnsafeReference(property: object): object;
 
     /**
      * Registers a JavaScript data binding model
@@ -162,6 +175,23 @@ declare module "cohtml/cohtml" {
      * Updates all localized elements having `data-l10n-id`. Useful after changing the locale.
      **/
     reloadLocalization(): void;
+
+    /**
+     * Enables or disables immediate layout. Disabled by default.
+     * @param isEnabled Whether to enable immediate layout
+     **/
+    enableImmediateLayout(isEnabled: boolean): void;
+
+    /**
+     * Returns whether or not immediate layout is enabled.
+     * @return boolean
+     **/
+    isImmediateLayoutEnabled(): boolean;
+
+    /**
+     * Performs Immediate Layout sync
+     **/
+    executeImmediateLayoutSync(): void;
   }
 
   export const engine: Engine; // modified by Colossal

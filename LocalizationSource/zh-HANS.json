@@ -16,6 +16,8 @@
   "AdvancedBuildingControl.Cleanup.Header": "建筑维护",
   "AdvancedBuildingControl.Cleanup.AppliesOne": "在此面板中所做的任何更改仅适用于该建筑物的当前实例。",
   "AdvancedBuildingControl.Cleanup.SetToZero": "设为0",
+  "AdvancedBuildingControl.Cleanup.ClearAbandonment": "清除废弃状态",
+  "AdvancedBuildingControl.Cleanup.ClearNotification": "清除所有通知",
   "AdvancedBuildingControl.WorkplaceComplexity_Manual": "手动",
   "AdvancedBuildingControl.WorkplaceComplexity_Simple": "简易",
   "AdvancedBuildingControl.WorkplaceComplexity_Complex": "复杂",

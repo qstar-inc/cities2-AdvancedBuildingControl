@@ -18,7 +18,12 @@ namespace AdvancedBuildingControl.Systems
         {
             buffer = new();
             if (!SystemAPI.TryGetSingletonEntity<Game.City.City>(out Entity city))
+            {
+                LogHelper.SendLog(
+                    "Something went wrong. Failed to get singleton entity for Game.City.City"
+                );
                 return false;
+            }
 
             if (!EntityManager.HasBuffer<ModifiedPrefab>(city))
                 EntityManager.AddBuffer<ModifiedPrefab>(city);

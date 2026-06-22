@@ -1,1 +1,4 @@
-- Fix issues with Static Ploppable Builder for multi mesh assets.
+- Fix ABC section missing from BuildingExtension upgrades panel.
+- Refresh cached data when playset data is changed.
+- Cleanup codes related to zone changing option.
+- Add two new cleanup triggers: Clear Abandonment, Clear Notifications.

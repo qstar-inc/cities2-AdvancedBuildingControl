@@ -28,19 +28,19 @@ import { MutableRefObject } from "react";
   export function bindValue<T>(
     group: string,
     name: string,
-    fallbackValue?: T
+    fallbackValue?: T,
   ): ValueBinding<T>;
   export function bindLocalValue<T>(initialValue: T): LocalValueBinding<T>;
   export function bindMap<K, V>(
     group: string,
     name: string,
-    keyStringifier?: (key: K) => string
+    keyStringifier?: (key: K) => string,
   ): MapBinding<K, V>;
   export function bindEvent<T>(group: string, name: string): EventBinding<T>;
   export function bindTrigger(group: string, name: string): () => void;
   export function bindTriggerWithArgs<T extends any[] = []>(
     group: string,
-    name: string
+    name: string,
   ): T extends [] ? unknown : (...args: T) => void;
   export function trigger(group: string, name: string, ...args: any[]): void;
   export function call<T>(
@@ -53,23 +53,23 @@ import { MutableRefObject } from "react";
   export function useReducedValue<T, V>(
     binding: ValueBinding<V>,
     reducer: (current: T, next: V) => T,
-    initial: T
+    initial: T,
   ): T;
   export function useValueRef<V>(binding: ValueBinding<V>): MutableRefObject<V>;
   export function useValueOnChange<V>(
     binding: ValueBinding<V>,
     onChange: (value: V, prevValue: V) => void,
-    depth?: number
+    depth?: number,
   ): V;
   export function useMapValueOnChange<K, V>(
     binding: MapBinding<K, V>,
     key: K,
-    onChange: (newValue: V) => void
+    onChange: (newValue: V) => void,
   ): V;
   /** Subscribe to a MapBinding value. throw an error if the binding is not registered on the C# side */
   export function useMapValue<K, V>(
     binding: MapBinding<K, V>,
-    key: undefined
+    key: undefined,
   ): undefined;
   export function useMapValue<K, V>(binding: MapBinding<K, V>, key: K): V;
   export function useMapValues<K, V>(binding: MapBinding<K, V>, keys: K[]): V[];
@@ -111,7 +111,7 @@ import { MutableRefObject } from "react";
     playFromTo(
       playTime: number,
       pauseTime: number,
-      callback?: () => void
+      callback?: () => void,
     ): void;
   }
 

@@ -36,24 +36,27 @@ import {
   export interface TooltipProps extends ClassProps {
     tooltip: ReactNode;
     disabled?: boolean;
+    delayTime?: number;
     forceVisible?: boolean;
+    hideOnInteraction?: boolean;
     theme?: Partial<BalloonTheme>;
     direction?: BalloonDirection;
     alignment?: BalloonAlignment;
     children: RefReactElement;
     anchorElRef?: RefObject<HTMLElement>;
   }
-  export const Tooltip: ({
-    tooltip,
-    forceVisible,
-    disabled,
-    theme,
-    direction,
-    alignment,
-    className,
-    children,
-    anchorElRef,
-  }: PropsWithChildren<TooltipProps>) => JSX.Element;
+  export const Tooltip: import("react").MemoExoticComponent<
+    (
+      props: TooltipProps & {
+        children?: ReactNode;
+      } & import("react").RefAttributes<HTMLElement>,
+    ) =>
+      | import("react").ReactElement<
+          any,
+          string | import("react").JSXElementConstructor<any>
+        >
+      | null
+  >;
   export class FocusSymbol {
     readonly debugName: string;
     readonly r: number;
@@ -73,6 +76,7 @@ import {
     content: string;
     footer: string;
     floatingHint?: string;
+    tooltipHint?: string;
   }
   export interface PanelTitleBarTheme {
     titleBar: string;
@@ -95,17 +99,103 @@ import {
   }
   export const DialogContext: import("react").Context<DialogContextProps>;
   export const DialogRenderer: ({ children }: PropsWithChildren) => JSX.Element;
-  export interface ConfirmationDialogProps {
+  export interface Typed<T extends string> {
+    __Type: T;
+  }
+  export type TypeFromMap<T extends Record<string, any>> = {
+    [K in keyof T]: K extends string ? T[K] & Typed<K> : never;
+  }[keyof T];
+  export enum Unit {
+    Integer = "integer",
+    IntegerRounded = "integerRounded",
+    IntegerPerMonth = "integerPerMonth",
+    IntegerPerHour = "integerPerHour",
+    FloatSingleFraction = "floatSingleFraction",
+    FloatTwoFractions = "floatTwoFractions",
+    FloatThreeFractions = "floatThreeFractions",
+    Percentage = "percentage",
+    PercentageSingleFraction = "percentageSingleFraction",
+    PercentagePrecise = "percentagePrecise",
+    Angle = "angle",
+    Length = "length",
+    Area = "area",
+    Volume = "volume",
+    VolumePerMonth = "volumePerMonth",
+    Weight = "weight",
+    WeightPerCell = "weightPerCell",
+    WeightPerMonth = "weightPerMonth",
+    Power = "power",
+    Energy = "energy",
+    DataRate = "dataRate",
+    DataBytes = "dataBytes",
+    DataMegabytes = "dataMegabytes",
+    Money = "money",
+    MoneyPerCell = "moneyPerCell",
+    MoneyPerMonth = "moneyPerMonth",
+    MoneyPerHour = "moneyPerHour",
+    MoneyPerDistance = "moneyPerDistance",
+    MoneyPerDistancePerMonth = "moneyPerDistancePerMonth",
+    BodiesPerMonth = "bodiesPerMonth",
+    XP = "xp",
+    Temperature = "temperature",
+    TemperaturePrecise = "temperaturePrecise",
+    NetElevation = "netElevation",
+    ScreenFrequency = "screenFrequency",
+    Height = "height",
+    Custom = "custom",
+    DurationSeconds = "durationSeconds",
+  }
+  export enum LocElementType {
+    Bounds = "Game.UI.Localization.LocalizedBounds",
+    Fraction = "Game.UI.Localization.LocalizedFraction",
+    Number = "Game.UI.Localization.LocalizedNumber",
+    String = "Game.UI.Localization.LocalizedString",
+  }
+  export interface LocElements {
+    [LocElementType.Bounds]: LocalizedBounds;
+    [LocElementType.Fraction]: LocalizedFraction;
+    [LocElementType.Number]: LocalizedNumber;
+    [LocElementType.String]: LocalizedString;
+  }
+  export type LocElement = TypeFromMap<LocElements>;
+  export interface LocalizedBounds {
+    min: number;
+    max: number;
+    unit?: Unit;
+  }
+  export interface LocalizedFraction {
+    value: number;
+    total: number;
+    unit?: Unit;
+  }
+  export interface LocalizedNumber {
+    value: number;
+    unit?: Unit;
+    signed: boolean;
+  }
+  export interface LocalizedString {
+    id: string | null;
+    value: string | null;
+    args: Record<string, LocElement> | null;
+  }
+  export interface Number2 {
+    readonly x: number;
+    readonly y: number;
+  }
+  export interface ConfirmationDialogProps extends PropsWithChildren {
     title?: ReactNode;
-    message: ReactNode;
+    message?: ReactNode;
     details?: string;
     confirm?: ReactNode;
     cancel?: ReactNode;
+    disabled?: boolean;
+    disableContinue?: boolean;
     onConfirm: (dismiss: boolean) => void;
     onCancel?: () => void;
     dismissible?: boolean;
     cancellable?: boolean;
     zIndex?: number;
+    multiline?: boolean;
   }
   export const UITriggeredConfirmationDialog: React.FC<ConfirmationDialogProps>;
   export enum UISound {
@@ -156,10 +246,6 @@ import {
     closeMenu = "close-menu",
     clickDisableButton = "click-disable-button",
   }
-  export interface Number2 {
-    readonly x: number;
-    readonly y: number;
-  }
   export type Action = () => void | boolean;
   export type Action1D = (value: number) => void | boolean;
   export interface InputActionsDefinition {
@@ -184,6 +270,7 @@ import {
     "Select Route": Action;
     "Remove Operating District": Action;
     "Upgrades Menu": Action;
+    "Upgrades Menu Secondary": Action;
     "Purchase Map Tile": Action;
     "Unfollow Citizen": Action;
     "Like Chirp": Action;
@@ -198,6 +285,7 @@ import {
     "Focus Line Panel": Action;
     "Focus Occupants Panel": Action;
     "Focus Info Panel": Action;
+    "Quaternary Action": Action;
     Close: Action;
     Back: Action;
     "Leave Underground Mode": Action;
@@ -253,6 +341,7 @@ import {
     "Notification Panel": Action;
     "Chirper Panel": Action;
     "Lifepath Panel": Action;
+    "Universal Mod Panel": Action;
     "Event Journal Panel": Action;
     "Radio Panel": Action;
     "Photo Mode Panel": Action;
@@ -284,6 +373,10 @@ import {
     "Debug Multiplier": Action1D;
   }
   export type InputAction = keyof InputActionsDefinition;
+  export type InputActionRequest = {
+    action: InputAction;
+    actionContext?: string;
+  };
   export interface ButtonTheme {
     button: string;
     hint: string;
@@ -309,8 +402,9 @@ import {
     onSelect?: () => void;
     as?: "button" | "div";
     hintAction?: InputAction;
+    actionContext?: string;
     forceHint?: boolean;
-    shortcut?: InputAction;
+    shortcut?: InputAction | InputActionRequest;
     allowFocusableChildren?: boolean;
   }
   export interface IconButtonTheme extends ButtonTheme {
@@ -337,6 +431,7 @@ import {
         | "menu"
         | "icon"
         | "floating"
+        | "text"
         | "default";
       theme?: ButtonTheme$1;
     };
@@ -362,6 +457,7 @@ import {
   }
   export interface DropdownItemTheme {
     dropdownItem: string;
+    icon?: string;
   }
   export interface DropdownProps {
     focusKey?: FocusKey;
@@ -402,10 +498,20 @@ import {
     selectSound?: UISound | string | null;
     tooltipLabel?: ReactNode;
   }
-  export interface DropdownItemProps<T> extends ClassProps {
-    focusKey?: FocusKey;
+  export interface DropdownItem<T> {
     value: T;
+    displayName: LocElement;
+    tooltip?: LocElement;
+    icon?: string;
+    iconTint?: string;
+    disabled?: boolean;
+  }
+  export interface DropdownItemProps<T>
+    extends ClassProps, Partial<Omit<DropdownItem<T>, "displayName">> {
+    value: T;
+    focusKey?: FocusKey;
     selected?: boolean;
+    hasIcons?: boolean;
     theme?: DropdownItemTheme;
     sounds?: ButtonSounds | null;
     closeOnSelect?: boolean;
@@ -425,16 +531,21 @@ import {
    *
    * When the item is clicked, the dropdown menu is automatically hidden.
    */
-  export function DropdownItem<T>({
+  export function DropdownItem$1<T>({
     focusKey,
     value,
+    disabled,
+    icon,
+    iconTint,
     selected,
+    hasIcons,
     theme,
     sounds,
     className,
     onChange,
     onToggleSelected,
     closeOnSelect,
+    tooltip,
     children,
   }: PropsWithChildren<DropdownItemProps<T>>): JSX.Element;
   export interface TransitionSounds {
@@ -455,7 +566,9 @@ import {
     hintClassName?: string;
     showCloseHint?: boolean | InputAction;
     unfocusedHintAction?: InputAction;
-    backActionOverride?: string;
+    footerHintAsTooltip?: boolean;
+    backActionOverride?: InputAction;
+    actionContext?: string;
     allowLooping?: boolean;
   }
   export interface DraggablePanelProps extends PanelProps {
@@ -493,23 +606,31 @@ import {
   export interface InfoRowProps extends ClassProps {
     icon?: string;
     left?: ReactNode;
+    center?: ReactNode;
     right?: ReactNode;
     tooltip?: ReactNode;
     link?: ReactNode;
     uppercase?: boolean;
     subRow?: boolean;
+    subRowDimmed?: boolean;
     disableFocus?: boolean;
+    noShrinkRight?: boolean;
+    justifyLeft?: boolean;
   }
   export const InfoRow: ({
     icon,
     left,
+    center,
     right,
     tooltip,
     link,
     uppercase,
     subRow,
+    subRowDimmed,
     disableFocus,
     className,
+    noShrinkRight,
+    justifyLeft,
   }: InfoRowProps) => JSX.Element;
   export interface SimplePanelProps extends PanelProps {
     draggable?: false | undefined;
@@ -521,7 +642,7 @@ import {
   export const Panel: (props: PropsWithChildren<PanelProps$1>) => JSX.Element;
   export interface IconProps {
     src: string;
-    tinted?: boolean;
+    tinted?: boolean | string;
     className?: string;
     children?: ReactNode;
   }
@@ -550,6 +671,7 @@ import {
     minOverflow: number;
   }
   export interface ScrollControllerCallback {
+    container: null | HTMLDivElement;
     scrollTo(x: number, y: number): void;
     scrollBy(x: number, y: number): void;
     smoothScrollTo(x: number, y: number): void;
@@ -561,13 +683,14 @@ import {
     scrollBy(x: number, y: number): void;
     smoothScrollTo(x: number, y: number): void;
     scrollIntoView(element: Element): void;
+    get container(): HTMLDivElement | null | undefined;
     _attachCallback(callback: ScrollControllerCallback): void;
     _detachCallback(callback: ScrollControllerCallback): void;
   }
   export interface ScrollableProps {
     horizontal?: boolean;
     vertical?: boolean;
-    trackVisibility?: "always" | "scrollable";
+    trackVisibility?: "always" | "scrollable" | "reserve";
     overshootX?: number;
     overshootY?: number;
     smooth?: boolean;
@@ -579,6 +702,7 @@ import {
     onOverflowY?: (overflow: boolean) => void;
     autoScroll?: boolean;
     autoScrollSettings?: AutoScrollSettings;
+    useNewStyle?: boolean;
   }
   export const Scrollable: (
     props: ScrollableProps & {
@@ -626,6 +750,7 @@ import {
     renderer?: FormattedTextRenderer;
     onLinkSelect?: (data: string) => void;
     selectAction?: InputAction;
+    nonInline?: boolean;
   }
   export const FormattedText: ({
     focusKey,
@@ -635,6 +760,7 @@ import {
     className,
     onLinkSelect,
     selectAction,
+    nonInline,
     ...props
   }: FormattedTextProps) => JSX.Element;
   export interface FormattedParagraphsTheme extends FormattedTextTheme {
@@ -650,6 +776,7 @@ import {
     selectAction?: InputAction;
     maxLineLength?: number;
     splitLineLength?: number;
+    nonInline?: boolean;
   }
   export const FormattedParagraphs: ({
     focusKey,
@@ -660,6 +787,7 @@ import {
     children,
     onLinkSelect,
     selectAction,
+    nonInline,
     maxLineLength,
     splitLineLength,
     ...props
@@ -700,6 +828,7 @@ import {
 
   export {
     ButtonProps$1 as ButtonProps,
+    DropdownItem$1 as DropdownItem,
     InfoRow as PanelSectionRow,
     InfoSection as PanelSection,
     InfoSectionFoldout as PanelFoldout,

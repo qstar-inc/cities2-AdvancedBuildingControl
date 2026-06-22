@@ -9,6 +9,7 @@ using Game;
 using Game.Buildings;
 using Game.Common;
 using Game.Companies;
+using Game.Notifications;
 using Game.Objects;
 using Game.Prefabs;
 using Game.UI;
@@ -67,6 +68,7 @@ namespace AdvancedBuildingControl.Systems
             CreateTrigger<int>("ResetComponentValue", ResetComponentValue);
             CreateTrigger("MakeSP", MakeSP);
             CreateTrigger<string, int>("ChangeBCTValue", ChangeBCTValue);
+            CreateTrigger<int>("TriggerBCT", TriggerBCT);
 
             Enabled = false;
         }
@@ -112,20 +114,17 @@ namespace AdvancedBuildingControl.Systems
 
         private bool Visible()
         {
-            bool isVisible = false;
-            if (EntityManager.TryGetComponent(selectedEntity, out PrefabRef _))
-            {
-                if (!prefabSystem.TryGetPrefab(selectedPrefab, out PrefabBase _))
-                    return false;
+            if (!EntityManager.TryGetComponent(selectedEntity, out PrefabRef _))
+                return false;
+            if (!prefabSystem.TryGetPrefab(selectedPrefab, out PrefabBase _))
+                return false;
 
-                if (EntityManager.HasComponent<BuildingData>(selectedPrefab))
-                    isVisible = true;
-
-                if (!isVisible)
-                    return false;
-
+            if (
+                EntityManager.HasComponent<BuildingData>(selectedPrefab)
+                || EntityManager.HasComponent<BuildingExtensionData>(selectedPrefab)
+            )
                 return true;
-            }
+
             return false;
         }
 
@@ -134,8 +133,10 @@ namespace AdvancedBuildingControl.Systems
             Reset();
             if (
                 !EntityManager.TryGetComponent(selectedEntity, out PrefabRef _)
-                || !EntityManager.HasComponent<BuildingData>(selectedPrefab)
-                || EntityManager.HasComponent<Abandoned>(selectedEntity)
+                || !(
+                    EntityManager.HasComponent<BuildingData>(selectedPrefab)
+                    || EntityManager.HasComponent<BuildingExtensionData>(selectedPrefab)
+                )
                 || EntityManager.HasComponent<Destroyed>(selectedEntity)
             )
                 return;
@@ -185,9 +186,6 @@ namespace AdvancedBuildingControl.Systems
 
         public void CheckCurrentModifications()
         {
-            //if (!EntityManager.HasComponent<LocalModified>(selectedPrefab))
-            //    return;
-
             if (!selectedPrefabModifier.localEntities.TryGetValue(selectedPrefab, out var data))
                 return;
 
@@ -280,6 +278,30 @@ namespace AdvancedBuildingControl.Systems
                 );
             }
 
+            if (EntityManager.HasComponent<Abandoned>(selectedEntity))
+            {
+                bldgCleanupInfoArray.Add(
+                    new()
+                    {
+                        CleanupType = BldgCleanupType.ClearAbandonment,
+                        Enabled = true,
+                        CurrentValueNumber = 0,
+                    }
+                );
+            }
+
+            if (EntityManager.HasBuffer<IconElement>(selectedEntity))
+            {
+                bldgCleanupInfoArray.Add(
+                    new()
+                    {
+                        CleanupType = BldgCleanupType.ClearNotification,
+                        Enabled = true,
+                        CurrentValueNumber = 0,
+                    }
+                );
+            }
+
             bldgCleanupInfo.Array = bldgCleanupInfoArray.ToArray();
 
             if (bldgCleanupInfo.Array != null && bldgCleanupInfo.Array.Length > 0)
@@ -332,6 +354,8 @@ namespace AdvancedBuildingControl.Systems
             if (updateType == UpdateValueType._All)
             {
                 selectedPrefabModifier.ResetAll(selectedPrefab);
+                EntityManager.AddComponent<Updated>(selectedEntity);
+                RequestUpdate();
                 return;
             }
 
@@ -355,20 +379,21 @@ namespace AdvancedBuildingControl.Systems
         {
             if (!Enum.IsDefined(typeof(BldgCleanupType), valueType))
                 return;
-            //if (
-            //    lastTrigger.Item1 == value
-            //    && lastTrigger.Item2 == valueType
-            //    && lastTrigger.Item3 == selectedPrefab
-            //)
-            //{
-            //    LogHelper.SendLog("Skipping duplicate trigger", LogLevel.DEVD);
-            //    return;
-            //}
 
-            //lastTrigger = (value, valueType, selectedPrefab);
             BldgCleanupType resetType = (BldgCleanupType)valueType;
-            LogHelper.SendLog("Triggering ChangeCleanupValue", LogLevel.DEVD);
+            LogHelper.SendLog("Triggering ChangeBCTValue", LogLevel.DEVD);
             selectedEntityModifier.ChangeCleanupValue(selectedEntity, value, resetType);
+            RequestUpdate();
+        }
+
+        public void TriggerBCT(int valueType)
+        {
+            if (!Enum.IsDefined(typeof(BldgCleanupType), valueType))
+                return;
+
+            BldgCleanupType resetType = (BldgCleanupType)valueType;
+            LogHelper.SendLog("Triggering TriggerBCT", LogLevel.DEVD);
+            selectedEntityModifier.TriggerCleanup(selectedEntity, resetType);
             RequestUpdate();
         }
 

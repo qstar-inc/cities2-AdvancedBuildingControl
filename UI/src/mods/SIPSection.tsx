@@ -1,21 +1,18 @@
+import { MakeSP, RandomizeStyle, selectedEntity } from "bindings/backend";
 import {
-  brandPanelVisibleBinding,
-  componentPanelVisibleBinding,
-  MakeSP,
-  PanelIndex,
-  RandomizeStyle,
-  resetPanelVisibleBinding,
-  selectedEntity,
-  togglePanel,
-  ToolButton,
-} from "bindings";
+    brandPanelVisibleBinding, cleanupPanelVisibleBinding, componentPanelVisibleBinding, PanelIndex,
+    togglePanel
+} from "bindings/frontend";
+import { cleanupIcon, spIcon } from "bindings/icons";
 import { useValue } from "cs2/api";
 import { SelectedInfoSectionBase } from "cs2/bindings";
 import { FOCUS_AUTO, FocusDisabled } from "cs2/input";
+import * as l10n from "cs2/l10n";
 import { PanelSection, PanelSectionRow } from "cs2/ui";
-import { FindTranslation } from "functions/lang";
 import mod from "mod.json";
-import { abcIcons, uilStandard } from "styleBindings";
+import { diceIcon, toolsIcon } from "shared/icons_uil";
+import { FindTranslation, initTranslationService } from "shared/lang";
+import { ToolButton } from "shared/vanilla";
 import { BldgCleanupInfo } from "types/BldgCleanupInfo";
 import { BldgComponentInfo } from "types/BldgComponentInfo";
 import { BldgModifiedInfo } from "types/BldgModifiedInfo";
@@ -39,6 +36,9 @@ export const SIP_ABC = (componentList: any): any => {
   componentList["AdvancedBuildingControl.Systems.SIP_ABC"] = (
     props: SIP_ABC,
   ) => {
+    const { translate } = l10n.useLocalization();
+    initTranslationService(translate);
+
     const hasSP = props.hasSP;
     const hasMesh = props.hasMesh;
 
@@ -49,7 +49,7 @@ export const SIP_ABC = (componentList: any): any => {
 
     const isBrandPanelOpen = useValue(brandPanelVisibleBinding);
     const isComponentPanelOpen = useValue(componentPanelVisibleBinding);
-    const isCleanupPanelOpen = useValue(resetPanelVisibleBinding);
+    const isCleanupPanelOpen = useValue(cleanupPanelVisibleBinding);
 
     const selectedEntityVal = useValue(selectedEntity);
 
@@ -82,7 +82,7 @@ export const SIP_ABC = (componentList: any): any => {
                       focusKey={FOCUS_AUTO}
                       tooltip={tooltipSPBuilder}
                       disabled={!hasSP || !hasMesh}
-                      src={abcIcons + "SP_Builder.svg"}
+                      src={spIcon}
                       onSelect={MakeSP}
                     />
                   }
@@ -91,7 +91,7 @@ export const SIP_ABC = (componentList: any): any => {
                     focusKey={FOCUS_AUTO}
                     tooltip={tooltipRandomizer}
                     selected={false}
-                    src={uilStandard + "Dice.svg"}
+                    src={diceIcon}
                     onSelect={RandomizeStyle}
                   />
                   {bldgBrandInfo.HasBrand && (
@@ -119,7 +119,7 @@ export const SIP_ABC = (componentList: any): any => {
                     focusKey={FOCUS_AUTO}
                     tooltip={tooltipComponentOverrider}
                     selected={isComponentPanelOpen}
-                    src={uilStandard + "Tools.svg"}
+                    src={toolsIcon}
                     onSelect={() => {
                       togglePanel(PanelIndex.Component);
                     }}
@@ -131,7 +131,6 @@ export const SIP_ABC = (componentList: any): any => {
                       bldgModifiedInfo={bldgModifiedInfo}
                     />
                   )}
-
                   {bldgCleanupInfo.Enabled && (
                     <>
                       <ToolButton
@@ -139,7 +138,7 @@ export const SIP_ABC = (componentList: any): any => {
                         focusKey={FOCUS_AUTO}
                         tooltip={tooltipCleanup}
                         selected={isCleanupPanelOpen}
-                        src={abcIcons + "Cleanup.svg"}
+                        src={cleanupIcon}
                         onSelect={() => {
                           togglePanel(PanelIndex.Cleanup);
                         }}

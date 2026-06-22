@@ -5,11 +5,9 @@ using System.IO;
 using System.Linq;
 using AdvancedBuildingControl.Components;
 using AdvancedBuildingControl.Variables;
-using Colossal.Entities;
 using Colossal.PSI.Environment;
 using Game;
 using Game.City;
-using Game.Prefabs;
 using Newtonsoft.Json;
 using StarQ.Shared.Extensions;
 using Unity.Collections;
@@ -63,17 +61,17 @@ namespace AdvancedBuildingControl.Systems
             {
                 ModifiedPrefab entry = array[i];
 
-                if (!EntityManager.TryGetComponent(entry.ModEntity, out PrefabRef prefabRef))
+                if (!PrefabHelper.TryFindPrefabRef(entry.ModEntity, out Entity m_Prefab))
                     continue;
 
                 if (!entry.IsEnabled)
                     continue;
 
-                string prefabName = WorldHelper.PrefabSystem.GetPrefabName(prefabRef.m_Prefab);
+                string prefabName = WorldHelper.PrefabSystem.GetPrefabName(m_Prefab);
 
                 if (!dict.TryGetValue(prefabName, out List<BackupFormat> list))
                 {
-                    list = new List<BackupFormat>();
+                    list = new();
                     dict[prefabName] = list;
                 }
 

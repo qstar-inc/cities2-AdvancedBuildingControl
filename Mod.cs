@@ -34,7 +34,7 @@ namespace AdvancedBuildingControl
         {
             LogHelper.Init(Id, log);
             LocaleHelper.Init(Id, Name, GetReplacements);
-            UIHostHelper.Init(Id, uiHostName);
+            //UIHostHelper.Init(Id, uiHostName);
 
             try
             {
@@ -69,17 +69,14 @@ namespace AdvancedBuildingControl
 
         public void OnDispose()
         {
-            log.Info(nameof(OnDispose));
-            if (m_Setting != null)
-            {
-                m_Setting.UnregisterInOptionsUI();
-                m_Setting = null;
-            }
+            LocaleHelper.Dispose();
+            m_Setting?.UnregisterInOptionsUI();
+            m_Setting = null;
         }
 
         public static Dictionary<string, string> GetReplacements()
         {
-            return new() { { "X", "Y" } };
+            return new() { };
         }
     }
 }

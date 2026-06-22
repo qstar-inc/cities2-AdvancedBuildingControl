@@ -16,6 +16,8 @@
   "AdvancedBuildingControl.Cleanup.Header": "건물 유지 관리",
   "AdvancedBuildingControl.Cleanup.AppliesOne": "이 패널에서 변경된 사항은 건물의 이 특정 인스턴스에만 적용됩니다.",
   "AdvancedBuildingControl.Cleanup.SetToZero": "제로로 설정",
+  "AdvancedBuildingControl.Cleanup.ClearAbandonment": "Clear Abandonment",
+  "AdvancedBuildingControl.Cleanup.ClearNotification": "Clear Notifications",
   "AdvancedBuildingControl.WorkplaceComplexity_Manual": "수동",
   "AdvancedBuildingControl.WorkplaceComplexity_Simple": "단순",
   "AdvancedBuildingControl.WorkplaceComplexity_Complex": "복합",

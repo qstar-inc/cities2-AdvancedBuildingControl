@@ -8,7 +8,7 @@ declare module "cs2/utils" {
   export function parseEntityKey(value: any): Entity | undefined;
   export function entityEquals(
     a: Entity | null | undefined,
-    b: Entity | null | undefined
+    b: Entity | null | undefined,
   ): boolean;
   export function isNullOrEmpty(s: string | null | undefined): boolean;
   /**
@@ -16,17 +16,22 @@ declare module "cs2/utils" {
    * when any key has values which are not strictly equal between the arguments.
    * Returns true when the values of all keys are strictly equal.
    */
-  export function shallowEqual(a: any, b: any, depth?: number): boolean;
+  export function shallowEqual(
+    a: any,
+    b: any,
+    depth?: number,
+    path?: string,
+  ): boolean;
   export function useMemoizedValue<T>(
     value: T,
-    equalityComparer: EqualityComparer<T>
+    equalityComparer: EqualityComparer<T>,
   ): T;
   export function formatLargeNumber(value: number): string;
   export function useFormattedLargeNumber(value: number): string;
   export function useRem(): number;
   export function useCssLength(length: string): number;
   export function preloadImages<T extends Record<string, string> | string[]>(
-    urls: T
+    urls: T,
   ): T;
 
   export {};

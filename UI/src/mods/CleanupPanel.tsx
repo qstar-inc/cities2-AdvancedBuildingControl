@@ -1,19 +1,23 @@
-import {
-    ChangeBCTValue, Divider, resetPanelVisibleBinding as cleanupPanelVisibleBinding, ToolButton
-} from "bindings";
+import { ChangeBCTValue, TriggerBCT } from "bindings/backend";
+import { cleanupPanelVisibleBinding } from "bindings/frontend";
+import { cleanupIcon } from "bindings/icons";
 import { useValue } from "cs2/api";
 import { FOCUS_DISABLED } from "cs2/input";
 import { PanelSection, PanelSectionRow, Scrollable } from "cs2/ui";
-import { FindTranslation, nicifyVariableName } from "functions/lang";
 import { NumberInputSnippet } from "partials/InputSnippets";
 import { FC } from "react";
-import { abcIcons, styleSIP } from "styleBindings";
+import { FindTranslation, nicifyVariableName } from "shared/lang";
+import { PanelBase } from "shared/PanelBase";
+import { styleSIP } from "shared/style";
+import { Divider, InfoButton, ToolButton } from "shared/vanilla";
+import commonStyles from "styles/common.module.scss";
 import {
-    BldgCleanupInfo, BldgCleanupType, BldgCleanupTypeInfo, CleanupValueType, GetCleanupMetadata
+  BldgCleanupInfo,
+  BldgCleanupType,
+  BldgCleanupTypeInfo,
+  CleanupValueType,
+  GetCleanupMetadata,
 } from "types/BldgCleanupInfo";
-
-import { PanelBase } from "./PanelBase";
-import styles from "./style.module.scss";
 
 interface CleanupPanelProps {
   bldgCleanupInfo: BldgCleanupInfo;
@@ -31,14 +35,14 @@ const ZeroButtonSnippet = ({
   return (
     <>
       <div
-        className={`${false ? "" : styles.MarginLeft3r} ${styles.AlignCenter}`}
+        className={`${false ? "" : commonStyles.MarginLeft3r} ${commonStyles.AlignCenter}`}
       >
         <ToolButton
           id={`starq-abc-resetPanel-${valueType}-reset`}
           focusKey={FOCUS_DISABLED}
           disabled={isDisabled}
           tooltip={tooltip}
-          src={abcIcons + "Cleanup.svg"}
+          src={cleanupIcon}
           onSelect={() => {
             ChangeBCTValue(0, valueType);
           }}
@@ -65,7 +69,7 @@ const Section = ({
   if (valueType === CleanupValueType.Number)
     return (
       <PanelSectionRow
-        className={styles.NoMarginVertical}
+        className={commonStyles.NoMarginVertical}
         disableFocus={true}
         left={title}
         right={
@@ -84,6 +88,26 @@ const Section = ({
         }
       />
     );
+
+  if (valueType === CleanupValueType.Trigger) {
+    const buttonText = FindTranslation(`Cleanup.${base}`);
+
+    return (
+      <PanelSectionRow
+        className={commonStyles.NoMargin}
+        disableFocus={true}
+        center={
+          <InfoButton
+            label={buttonText}
+            // icon={resetIcon}
+            onSelect={() => {
+              TriggerBCT(resetData.CleanupType);
+            }}
+          ></InfoButton>
+        }
+      />
+    );
+  }
 
   return (
     <PanelSectionRow
@@ -114,9 +138,11 @@ export const CleanupPanel: FC<CleanupPanelProps> = (
   return (
     <>
       <PanelBase
-        header={headerText!}
+        id="abc-cleanup"
+        title={headerText!}
         visible={visibleBindingValue}
-        icon={abcIcons + "Cleanup.svg"}
+        icon={cleanupIcon}
+        sipAligned={true}
         content={
           <>
             <Scrollable

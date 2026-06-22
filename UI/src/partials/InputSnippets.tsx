@@ -1,13 +1,10 @@
-import { LocalizedNumber, Unit } from "cs2/l10n";
+import { Unit } from "cs2/l10n";
 import { useEffect, useState } from "react";
 import {
-  infoRowModule,
-  sipTextInputModule,
-  textElipsisInputModule,
-  textElipsisInputThemeModule,
-} from "styleBindings";
-
-import styles from "../mods/style.module.scss";
+    infoRowModule, sipTextInputModule, textElipsisInputModule, textElipsisInputThemeModule
+} from "shared/style";
+import { LocalizedNumber } from "shared/vanilla-type-fix";
+import commonStyles from "styles/common.module.scss";
 
 export const NumberInputSnippet = ({
   value,
@@ -36,7 +33,7 @@ export const NumberInputSnippet = ({
       <div style={{ width: "100rem" }}>
         <div className={textElipsisInputThemeModule.wrapper}>
           <div
-            className={`${textElipsisInputModule.container} ${sipTextInputModule.container} ${styles.NoMarginSide} ${styles.InputBoxCustom}`}
+            className={`${textElipsisInputModule.container} ${sipTextInputModule.container} ${commonStyles.NoMarginSide} ${commonStyles.InputBoxCustom}`}
             style={{ height: "32rem" }}
           >
             <input
@@ -54,7 +51,7 @@ export const NumberInputSnippet = ({
               onBlur={applyIfChanged}
             />
             <div
-              className={`${infoRowModule.right} ${textElipsisInputModule.label} ${sipTextInputModule.label} ${styles.InputBoxCustom}`}
+              className={`${infoRowModule.right} ${textElipsisInputModule.label} ${sipTextInputModule.label} ${commonStyles.InputBoxCustom}`}
             >
               {inputPrefix}{" "}
               {

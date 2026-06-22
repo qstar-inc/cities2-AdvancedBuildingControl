@@ -16,6 +16,8 @@
   "AdvancedBuildingControl.Cleanup.Header": "Maintenance du bâtiment",
   "AdvancedBuildingControl.Cleanup.AppliesOne": "Toutes les modifications effectuées dans ce panneau s’appliquent uniquement à cette instance du bâtiment.",
   "AdvancedBuildingControl.Cleanup.SetToZero": "Mettre à zéro",
+  "AdvancedBuildingControl.Cleanup.ClearAbandonment": "Clear Abandonment",
+  "AdvancedBuildingControl.Cleanup.ClearNotification": "Clear Notifications",
   "AdvancedBuildingControl.WorkplaceComplexity_Manual": "Manuel",
   "AdvancedBuildingControl.WorkplaceComplexity_Simple": "Simple",
   "AdvancedBuildingControl.WorkplaceComplexity_Complex": "Complexe",

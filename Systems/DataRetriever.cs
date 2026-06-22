@@ -25,20 +25,6 @@ namespace AdvancedBuildingControl.Systems
         public string[] Companies { get; set; } = new string[0];
     }
 
-    //public class ZoneDataInfo
-    //{
-    //    public string Name { get; set; } = "UnknownName";
-    //    public string PrefabName { get; set; } = "UnknownPrefab";
-    //    public string Color1 { get; set; } = "RGBA(0,0,0)";
-    //    public string Color2 { get; set; } = "RGBA(0,0,0)";
-    //    public float Upkeep { get; set; } = 0f;
-    //    public Entity Entity { get; set; } = Entity.Null;
-
-    //    //public string Icon { get; set; } = "";
-    //    public AreaType AreaType { get; set; } = AreaType.None;
-    //    public string AreaTypeString { get; set; } = "";
-    //}
-
     //public enum ResourceGroup
     //{
     //    None = 0,
@@ -73,10 +59,6 @@ namespace AdvancedBuildingControl.Systems
         public static readonly List<BrandDataInfo> brandDataInfos = new();
         public static bool hasNewBrandData = false;
 
-        //public int prevZoneEntityCount = 0;
-        //public static readonly List<ZoneDataInfo> zoneDataInfos = new();
-        //public static bool hasNewZoneData = false;
-
         //public int prevResourceEntityCount = 0;
         //public static readonly List<ResourceDataInfo> resourceDataInfos = new();
         //public static bool hasNewResourceData = false;
@@ -88,6 +70,7 @@ namespace AdvancedBuildingControl.Systems
         private static readonly object _lock2 = new();
 
         //private static readonly object _lock3 = new();
+        public Dictionary<Entity, CreatedEntitiesData> localEntities = new();
 
         protected override void OnCreate()
         {
@@ -97,8 +80,13 @@ namespace AdvancedBuildingControl.Systems
             prefabUISystem = WorldHelper.PrefabUISystem;
             nameSystem = WorldHelper.NameSystem;
             imageSystem = WorldHelper.ImageSystem;
-
+            localEntities = new();
             //Mod.m_Setting.onSettingsApplied += OnSettingsChanged;
+            ModHelper.AddAfterActivePlaysetOrModStatusChanged(() =>
+            {
+                NeedUpdate = true;
+                CleanAndGetData();
+            });
         }
 
         protected override void OnUpdate() { }
@@ -141,7 +129,6 @@ namespace AdvancedBuildingControl.Systems
 
                 //dataRetrieved = false;
                 GetBrandData();
-                //GetZoneData();
                 //GetResourceData();
 
                 if (
@@ -154,7 +141,7 @@ namespace AdvancedBuildingControl.Systems
 
                 //dataRetrieved = true;
                 LogHelper.SendLog(
-                    $"Data retrieved:\nBrandDataInfos: {brandDataInfos.Count}", //, ZoneDataInfos: {zoneDataInfos.Count}, ResourceDataInfos: {resourceDataInfos.Count}",
+                    $"Data retrieved:\nBrandDataInfos: {brandDataInfos.Count}", //, ResourceDataInfos: {resourceDataInfos.Count}",
                     LogLevel.DEV
                 );
                 NeedUpdate = false;
@@ -187,7 +174,10 @@ namespace AdvancedBuildingControl.Systems
                             EntityManager.TryGetComponent(entity, out PrefabData pd);
                             string missingName = EntityManager.GetName(entity);
 
-                            Mod.log.Info($"Brand '{missingName}' ({entity} is missing");
+                            LogHelper.SendLog(
+                                $"Brand '{missingName}' ({entity} is missing",
+                                LogLevel.DEVD
+                            );
                             continue;
                         }
 
@@ -199,17 +189,6 @@ namespace AdvancedBuildingControl.Systems
                                 32,
                                 32
                             );
-                        ;
-
-                        //if (brandPrefab.TryGetExactly(out UIObject uiObject))
-                        //{
-                        //    icon = uiObject.m_Icon;
-                        //}
-                        //else
-                        //{
-                        //    icon =
-                        //        $"thumbnail://ThumbnailCamera/BrandPrefab/{brandPrefab.name}?width=32&height=32";
-                        //}
 
                         CompanyPrefab[] companyPrefabs = brandPrefab.m_Companies;
                         string[] companies = new string[companyPrefabs.Length];
@@ -243,92 +222,6 @@ namespace AdvancedBuildingControl.Systems
                 Mod.log.Error(ex);
             }
         }
-
-        //void GetZoneData()
-        //{
-        //    //if (dataRetrieved)
-        //    //    return;
-        //    try
-        //    {
-        //        EntityQuery zoneQuery = SystemAPI.QueryBuilder().WithAll<ZoneData>().Build();
-        //        NativeArray<Entity> zoneEntitiesFromQuery = zoneQuery.ToEntityArray(Allocator.Temp);
-
-        //        hasNewZoneData = false;
-        //        int zCount = zoneEntitiesFromQuery.Length;
-        //        if (zoneDataInfos.Count == 0 || prevZoneEntityCount != zCount)
-        //        {
-        //            zoneDataInfos.Clear();
-        //            prevZoneEntityCount = zCount;
-        //            foreach (var entity in zoneEntitiesFromQuery)
-        //            {
-        //                prefabSystem.TryGetPrefab(entity, out ZonePrefab zonePrefab);
-
-        //                if (zonePrefab == null)
-        //                {
-        //                    EntityManager.TryGetComponent(entity, out PrefabData pd);
-        //                    string missingName = EntityManager.GetName(entity);
-
-        //                    Mod.log.Info($"Zone '{missingName}' ({entity} is missing");
-        //                    continue;
-        //                }
-
-        //                //string icon =
-        //                //    imageSystem.GetIconOrGroupIcon(entity)
-        //                //    ?? string.Format(
-        //                //        "{0}?width={1}&height={2}",
-        //                //        zonePrefab.thumbnailUrl,
-        //                //        32,
-        //                //        32
-        //                //    )
-        //                //    ?? "Media/Misc/Error.svg";
-
-        //                //zonePrefab.TryGetExactly(out UIObject uiObject);
-        //                //string icon = "";
-        //                //if (uiObject != null)
-        //                //{
-        //                //    icon = uiObject.m_Icon;
-        //                //}
-
-        //                string areaType = zonePrefab.m_AreaType.ToString();
-
-        //                if (zonePrefab.m_Office)
-        //                    areaType = "Office";
-
-        //                float upkeep = 0f;
-        //                zonePrefab.TryGetExactly(out ZoneServiceConsumption zoneServiceConsumption);
-        //                if (zoneServiceConsumption != null)
-        //                {
-        //                    upkeep = zoneServiceConsumption.m_Upkeep;
-        //                }
-
-        //                prefabUISystem.GetTitleAndDescription(entity, out var titleId, out var _);
-
-        //                zoneDataInfos.Add(
-        //                    new ZoneDataInfo
-        //                    {
-        //                        Name = titleId,
-        //                        PrefabName = zonePrefab.name,
-        //                        Color1 = zonePrefab.m_Color.ToHexCode(),
-        //                        Color2 = zonePrefab.m_Edge.ToHexCode(),
-        //                        Upkeep = upkeep,
-        //                        Entity = entity,
-        //                        //Icon = icon,
-        //                        AreaType = zonePrefab.m_AreaType,
-        //                        AreaTypeString = areaType,
-        //                    }
-        //                );
-        //            }
-        //            zoneDataInfos.Sort(
-        //                (a, b) => string.Compare(a.Name, b.Name, StringComparison.Ordinal)
-        //            );
-        //            hasNewZoneData = true;
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Mod.log.Error(ex);
-        //    }
-        //}
 
         //public ResourceGroup GetResourceGroup(Resource res, ResourcePrefab resourcePrefab)
         //{
@@ -412,6 +305,33 @@ namespace AdvancedBuildingControl.Systems
         //    {
         //        Mod.log.Error(ex);
         //    }
+        //}
+
+        //public bool TryAddOrCreateEntity(Entity selectedPrefab, out Entity newEntity)
+        //{
+        //    if (
+        //        localEntities.TryGetValue(selectedPrefab, out CreatedEntitiesData ced)
+        //        && ced.CreatedEntity != Entity.Null
+        //    )
+        //    {
+        //        newEntity = ced.CreatedEntity;
+        //        LogHelper.SendLog($"Existing entity found", LogLevel.DEVD);
+        //        if (!EntityManager.HasComponent<LocalEntities>(newEntity))
+        //            EntityManager.AddComponent<LocalEntities>(newEntity);
+        //        if (
+        //            !EntityManager.TryGetComponent(newEntity, out PrefabRef prefabRef)
+        //            || prefabRef.m_Prefab != selectedPrefab
+        //        )
+        //            EntityManager.AddComponentData(newEntity, new PrefabRef(selectedPrefab));
+        //        return true;
+        //    }
+
+        //    newEntity = EntityManager.CreateEntity();
+        //    LogHelper.SendLog($"Creating new entity", LogLevel.DEVD);
+        //    EntityManager.AddComponentData(newEntity, new PrefabRef(selectedPrefab));
+        //    EntityManager.AddComponent<LocalEntities>(newEntity);
+        //    localEntities[selectedPrefab] = new() { CreatedEntity = newEntity };
+        //    return true;
         //}
     }
 }

@@ -22,6 +22,8 @@
         PhysicalDamage,
         FireDamage,
         WaterDamage,
+        ClearAbandonment,
+        ClearNotification,
         _All,
     }
 }

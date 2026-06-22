@@ -1,0 +1,10 @@
+{
+	"folders": [
+		{
+			"path": "UI"
+		}
+	],
+	"settings": {
+		"js/ts.tsdk.path": "UI\\node_modules\\typescript\\lib"
+	}
+}

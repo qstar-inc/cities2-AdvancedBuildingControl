@@ -1,12 +1,5 @@
-import { useLocalization } from "cs2/l10n";
-import mod from "mod.json";
+import { FindTranslation } from "shared/lang";
 import { UpdateValueType } from "types/UpdateValueType";
-
-export function FindTranslation(str: string, vanilla: boolean = false) {
-  const { translate } = useLocalization();
-  if (vanilla) return translate(str) ?? `${str}`;
-  return translate(`${mod.id}.${str}`) ?? `${str}`;
-}
 
 export function GetCompName(str: string) {
   switch (str) {
@@ -21,23 +14,6 @@ export function GetCompName(str: string) {
       break;
   }
   return "Component Name Unknown";
-}
-
-export function nicifyVariableName(name?: string | null): string {
-  if (!name) return "";
-
-  if (name.startsWith("m_")) {
-    name = name.substring(2);
-  } else if (name.startsWith("Get")) {
-    name = name.substring(3);
-  }
-
-  name = name.replace(/\B([A-Z][a-z])/g, " $1");
-  name = name.replace(/([^A-Z\s])([A-Z])/g, "$1 $2");
-  name = name.replace(/(?<![\d\s]|\dx|\d-)(\d)/g, " $1");
-  name = name.replace(/^([a-z])/, m => m.toUpperCase());
-
-  return name;
 }
 
 export function GetAlternateDropdownText(

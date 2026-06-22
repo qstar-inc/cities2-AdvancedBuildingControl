@@ -3,7 +3,7 @@ const MOD = require("./mod.json");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { CSSPresencePlugin } = require("./tools/css-presence");
 const TerserPlugin = require("terser-webpack-plugin");
-const gray = (text) => `\x1b[90m${text}\x1b[0m`;
+const gray = text => `\x1b[90m${text}\x1b[0m`;
 
 const CSII_USERDATAPATH = process.env.CSII_USERDATAPATH;
 
@@ -50,7 +50,10 @@ module.exports = {
       },
       {
         test: /\.s?css$/,
-        include: path.join(__dirname, "src"),
+        include: [
+          path.join(__dirname, "src"),
+          path.resolve(__dirname, "../StarQ.Shared/UI/styles"),
+        ],
         use: [
           MiniCssExtractPlugin.loader,
           {
@@ -78,6 +81,7 @@ module.exports = {
     ],
   },
   resolve: {
+    symlinks: false,
     extensions: [".tsx", ".ts", ".js"],
     modules: ["node_modules", path.join(__dirname, "src")],
     alias: {
@@ -110,17 +114,12 @@ module.exports = {
     {
       apply(compiler) {
         let runCount = 0;
-        compiler.hooks.done.tap("AfterDonePlugin", (stats) => {
+        compiler.hooks.done.tap("AfterDonePlugin", stats => {
           console.log(stats.toString({ colors: true }));
           console.log(`\n🔨 ${!runCount++ ? "Built" : "Updated"} ${MOD.id}`);
           console.log("   " + gray(OUTPUT_DIR) + "\n");
         });
       },
     },
-  ],
-  ignoreWarnings: [
-    (warning) =>
-      typeof warning.message === "string" &&
-      warning.message.includes("The legacy JS API is deprecated"),
   ],
 };

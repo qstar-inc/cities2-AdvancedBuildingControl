@@ -16,6 +16,8 @@
   "AdvancedBuildingControl.Cleanup.Header": "Gebäude Instandhaltung",
   "AdvancedBuildingControl.Cleanup.AppliesOne": "Alle in diesem Fenster vorgenommenen Änderungen gelten nur für dieses Gebäude.",
   "AdvancedBuildingControl.Cleanup.SetToZero": "Auf null zurücksetzen",
+  "AdvancedBuildingControl.Cleanup.ClearAbandonment": "Clear Abandonment",
+  "AdvancedBuildingControl.Cleanup.ClearNotification": "Clear Notifications",
   "AdvancedBuildingControl.WorkplaceComplexity_Manual": "Handbuch",
   "AdvancedBuildingControl.WorkplaceComplexity_Simple": "Einfach",
   "AdvancedBuildingControl.WorkplaceComplexity_Complex": "Komplex",

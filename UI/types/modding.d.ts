@@ -2,7 +2,7 @@ declare module "cs2/modding" {
 import { ComponentType } from "react";
 
     export type ModuleRegistryExtend = <T extends ComponentType<any>>(
-    curr: T
+    curr: T,
   ) => (props: any) => JSX.Element;
   export type ModuleRegistryAppend = ComponentType<{}> | (() => JSX.Element);
   export type AppendHookTargets =
@@ -11,7 +11,8 @@ import { ComponentType } from "react";
     | "Game"
     | "GameTopLeft"
     | "GameTopRight"
-    | "GameBottomRight";
+    | "GameBottomRight"
+    | "UniversalModMenu";
   export type ModuleRegistry = {
     get(modulePath: string, exportName: string): any;
     add(modulePath: string, module: Record<string, any>): void;
@@ -19,27 +20,28 @@ import { ComponentType } from "react";
     extend(
       modulePath: string,
       exportNameOrSCSSValue: string | any,
-      extendCb?: ModuleRegistryExtend
+      extendCb?: ModuleRegistryExtend,
     ): void;
     append(
       modulePath: string,
       exportName: string,
       appendedComponent?: ModuleRegistryAppend,
-      index?: number
+      index?: number,
     ): void;
     append(
       target: AppendHookTargets,
       appendedComponent: ModuleRegistryAppend,
       index?: number,
-      _?: never
+      _?: never,
     ): void;
+    hasAppend(target: AppendHookTargets): boolean;
     registry: Map<string, Record<string, any>>;
     find(query: string | RegExp): [path: string, ...exports: string[]][];
     reset(): void;
   };
   export type ModRegistrar = (moduleRegistry: ModuleRegistry) => void;
   export const findModule: (
-    query: string | RegExp
+    query: string | RegExp,
   ) => [path: string, ...exports: string[]][];
   export const getModule: (modulePath: string, exportName: string) => any;
   // https://coherent-labs.com/Documentation/cpp-gameface/d1/dea/shape_morphing.html
@@ -59,7 +61,7 @@ import { ComponentType } from "react";
     playFromTo(
       playTime: number,
       pauseTime: number,
-      callback?: () => void
+      callback?: () => void,
     ): void;
   }
 

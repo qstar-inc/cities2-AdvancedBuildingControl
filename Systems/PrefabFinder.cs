@@ -20,6 +20,14 @@ namespace AdvancedBuildingControl.Systems
 
     public partial class PrefabFinder : GameSystemBase
     {
+        private PrefabSystem prefabSystem;
+
+        protected override void OnCreate()
+        {
+            base.OnCreate();
+            prefabSystem = WorldHelper.PrefabSystem;
+        }
+
         protected override void OnUpdate() { }
 
         public bool TryFindPrefab(string name, PrefabType prefabType, out Entity entity) =>
@@ -50,7 +58,6 @@ namespace AdvancedBuildingControl.Systems
             entity = Entity.Null;
             try
             {
-                PrefabSystem prefabSystem = WorldHelper.PrefabSystem;
                 PrefabID prefabID = new();
                 if (
                     prefabType == PrefabType.Building
@@ -129,8 +136,6 @@ namespace AdvancedBuildingControl.Systems
             entity = Entity.Null;
             try
             {
-                PrefabSystem prefabSystem = WorldHelper.PrefabSystem;
-
                 var eq3 = SystemAPI.QueryBuilder().WithAll<BuildingData, PrefabData>().Build();
                 var ents3 = eq3.ToEntityArray(Allocator.Temp);
 
@@ -176,8 +181,6 @@ namespace AdvancedBuildingControl.Systems
             entity = Entity.Null;
             try
             {
-                PrefabSystem prefabSystem = WorldHelper.PrefabSystem;
-
                 var eq3 = SystemAPI.QueryBuilder().WithAll<MeshData, PrefabData>().Build();
                 var ents3 = eq3.ToEntityArray(Allocator.Temp);
 

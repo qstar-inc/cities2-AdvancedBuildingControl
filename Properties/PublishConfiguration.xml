@@ -55,11 +55,14 @@ Writing this devlog was a very fun experience for me, and I hope you enjoyed rea
   <Screenshot Value="Properties/Screenshot05.png" />
   <Screenshot Value="Properties/Screenshot06.png" />
   <Tag Value="Code Mod" />
-  <ForumLink Value="" />
-  <ModVersion Value="2.1.1" />
-  <GameVersion Value="1.5.*" />
+  <ForumLink Value="https://forum.paradoxplaza.com/forum/threads/starq-mods-assets-projects-megathread.1930389/" />
+  <ModVersion Value="2.2.1" />
+  <GameVersion Value="1.6.0*" />
   <Dependency Id="74417" />
-  <ChangeLog>- Fix issues with Static Ploppable Builder for multi mesh assets.</ChangeLog>
+  <ChangeLog>- Fix ABC section missing from BuildingExtension upgrades panel.
+- Refresh cached data when playset data is changed.
+- Cleanup codes related to zone changing option.
+- Add two new cleanup triggers: Clear Abandonment, Clear Notifications.</ChangeLog>
   <ExternalLink Type="github" Url="https://github.com/qstar-inc/cities2-AdvancedBuildingControl" />
   <ExternalLink Type="discord" Url="https://discord.gg/U2PSjUzUuF" />
   <ExternalLink Type="buymeacoffee" Url="https://buymeacoffee.com/starq" />

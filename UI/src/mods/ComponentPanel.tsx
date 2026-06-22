@@ -1,33 +1,50 @@
 import {
-    ChangeUVTValue, ChangeUVTValueString, CheckBox, componentPanelVisibleBinding, Divider,
-    ResetUVTValue, ToolButton
-} from "bindings";
+  ChangeUVTValue,
+  ChangeUVTValueString,
+  ResetUVTValue,
+} from "bindings/backend";
+import { componentPanelVisibleBinding } from "bindings/frontend";
 import { useValue } from "cs2/api";
 import { Number2 } from "cs2/bindings";
 import { FOCUS_AUTO, FOCUS_DISABLED, FocusDisabled } from "cs2/input";
-import { LocalizedNumber, Unit } from "cs2/l10n";
+import { Unit } from "cs2/l10n";
 import {
-    Button, Dropdown, DropdownItem, DropdownToggle, PanelFoldout, PanelSection, PanelSectionRow,
-    Scrollable
+  Button,
+  Dropdown,
+  DropdownToggle,
+  PanelFoldout,
+  PanelSection,
+  PanelSectionRow,
+  Scrollable,
 } from "cs2/ui";
-import { hasFlag, toggleFlag } from "functions/enum";
-import {
-    FindTranslation, GetAlternateDropdownText, GetComponentTooltip, nicifyVariableName
-} from "functions/lang";
+import { GetAlternateDropdownText, GetComponentTooltip } from "functions/lang";
 import { GetFlags, isSingleSelect } from "functions/uvt";
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, ReactNode, useEffect, useMemo, useState } from "react";
+import { hasFlag, toggleFlag } from "shared/enum";
+import { resetIcon } from "shared/icons";
+import { toolsIcon } from "shared/icons_uil";
+import { FindTranslation, nicifyVariableName } from "shared/lang";
+import { PanelBase } from "shared/PanelBase";
+import { GetSectionOpen, SetSectionOpen } from "shared/section";
 import {
-    baseGameIcons, dropdownModule, infoRowModule, sipTextInputModule, styleLevelProgress,
-    styleLevelSection, styleProgress, styleSIP, textElipsisInputModule, textElipsisInputThemeModule,
-    uilStandard
-} from "styleBindings";
+  dropdownModule,
+  infoRowModule,
+  sipTextInputModule,
+  styleLevelProgress,
+  styleLevelSection,
+  styleProgress,
+  styleSIP,
+  textElipsisInputModule,
+  textElipsisInputThemeModule,
+} from "shared/style";
+import { CheckBox, Divider, ToolButton } from "shared/vanilla";
+import { DropdownItem, LocalizedNumber } from "shared/vanilla-type-fix";
+import commonStyle from "styles/common.module.scss";
 import { BldgComponentInfo } from "types/BldgComponentInfo";
 import { BldgModifiedInfo } from "types/BldgModifiedInfo";
-import { GetSectionOpen, SetSectionOpen } from "types/SectionControl";
 import { UpdateValueType } from "types/UpdateValueType";
 
-import { PanelBase } from "./PanelBase";
-import styles from "./style.module.scss";
+import levelStyle from "./style_level.module.scss";
 
 interface ComponentPanelProps {
   bldgComponentInfo: BldgComponentInfo;
@@ -40,23 +57,35 @@ const DropDownItemSnippet = ({
   valueType,
   setVal,
   label,
+  align = "right",
+  disabled = false,
 }: {
   current: number;
   selectedVal: number;
   valueType: UpdateValueType;
   setVal: (e: number) => void;
-  label: string;
+  label: string | ReactNode;
+  align?: "left" | "right" | "center";
+  disabled?: boolean;
 }) => {
+  const selected: boolean = current === selectedVal;
   return (
     <DropdownItem
       // key={`abc-${valueType}-${current}`}
       value={current}
       focusKey={FOCUS_DISABLED}
-      selected={current === selectedVal}
+      selected={selected}
       closeOnSelect={false}
+      disabled={disabled}
       theme={dropdownModule}
       onChange={() => setVal(current)}
-      className={styles.DropdownItemCustomRight}
+      className={`${
+        align == "left"
+          ? commonStyle.DropdownItemCustomLeft
+          : align == "right"
+            ? commonStyle.DropdownItemCustomRight
+            : commonStyle.DropdownItemCustomCenter
+      } ${disabled ? commonStyle.DropdownItemDisabled : ""}`}
     >
       {label}
     </DropdownItem>
@@ -93,12 +122,12 @@ const MultiSelectDropdownItemSnippet = ({
       theme={dropdownModule}
       onChange={valFunc}
       onToggleSelected={valFunc}
-      className={`${styles.DropdownItemCustomRight} ${styles.DropdownLabelWithCheckbox}`}
+      className={`${commonStyle.DropdownItemCustomRight} ${commonStyle.DropdownLabelWithCheckbox}`}
     >
       <CheckBox
         checked={isSelected}
         focusKey={FOCUS_DISABLED}
-        className={`${styles.CheckboxCustom}`}
+        className={`${commonStyle.CheckboxCustom}`}
       />
       {label}
     </DropdownItem>
@@ -122,12 +151,12 @@ const Switch = ({
   return (
     <button
       type="button"
-      className={`${styles.ToggleSwitchCustom} ${checked ? `${styles.on}` : ""} ${disabled ? `${styles.disabled}` : ""}`}
+      className={`${commonStyle.ToggleSwitchCustom} ${checked ? `${commonStyle.on}` : ""} ${disabled ? `${commonStyle.disabled}` : ""}`}
       onClick={toggle}
       aria-checked={checked}
       role="switch"
     >
-      <span className={`${styles.ToggleSwitchCustomCircle}`} />
+      <span className={`${commonStyle.ToggleSwitchCustomCircle}`} />
     </button>
   );
 };
@@ -159,7 +188,7 @@ const NumberInputSnippet = ({
       <div style={{ width: "100rem" }}>
         <div className={textElipsisInputThemeModule.wrapper}>
           <div
-            className={`${textElipsisInputModule.container} ${sipTextInputModule.container} ${styles.NoMarginSide} ${styles.InputBoxCustom}`}
+            className={`${textElipsisInputModule.container} ${sipTextInputModule.container} ${commonStyle.NoMarginSide} ${commonStyle.InputBoxCustom}`}
             style={{ height: "32rem" }}
           >
             <input
@@ -177,7 +206,7 @@ const NumberInputSnippet = ({
               onBlur={applyIfChanged}
             />
             <div
-              className={`${infoRowModule.right} ${textElipsisInputModule.label} ${sipTextInputModule.label} ${styles.InputBoxCustom}`}
+              className={`${infoRowModule.right} ${textElipsisInputModule.label} ${sipTextInputModule.label} ${commonStyle.InputBoxCustom}`}
             >
               {inputPrefix}{" "}
               {
@@ -260,14 +289,14 @@ const ResetButtonSnippet = ({
   return (
     <>
       <div
-        className={`${false ? "" : styles.MarginLeft3r} ${styles.AlignCenter}`}
+        className={`${false ? "" : commonStyle.MarginLeft3r} ${commonStyle.AlignCenter}`}
       >
         <ToolButton
           id={`starq-abc-comp-${valueType}-reset`}
           focusKey={FOCUS_DISABLED}
           disabled={isDisabled}
           tooltip={tooltip}
-          src={baseGameIcons + "NewUI/Reset_Button.svg"}
+          src={resetIcon}
           onSelect={() => {
             ResetUVTValue(valueType);
           }}
@@ -302,14 +331,16 @@ const Section = ({
     return (
       <>
         <PanelSectionRow
-          className={styles.NoMarginVertical}
+          className={commonStyle.NoMarginVertical}
           disableFocus={true}
           subRow={true}
           tooltip={tooltip}
           left={nicifyVariableName(field)}
           right={
             <FocusDisabled>
-              <div className={`${styleLevelSection.bar} ${styles.MarginRight}`}>
+              <div
+                className={`${styleLevelSection.bar} ${commonStyle.MarginRight}`}
+              >
                 {Array.from({ length: 5 }, (_, i) => i + 1).map(i => {
                   let isPassed = i <= value;
 
@@ -323,7 +354,7 @@ const Section = ({
                           UpdateValueType.SpawnableBuildingData_Level,
                         )
                       }
-                      className={`${styleLevelProgress.progressBar} ${styleLevelSection.levelSegment} ${styles.LevelSegment}`}
+                      className={`${styleLevelProgress.progressBar} ${styleLevelSection.levelSegment} ${levelStyle.LevelSegment}`}
                     >
                       <div
                         className={styleProgress.progressBounds}
@@ -333,7 +364,7 @@ const Section = ({
                         }}
                       >
                         <div
-                          className={`${isPassed ? styleLevelProgress.progress : ""} ${styles.LevelBox}`}
+                          className={`${isPassed ? styleLevelProgress.progress : ""} ${levelStyle.LevelBox}`}
                           style={{
                             color: isPassed ? undefined : "whitesmoke",
                           }}
@@ -400,7 +431,7 @@ const Section = ({
     if (singleSelect) {
       return (
         <PanelSectionRow
-          className={styles.NoMarginVertical}
+          className={commonStyle.NoMarginVertical}
           disableFocus={true}
           subRow={true}
           tooltip={tooltip}
@@ -425,7 +456,7 @@ const Section = ({
                   ))}
                 >
                   <DropdownToggle
-                    className={`${styles.DropdownToggleCustom}`}
+                    className={`${commonStyle.DropdownToggleCustom}`}
                     theme={dropdownModule}
                   >
                     {
@@ -456,7 +487,7 @@ const Section = ({
     return (
       <>
         <PanelSectionRow
-          className={styles.NoMarginVertical}
+          className={commonStyle.NoMarginVertical}
           disableFocus={true}
           subRow={true}
           tooltip={tooltip}
@@ -480,7 +511,7 @@ const Section = ({
                   // ))}
                 >
                   <DropdownToggle
-                    className={`${styles.DropdownToggleCustom}`}
+                    className={`${commonStyle.DropdownToggleCustom}`}
                     theme={dropdownModule}
                   >
                     {flagLabels
@@ -505,7 +536,7 @@ const Section = ({
   if (typeof value === "number" && Number.isFinite(value))
     return (
       <PanelSectionRow
-        className={styles.NoMarginVertical}
+        className={commonStyle.NoMarginVertical}
         disableFocus={true}
         subRow={true}
         tooltip={tooltip}
@@ -529,7 +560,7 @@ const Section = ({
   if (typeof value === "boolean") {
     return (
       <PanelSectionRow
-        className={styles.NoMarginVertical}
+        className={commonStyle.NoMarginVertical}
         disableFocus={true}
         subRow={true}
         tooltip={tooltip}
@@ -573,7 +604,7 @@ const Section = ({
       right={
         <>
           {`Not yet implemented...`}
-          {/* {`(${typeof value} = ${value}), (${valueType})`} */}
+          {/* {`(${typeof value} = ${value["__Type"]}), (${valueType})`} */}
           {/* <ResetButtonSnippet valueType={valueType} /> */}
         </>
       }
@@ -656,9 +687,11 @@ export const ComponentPanel: FC<ComponentPanelProps> = (
   return (
     <>
       <PanelBase
-        header={headerText!}
+        id="abc-component"
+        title={headerText!}
         visible={visibleBindingValue}
-        icon={uilStandard + "Tools.svg"}
+        icon={toolsIcon}
+        sipAligned={true}
         content={
           <>
             <Scrollable
@@ -716,6 +749,10 @@ export const ComponentPanel: FC<ComponentPanelProps> = (
                 );
               })}
             </Scrollable>
+          </>
+        }
+        footer={
+          <>
             <Divider noMargin={1} />
             <PanelSection>
               <PanelSectionRow

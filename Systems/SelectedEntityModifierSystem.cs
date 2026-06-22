@@ -12,6 +12,7 @@ using Game.Objects;
 using Game.Prefabs;
 using Game.Simulation;
 using StarQ.Shared.Extensions;
+using Unity.Collections;
 using Unity.Entities;
 
 namespace AdvancedBuildingControl.Systems
@@ -247,6 +248,116 @@ namespace AdvancedBuildingControl.Systems
 
                 default:
                     break;
+            }
+        }
+
+        public void TriggerCleanup(Entity entity, BldgCleanupType resetType)
+        {
+            switch (resetType)
+            {
+                case BldgCleanupType.ClearAbandonment:
+                    RemoveAbandonment(entity);
+                    break;
+
+                case BldgCleanupType.ClearNotification:
+                    RemoveNotifications(entity);
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        // Original from Plop The Growable
+        public void RemoveAbandonment(Entity entity)
+        {
+            EntityQuery bcQuery = SystemAPI
+                .QueryBuilder()
+                .WithAll<BuildingConfigurationData>()
+                .Build();
+
+            BuildingConfigurationData bcData = bcQuery.GetSingleton<BuildingConfigurationData>();
+            Entity abandonedNotification = bcData.m_AbandonedNotification;
+
+            EntityManager.RemoveComponent<Abandoned>(entity);
+
+            EntityManager.AddComponent<PropertyToBeOnMarket>(entity);
+            if (EntityManager.HasComponent<PropertyOnMarket>(entity))
+                EntityManager.RemoveComponent<PropertyOnMarket>(entity);
+
+            if (EntityManager.HasComponent<BuildingCondition>(entity))
+                EntityManager.SetComponentData(entity, new BuildingCondition { m_Condition = 0 });
+
+            EntityManager.AddComponentData(entity, default(GarbageProducer));
+            EntityManager.AddComponentData(entity, default(MailProducer));
+            EntityManager.AddComponentData(entity, default(ElectricityConsumer));
+            EntityManager.AddComponentData(entity, default(WaterConsumer));
+
+            iconCommandBuffer = iconCommandSystem.CreateCommandBuffer();
+            iconCommandBuffer.Remove(entity, abandonedNotification);
+
+            if (
+                EntityManager.TryGetComponent(entity, out Building building)
+                && building.m_RoadEdge != Entity.Null
+            )
+                EntityManager.AddComponent<Updated>(building.m_RoadEdge);
+        }
+
+        public void RemoveNotifications(Entity entity)
+        {
+            if (
+                !EntityManager.TryGetBuffer(
+                    entity,
+                    false,
+                    out DynamicBuffer<IconElement> iconBuffer
+                )
+            )
+                return;
+
+            EntityQuery tcQuery = SystemAPI
+                .QueryBuilder()
+                .WithAll<TrafficConfigurationData>()
+                .Build();
+            TrafficConfigurationData m_TrafficConfigurationData =
+                tcQuery.GetSingleton<TrafficConfigurationData>();
+
+            iconCommandBuffer = iconCommandSystem.CreateCommandBuffer();
+            using var icons = iconBuffer.ToNativeArray(Allocator.Temp);
+            foreach (var iconElement in icons)
+            {
+                if (!EntityManager.TryGetComponent(iconElement.m_Icon, out PrefabRef prefabRef))
+                    continue;
+                Entity prefab = prefabRef.m_Prefab;
+                if (
+                    (
+                        prefab == m_TrafficConfigurationData.m_CarConnectionNotification
+                        || prefab == m_TrafficConfigurationData.m_ShipConnectionNotification
+                        || prefab == m_TrafficConfigurationData.m_PedestrianConnectionNotification
+                        || prefab == m_TrafficConfigurationData.m_TrainConnectionNotification
+                        || prefab == m_TrafficConfigurationData.m_RoadConnectionNotification
+                        || prefab == m_TrafficConfigurationData.m_BicycleConnectionNotification
+                    ) && EntityManager.TryGetComponent(iconElement.m_Icon, out Target target)
+                )
+                {
+                    if (
+                        !EntityManager.TryGetComponent(
+                            iconElement.m_Icon,
+                            out Game.Notifications.Icon icon
+                        )
+                    )
+                        continue;
+                    IconFlags iconFlags = icon.m_Flags & IconFlags.SecondaryLocation;
+                    iconCommandBuffer.Remove(entity, prefab, target.m_Target, iconFlags);
+                }
+                else
+                {
+                    iconCommandBuffer.Remove(entity, prefab);
+                }
+
+                LogHelper.SendLog(
+                    $"Removed notification '{WorldHelper.PrefabSystem.GetPrefabName(prefab)}'",
+                    LogLevel.DEVD
+                );
             }
         }
     }

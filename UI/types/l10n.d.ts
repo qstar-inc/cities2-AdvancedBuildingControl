@@ -1,8 +1,9 @@
 declare module "cs2/l10n" {
 import { FC, FunctionComponent, MemoExoticComponent } from "react";
 
-    export interface LocComponent<P = unknown>
-    extends MemoExoticComponent<FunctionComponent<P>> {
+    export interface LocComponent<P = unknown> extends MemoExoticComponent<
+    FunctionComponent<P>
+  > {
     renderString: LocStringRenderer<P>;
     propsAreEqual: PropsAreEqual<P>;
   }
@@ -25,6 +26,7 @@ import { FC, FunctionComponent, MemoExoticComponent } from "react";
     FloatThreeFractions = "floatThreeFractions",
     Percentage = "percentage",
     PercentageSingleFraction = "percentageSingleFraction",
+    PercentagePrecise = "percentagePrecise",
     Angle = "angle",
     Length = "length",
     Area = "area",
@@ -47,9 +49,12 @@ import { FC, FunctionComponent, MemoExoticComponent } from "react";
     BodiesPerMonth = "bodiesPerMonth",
     XP = "xp",
     Temperature = "temperature",
+    TemperaturePrecise = "temperaturePrecise",
     NetElevation = "netElevation",
     ScreenFrequency = "screenFrequency",
+    Height = "height",
     Custom = "custom",
+    DurationSeconds = "durationSeconds",
   }
   export enum LocElementType {
     Bounds = "Game.UI.Localization.LocalizedBounds",
@@ -198,7 +203,7 @@ import { FC, FunctionComponent, MemoExoticComponent } from "react";
     playFromTo(
       playTime: number,
       pauseTime: number,
-      callback?: () => void
+      callback?: () => void,
     ): void;
   }
 

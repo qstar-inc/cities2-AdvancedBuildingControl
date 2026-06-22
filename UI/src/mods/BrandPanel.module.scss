@@ -1,0 +1,35 @@
+$boxSize: 15rem;
+
+.BrandColorBox {
+  width: $boxSize;
+  height: $boxSize;
+}
+
+.BrandCurrent {
+  font-weight: bold !important;
+  text-transform: uppercase;
+}
+
+.BrandCurrentRow {
+  background-color: var(--accentColorNormal);
+}
+
+.BrandCurrentRow > div {
+  color: white;
+}
+
+.BrandRow:hover {
+  background-color: var(--accentColorNormal-hover);
+  color: var(--menuControl1) !important;
+}
+
+.BrandRow:hover * {
+  color: var(--menuControl1) !important;
+}
+
+.BrandImage {
+  width: 20rem;
+  height: 20rem;
+  margin-right: 4rem;
+  border-radius: 100rem;
+}

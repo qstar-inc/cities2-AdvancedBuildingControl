@@ -25,7 +25,7 @@ import React$1, { CSSProperties, PropsWithChildren, ReactNode } from "react";
   export type UniqueFocusKey = FocusSymbol | string | number;
   export function useUniqueFocusKey(
     focusKey: FocusKey,
-    debugName: string
+    debugName: string,
   ): UniqueFocusKey | null;
   export interface FocusController {
     isChildFocused(focusKey: UniqueFocusKey): boolean;
@@ -75,7 +75,7 @@ import React$1, { CSSProperties, PropsWithChildren, ReactNode } from "react";
     protected abstract isChildFocusedImpl(focusKey: UniqueFocusKey): boolean;
     abstract registerChild(
       focusKey: UniqueFocusKey,
-      element: FocusController
+      element: FocusController,
     ): void;
     abstract unregisterChild(focusKey: UniqueFocusKey): void;
     attachCallback: (callback: FocusCallback) => void;
@@ -102,7 +102,7 @@ import React$1, { CSSProperties, PropsWithChildren, ReactNode } from "react";
     focusKey: UniqueFocusKey | null,
     elementRef: React$1.RefObject<HTMLElement | SVGElement | null>,
     activation?: FocusActivation,
-    allowChildren?: boolean
+    allowChildren?: boolean,
   ): ElementFocusController;
   export interface BoundsCallback {
     (): DOMRect | null;
@@ -117,19 +117,19 @@ import React$1, { CSSProperties, PropsWithChildren, ReactNode } from "react";
       focusKey: UniqueFocusKey | null,
       getBounds: BoundsCallback,
       activation: FocusActivation,
-      allowChildren: boolean
+      allowChildren: boolean,
     );
     isChildFocusedImpl: (childFocusKey: UniqueFocusKey) => boolean;
     registerChild: (
       childFocusKey: UniqueFocusKey,
-      element: FocusController
+      element: FocusController,
     ) => void;
     unregisterChild: (childFocusKey: UniqueFocusKey) => void;
     getFocusedBounds(): FocusDOMRect | DOMRect | null;
     protected get debugFocusedChild(): FocusController | null;
   }
   export function useKeyFocusController(
-    focusKey: UniqueFocusKey | null
+    focusKey: UniqueFocusKey | null,
   ): KeyFocusController;
   export class KeyFocusController extends FocusControllerBase {
     private childFocusKey;
@@ -145,7 +145,7 @@ import React$1, { CSSProperties, PropsWithChildren, ReactNode } from "react";
   export function useMultiChildFocusController(
     focusKey: UniqueFocusKey | null,
     activation: FocusActivation,
-    limits: FocusLimits
+    limits: FocusLimits,
   ): MultiChildFocusController;
   export interface RefocusCallback {
     (previousElement: FocusController | null): void;
@@ -159,7 +159,7 @@ import React$1, { CSSProperties, PropsWithChildren, ReactNode } from "react";
     constructor(
       focusKey: UniqueFocusKey | null,
       activation: FocusActivation,
-      limits: FocusLimits
+      limits: FocusLimits,
     );
     get focusedChildKey(): UniqueFocusKey | null;
     set focusedChildKey(nextFocusedChildKey: UniqueFocusKey | null);
@@ -184,7 +184,7 @@ import React$1, { CSSProperties, PropsWithChildren, ReactNode } from "react";
   export function usePassThroughFocusController(
     debugName: string,
     enabled?: boolean,
-    childFocused?: boolean
+    childFocused?: boolean,
   ): PassThroughFocusController;
   export class PassThroughFocusController extends FocusControllerBase {
     private childElement;
@@ -227,19 +227,19 @@ import React$1, { CSSProperties, PropsWithChildren, ReactNode } from "react";
   }
   export function transformNavigationInput(
     value: Number2,
-    dir: NavigationDirection
+    dir: NavigationDirection,
   ): Number2;
   export function getClosestKey(
     controller: MultiChildFocusController,
     pos: Number2,
-    anchor: Number2
+    anchor: Number2,
   ): UniqueFocusKey | null;
   export function getClosestKeyInDirection(
     controller: MultiChildFocusController,
     focusedElement: FocusController,
     dir: Number2,
     anchor: Number2,
-    ignoreKey?: UniqueFocusKey
+    ignoreKey?: UniqueFocusKey,
   ): UniqueFocusKey | null;
   export const focusAnchorCenter: Number2;
   export const focusAnchorTop: Number2;
@@ -248,19 +248,61 @@ import React$1, { CSSProperties, PropsWithChildren, ReactNode } from "react";
   export const focusAnchorRight: Number2;
   export function getElementFocusPosition(
     rect: FocusDOMRect | null,
-    anchor: Number2
+    anchor: Number2,
   ): Number2 | null;
+  export interface NavigationScopeProps {
+    focusKey?: FocusKey;
+    debugName?: string;
+    focused: UniqueFocusKey | null;
+    direction?: NavigationDirection;
+    activation?: FocusActivation;
+    limits?: FocusLimits;
+    onFocused?: (focused: boolean) => void;
+    onChange: (key: UniqueFocusKey | null) => void;
+    onRefocus?: RefocusHandler;
+    allowFocusExit?: boolean;
+    allowLooping?: boolean | "x" | "y";
+    jumpSections?: boolean;
+  }
+  /**
+   * A stateless component that allows the user to navigate between multiple focusable children with a gamepad.
+   *
+   * The `onRefocus` callback controls what happens when the focus is lost within the scope.
+   *
+   * The focus behavior of the scope can be controlled by the `activation` prop.
+   *
+   * Optionally, a `focusKey` for the component itself can be set.
+   */
+  export const NavigationScope: ({
+    focusKey,
+    debugName,
+    focused,
+    direction,
+    activation,
+    limits,
+    children,
+    onFocused,
+    onChange,
+    onRefocus,
+    allowFocusExit,
+    allowLooping,
+    jumpSections,
+  }: React$1.PropsWithChildren<NavigationScopeProps>) => JSX.Element;
+  export type RefocusHandler = (
+    focusController: MultiChildFocusController,
+    lastElement: FocusController | null,
+  ) => UniqueFocusKey | null;
+  export const refocusClosestKeyIfNoFocus: RefocusHandler;
+  export const refocusClosestKey: RefocusHandler;
   export interface AutoNavigationScopeProps {
     focusKey?: FocusKey;
     initialFocused?: UniqueFocusKey | null;
     direction?: NavigationDirection;
     activation?: FocusActivation;
     limits?: FocusLimits;
-    onRefocus?: (
-      controller: MultiChildFocusController,
-      lastElement: FocusController | null
-    ) => UniqueFocusKey | null;
+    onRefocus?: RefocusHandler;
     onChange?: (key: UniqueFocusKey | null) => void;
+    onFocused?: (focused: boolean) => void;
     allowFocusExit?: boolean;
     forceFocus?: UniqueFocusKey | null;
     debugName?: string;
@@ -271,19 +313,15 @@ import React$1, { CSSProperties, PropsWithChildren, ReactNode } from "react";
    * Automatic navigation in lists, grids and forms.
    */
   export const AutoNavigationScope: ({
-    focusKey,
-    initialFocused,
-    direction,
-    activation,
-    limits,
-    children,
-    onChange,
     onRefocus,
+    onChange,
     allowFocusExit,
-    forceFocus,
-    debugName,
     allowLooping,
-    jumpSections,
+    debugName,
+    focusKey,
+    forceFocus,
+    initialFocused,
+    ...props
   }: React$1.PropsWithChildren<AutoNavigationScopeProps>) => JSX.Element;
   export interface FocusBoundaryProps {
     disabled?: boolean;
@@ -310,13 +348,13 @@ import React$1, { CSSProperties, PropsWithChildren, ReactNode } from "react";
   export type KeyParser<T> = (key: UniqueFocusKey) => T | null | undefined;
   export function useFocusChangeListener<T>(
     parser: KeyParser<T>,
-    onChange: ChangeCallback<T>
+    onChange: ChangeCallback<T>,
   ): FocusChangeListener;
   export function useEntityFocusChangeListener(
-    onChange: ChangeCallback<Entity>
+    onChange: ChangeCallback<Entity>,
   ): FocusChangeListener;
   export function useStringFocusChangeListener(
-    onChange: ChangeCallback<string>
+    onChange: ChangeCallback<string>,
   ): FocusChangeListener;
   export interface FocusDisabledProps {
     disabled?: boolean;
@@ -373,8 +411,7 @@ import React$1, { CSSProperties, PropsWithChildren, ReactNode } from "react";
     closeMenu = "close-menu",
     clickDisableButton = "click-disable-button",
   }
-  export interface PassiveFocusDivProps
-    extends React$1.HTMLAttributes<HTMLDivElement> {
+  export interface PassiveFocusDivProps extends React$1.HTMLAttributes<HTMLDivElement> {
     onFocusChange?: (focused: boolean) => void;
     focusSound?: UISound | string | null;
   }
@@ -387,7 +424,7 @@ import React$1, { CSSProperties, PropsWithChildren, ReactNode } from "react";
    * That means if there is no focusable child inside of it, it can never receive the `focused` class name.
    */
   export const PassiveFocusDiv: (
-    props: PassiveFocusDivProps & React$1.RefAttributes<HTMLDivElement>
+    props: PassiveFocusDivProps & React$1.RefAttributes<HTMLDivElement>,
   ) => React$1.ReactElement<
     any,
     string | React$1.JSXElementConstructor<any>
@@ -405,18 +442,18 @@ import React$1, { CSSProperties, PropsWithChildren, ReactNode } from "react";
    * Unlike the `PassiveFocusDiv`, the element itself can be focused, even if there are no elements inside of it.
    */
   export const ActiveFocusDiv: (
-    props: ActiveFocusDivProps & React$1.RefAttributes<HTMLDivElement>
+    props: ActiveFocusDivProps & React$1.RefAttributes<HTMLDivElement>,
   ) => React$1.ReactElement<
     any,
     string | React$1.JSXElementConstructor<any>
   > | null;
   export function useFocused(focusController: FocusController): boolean;
   export function useFocusedRef(
-    focusController: FocusController
+    focusController: FocusController,
   ): React$1.RefObject<boolean>;
   export function useFocusCallback(
     focusController: FocusController,
-    callback: FocusCallback | null | undefined
+    callback: FocusCallback | null | undefined,
   ): void;
   export interface FocusKeyOverrideProps {
     focusKey: FocusKey | undefined;
@@ -467,51 +504,6 @@ import React$1, { CSSProperties, PropsWithChildren, ReactNode } from "react";
     limits,
     children,
   }: React$1.PropsWithChildren<FocusScopeProps>) => JSX.Element;
-  export interface NavigationScopeProps {
-    focusKey?: FocusKey;
-    debugName?: string;
-    focused: UniqueFocusKey | null;
-    direction?: NavigationDirection;
-    activation?: FocusActivation;
-    limits?: FocusLimits;
-    onChange: (key: UniqueFocusKey | null) => void;
-    onRefocus?: (
-      controller: MultiChildFocusController,
-      lastElement: FocusController | null
-    ) => UniqueFocusKey | null;
-    allowFocusExit?: boolean;
-    allowLooping?: boolean | "x" | "y";
-    jumpSections?: boolean;
-  }
-  /**
-   * A stateless component that allows the user to navigate between multiple focusable children with a gamepad.
-   *
-   * The `onRefocus` callback controls what happens when the focus is lost within the scope.
-   *
-   * The focus behavior of the scope can be controlled by the `activation` prop.
-   *
-   * Optionally, a `focusKey` for the component itself can be set.
-   */
-  export const NavigationScope: ({
-    focusKey,
-    debugName,
-    focused,
-    direction,
-    activation,
-    limits,
-    children,
-    onChange,
-    onRefocus,
-    allowFocusExit,
-    allowLooping,
-    jumpSections,
-  }: React$1.PropsWithChildren<NavigationScopeProps>) => JSX.Element;
-  export type RefocusHandler = (
-    focusController: MultiChildFocusController,
-    lastElement: FocusController | null
-  ) => UniqueFocusKey | null;
-  export const refocusClosestKeyIfNoFocus: RefocusHandler;
-  export const refocusClosestKey: RefocusHandler;
   export interface SelectableFocusBoundaryProps {
     onSelectedStateChanged?: (selected: boolean) => void;
   }
@@ -544,6 +536,7 @@ import React$1, { CSSProperties, PropsWithChildren, ReactNode } from "react";
     "Select Route": Action;
     "Remove Operating District": Action;
     "Upgrades Menu": Action;
+    "Upgrades Menu Secondary": Action;
     "Purchase Map Tile": Action;
     "Unfollow Citizen": Action;
     "Like Chirp": Action;
@@ -558,6 +551,7 @@ import React$1, { CSSProperties, PropsWithChildren, ReactNode } from "react";
     "Focus Line Panel": Action;
     "Focus Occupants Panel": Action;
     "Focus Info Panel": Action;
+    "Quaternary Action": Action;
     Close: Action;
     Back: Action;
     "Leave Underground Mode": Action;
@@ -613,6 +607,7 @@ import React$1, { CSSProperties, PropsWithChildren, ReactNode } from "react";
     "Notification Panel": Action;
     "Chirper Panel": Action;
     "Lifepath Panel": Action;
+    "Universal Mod Panel": Action;
     "Event Journal Panel": Action;
     "Radio Panel": Action;
     "Photo Mode Panel": Action;
@@ -644,8 +639,18 @@ import React$1, { CSSProperties, PropsWithChildren, ReactNode } from "react";
     "Debug Multiplier": Action1D;
   }
   export type InputAction = keyof InputActionsDefinition;
+  export type InputActionRequest = {
+    action: InputAction;
+    actionContext?: string;
+  };
   export type InputActions = {
-    [K in InputAction]?: InputActionsDefinition[K] | null;
+    [K in InputAction]?:
+      | InputActionsDefinition[K]
+      | {
+          actionContext?: string;
+          onAction: InputActionsDefinition[K] | null;
+        }
+      | null;
   };
   export interface ButtonTheme {
     button: string;
@@ -656,8 +661,9 @@ import React$1, { CSSProperties, PropsWithChildren, ReactNode } from "react";
     hover?: UISound | string | null;
     focus?: UISound | string | null;
   }
-  export interface ButtonProps
-    extends React$1.ButtonHTMLAttributes<HTMLButtonElement | HTMLDivElement> {
+  export interface ButtonProps extends React$1.ButtonHTMLAttributes<
+    HTMLButtonElement | HTMLDivElement
+  > {
     focusKey?: FocusKey;
     debugName?: string;
     selected?: boolean;
@@ -671,8 +677,9 @@ import React$1, { CSSProperties, PropsWithChildren, ReactNode } from "react";
     onSelect?: () => void;
     as?: "button" | "div";
     hintAction?: InputAction;
+    actionContext?: string;
     forceHint?: boolean;
-    shortcut?: InputAction;
+    shortcut?: InputAction | InputActionRequest;
     allowFocusableChildren?: boolean;
   }
   export interface ClassProps {
@@ -727,7 +734,7 @@ import React$1, { CSSProperties, PropsWithChildren, ReactNode } from "react";
     delayIgnoreCounter?: number;
   }
   export const InputActionHints: (
-    props: InputActionHintsProps & React$1.RefAttributes<HTMLDivElement>
+    props: InputActionHintsProps & React$1.RefAttributes<HTMLDivElement>,
   ) => React$1.ReactElement<
     any,
     string | React$1.JSXElementConstructor<any>
@@ -752,12 +759,15 @@ import React$1, { CSSProperties, PropsWithChildren, ReactNode } from "react";
   }
   export interface InputHintProps extends ClassProps, StyleProps {
     action?: InputAction;
+    actionContext?: string;
     bindingIndex?: number;
     active?: boolean;
     controlScheme?: ControlScheme;
     theme?: Partial<InputHintTheme>;
     shortName?: ShortInputPathOption;
     showLabel?: boolean;
+    tooltip?: boolean;
+    tooltipClassName?: string;
   }
   export const InputHint: ({
     action,
@@ -766,7 +776,7 @@ import React$1, { CSSProperties, PropsWithChildren, ReactNode } from "react";
     ...props
   }: InputHintProps) => JSX.Element | null;
   export const ActiveControlSchemeInputHint: (
-    props: InputHintProps
+    props: InputHintProps,
   ) => JSX.Element;
   export const FocusedInputHint: (props: InputHintProps) => JSX.Element | null;
   export interface ControlIconsProps extends ClassProps, StyleProps {
@@ -813,7 +823,7 @@ import React$1, { CSSProperties, PropsWithChildren, ReactNode } from "react";
     right = 15,
   }
   export function gamepadButtonFromString(
-    name: string
+    name: string,
   ): GamepadButton$1 | undefined;
   export enum GamepadAxis {
     leftStickX = 0,
@@ -845,6 +855,7 @@ import React$1, { CSSProperties, PropsWithChildren, ReactNode } from "react";
   >;
   export interface InputActionConsumerProps {
     actions: InputActions | null;
+    actionContext?: string;
     disabled?: boolean;
     ignoreFocusState?: boolean;
   }
@@ -852,8 +863,9 @@ import React$1, { CSSProperties, PropsWithChildren, ReactNode } from "react";
     React$1.PropsWithChildren<InputActionConsumerProps>
   >;
   export interface SingleActionConsumerProps {
-    action: string;
+    action: InputAction;
     disabled?: boolean;
+    actionContext?: string;
     onAction?: () => void;
   }
   /** When the Gamepad "A" button is pressed */
@@ -870,8 +882,10 @@ import React$1, { CSSProperties, PropsWithChildren, ReactNode } from "react";
   }: React$1.PropsWithChildren<
     Partial<SingleActionConsumerProps>
   >) => JSX.Element;
-  export interface ExpandConsumerProps
-    extends Omit<SingleActionConsumerProps, "action"> {
+  export interface ExpandConsumerProps extends Omit<
+    SingleActionConsumerProps,
+    "action"
+  > {
     expanded: boolean;
     expandable: boolean;
   }
@@ -894,14 +908,24 @@ import React$1, { CSSProperties, PropsWithChildren, ReactNode } from "react";
   export const onInputActionReleased$: EventBinding<InputActionEvent>;
   export function setInputActionPriority(
     action: InputAction,
+    requestId: string | null,
     priority: number,
-    force: boolean
+    force: boolean,
   ): void;
   export class InputStack {
     _items: InputStackItem[];
     contains(action: InputAction): boolean;
     indexOf(action: InputAction): number;
-    push(action: InputAction, callback: Function): void;
+    lastIndexOf(action: InputAction): number;
+    findItem(action: InputAction): {
+      context: string;
+      index: number;
+    };
+    findLastItem(action: InputAction): {
+      context: string;
+      index: number;
+    };
+    push(action: InputAction, context: string, callback: Function): void;
     removeWhere(predicate: (action: InputAction) => boolean): void;
     clear(): void;
     dispatchInputEvent(action: InputAction, value: any): boolean;
@@ -909,8 +933,9 @@ import React$1, { CSSProperties, PropsWithChildren, ReactNode } from "react";
   }
   export class InputStackItem {
     readonly action: InputAction;
+    readonly context: string;
     readonly callback: Function;
-    constructor(action: InputAction, callback: Function);
+    constructor(action: InputAction, context: string, callback: Function);
   }
   export interface InputController {
     attachChild(controller: InputController): void;
@@ -928,7 +953,7 @@ import React$1, { CSSProperties, PropsWithChildren, ReactNode } from "react";
   }
   export function useInputController(
     state: InputControllerState,
-    transformer: InputStackTransformer | null
+    transformer: InputStackTransformer | null,
   ): InputController;
   export class InputControllerImpl implements InputController {
     private _parent;
@@ -971,7 +996,7 @@ import React$1, { CSSProperties, PropsWithChildren, ReactNode } from "react";
     playFromTo(
       playTime: number,
       pauseTime: number,
-      callback?: () => void
+      callback?: () => void,
     ): void;
   }
 

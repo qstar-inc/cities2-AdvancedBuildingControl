@@ -11,12 +11,15 @@ export enum BldgCleanupType {
   PhysicalDamage,
   FireDamage,
   WaterDamage,
+  ClearAbandonment,
+  ClearNotification,
   _All,
 }
 
 export enum CleanupValueType {
   _None,
   Number,
+  Trigger,
 }
 
 export interface BldgCleanupTypeInfo {
@@ -41,6 +44,10 @@ export const GetCleanupMetadata = (cleanupType: BldgCleanupType) => {
     case BldgCleanupType.FireDamage:
     case BldgCleanupType.WaterDamage:
       return [CleanupValueType.Number, "%"];
+
+    case BldgCleanupType.ClearAbandonment:
+    case BldgCleanupType.ClearNotification:
+      return [CleanupValueType.Trigger, ""];
 
     default:
       return [CleanupValueType._None, ""];

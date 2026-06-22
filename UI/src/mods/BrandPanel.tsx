@@ -1,22 +1,21 @@
-import {
-  brandPanelVisibleBinding,
-  Divider,
-  selectedEntity,
-  SetBrand,
-  SizeProvider,
-  useUniformSizeProvider,
-  VanillaVirtualList,
-} from "bindings";
+import { selectedEntity, SetBrand } from "bindings/backend";
+import { brandPanelVisibleBinding } from "bindings/frontend";
 import { useValue } from "cs2/api";
 import { AutoNavigationScope, FocusActivation } from "cs2/input";
 import { PanelSection, PanelSectionRow } from "cs2/ui";
 import { useCssLength } from "cs2/utils";
-import { FindTranslation, nicifyVariableName } from "functions/lang";
 import { FC, useCallback, useMemo } from "react";
+import { FindTranslation, nicifyVariableName } from "shared/lang";
+import { PanelBase } from "shared/PanelBase";
+import {
+  Divider,
+  SizeProvider,
+  useUniformSizeProvider,
+  VanillaVirtualList,
+} from "shared/vanilla";
 import { BldgBrandInfo, BrandDataInfo } from "types/BrandDataInfo";
 
-import { PanelBase } from "./PanelBase";
-import styles from "./style.module.scss";
+import brandStyles from "./BrandPanel.module.scss";
 
 interface BrandPanelProps {
   bldgBrandInfo: BldgBrandInfo;
@@ -42,8 +41,8 @@ const BrandSection = ({
       if (itemIndex < 0 || itemIndex >= BrandsArrayX.length) return null;
       const brand = BrandsArrayX[itemIndex];
       const isCurrent = brand.Name === SelectedBrand;
-      const brandRowClass = `${isCurrent ? styles.BrandCurrentRow : ""} ${
-        styles.BrandRow
+      const brandRowClass = `${isCurrent ? brandStyles.BrandCurrentRow : ""} ${
+        brandStyles.BrandRow
       }`;
       return (
         <RenderRow
@@ -99,12 +98,12 @@ export const RenderRow = ({
         className={brandRowClass}
         left={
           <>
-            <img className={styles.BrandImage} src={`${brand.Icon}`} />
+            <img className={brandStyles.BrandImage} src={`${brand.Icon}`} />
 
             {isCurrent && (
-              <span className={styles.BrandCurrent}>[Current] </span>
+              <span className={brandStyles.BrandCurrent}>[Current] </span>
             )}
-            <span className={styles.BrandName}>{brand.Name}</span>
+            <span className={brandStyles.BrandName}>{brand.Name}</span>
           </>
         }
         right={
@@ -112,7 +111,7 @@ export const RenderRow = ({
             {[brand.Color1, brand.Color2, brand.Color3].map((color, i) => (
               <div
                 key={i}
-                className={styles.BrandColorBox}
+                className={brandStyles.BrandColorBox}
                 style={{
                   background: color.slice(0, -2) + "FF",
                 }}
@@ -184,8 +183,10 @@ export const BrandPanel: FC<BrandPanelProps> = (props: BrandPanelProps) => {
   return (
     <>
       <PanelBase
-        header={headerText!}
+        id="abc-brand"
+        title={headerText!}
         visible={visible}
+        sipAligned={true}
         content={
           <>
             <PanelSection>

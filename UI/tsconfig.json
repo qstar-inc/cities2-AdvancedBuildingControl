@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "jsx":"react-jsx",
+    "jsx": "react-jsx",
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "Node",
@@ -14,6 +14,21 @@
     "resolveJsonModule": true,
     "paths": {
       "mod.json": ["../mod.json"]
-    }
-  },
-} 
+    },
+    "preserveSymlinks": true
+  }
+}
+
+    // "typeRoots": [
+    //   "./types",
+    //   "../../../../ModsPersonal/StarQ.Shared/UI/types",
+    //   "node_modules/@types"
+    // ],
+    // "resolveJsonModule": true,
+    // "paths": {
+    //   "mod.json": ["../mod.json"],
+    //   "shared/*": ["../../../../ModsPersonal/StarQ.Shared/UI/shared/*"],
+    //   "styles/*": ["../../../../ModsPersonal/StarQ.Shared/UI/styles/*"],
+    //   "react":     ["../node_modules/@types/react"],
+    //   "react/*":   ["../node_modules/@types/react/*"]
+    // }
