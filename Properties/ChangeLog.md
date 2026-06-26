@@ -1,2 +1,1 @@
-- Fix accidental usage of `new BuildingPrefab` instead of new `ScriptableObject` instance.
-- Fix panels overlapping the SIP in non 16:9 screen resolution.
+	- Remove unwanted UI logs.
