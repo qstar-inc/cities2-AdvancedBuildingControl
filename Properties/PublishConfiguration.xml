@@ -56,11 +56,10 @@ Writing this devlog was a very fun experience for me, and I hope you enjoyed rea
   <Screenshot Value="Properties/Screenshot06.png" />
   <Tag Value="Code Mod" />
   <ForumLink Value="https://forum.paradoxplaza.com/forum/threads/starq-mods-assets-projects-megathread.1930389/" />
-  <ModVersion Value="2.2.2" />
+  <ModVersion Value="2.2.3" />
   <GameVersion Value="1.6.0*" />
   <Dependency Id="74417" />
-  <ChangeLog>- Fix accidental usage of `new BuildingPrefab` instead of new `ScriptableObject` instance.
-- Fix panels overlapping the SIP in non 16:9 screen resolution.</ChangeLog>
+  <ChangeLog>- Remove unwanted UI logs.</ChangeLog>
   <ExternalLink Type="github" Url="https://github.com/qstar-inc/cities2-AdvancedBuildingControl" />
   <ExternalLink Type="discord" Url="https://discord.gg/U2PSjUzUuF" />
   <ExternalLink Type="buymeacoffee" Url="https://buymeacoffee.com/starq" />
