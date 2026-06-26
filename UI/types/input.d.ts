@@ -1,7 +1,7 @@
 declare module "cs2/input" {
-import React$1, { CSSProperties, PropsWithChildren, ReactNode } from "react";
+  import React$1, { CSSProperties, PropsWithChildren, ReactNode } from "react";
 
-    export class FocusSymbol {
+  export class FocusSymbol {
     readonly debugName: string;
     readonly r: number;
     constructor(debugName: string);
@@ -603,6 +603,7 @@ import React$1, { CSSProperties, PropsWithChildren, ReactNode } from "react";
     "Economy Panel": Action;
     "City Information Panel": Action;
     "Statistic Panel": Action;
+    "Toggle Global Contour Lines": Action;
     "Transportation Overview Panel": Action;
     "Notification Panel": Action;
     "Chirper Panel": Action;

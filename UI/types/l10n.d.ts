@@ -1,7 +1,7 @@
 declare module "cs2/l10n" {
-import { FC, FunctionComponent, MemoExoticComponent } from "react";
+  import { FC, FunctionComponent, MemoExoticComponent } from "react";
 
-    export interface LocComponent<P = unknown> extends MemoExoticComponent<
+  export interface LocComponent<P = unknown> extends MemoExoticComponent<
     FunctionComponent<P>
   > {
     renderString: LocStringRenderer<P>;

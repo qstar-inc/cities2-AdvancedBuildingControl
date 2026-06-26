@@ -10,7 +10,7 @@ Modify buildings to your heart's content (within limits).
 - Visual Randomizer: Randomize building's pseudo-random properties (per building). Let's players randomize the building's seed - reshuffling the colours and props like trees, fences, and billboards.
 - Brand Changer: Change brands on buildings (per building): Access any building with an active business, and instantly switch its brand (including the logo and the name) to any other brand available in the game, including those added by mods. Changes to brand is completely visual and does not affect simulation or products.
 - Property Customizer: Change building properties/component values (per save). This includes but not limited to: spawn level, upkeep, service consumption, service vehicle count, service workplace count, etc. Changes to properties are applied city wide and will affect the simulation.
-- Building Maintenance: Cleanup building's garbage, mails, crimes and damages (per building). This is a manual cleanup for now, but an auto cleanup system based on limits will be added in a future update.
+- Building Maintenance: Cleanup building's garbage, mails, crimes, damages, abandonment and notifications (per building). This is a manual cleanup for now, but an auto cleanup system based on limits will be added in a future update.
 
 ## Requirements:
 - Unified Icon Library (ID: 74417) - Required for the icons used in the mod. Make sure to subscribe to it before using the mod.
@@ -56,13 +56,11 @@ Writing this devlog was a very fun experience for me, and I hope you enjoyed rea
   <Screenshot Value="Properties/Screenshot06.png" />
   <Tag Value="Code Mod" />
   <ForumLink Value="https://forum.paradoxplaza.com/forum/threads/starq-mods-assets-projects-megathread.1930389/" />
-  <ModVersion Value="2.2.1" />
+  <ModVersion Value="2.2.2" />
   <GameVersion Value="1.6.0*" />
   <Dependency Id="74417" />
-  <ChangeLog>- Fix ABC section missing from BuildingExtension upgrades panel.
-- Refresh cached data when playset data is changed.
-- Cleanup codes related to zone changing option.
-- Add two new cleanup triggers: Clear Abandonment, Clear Notifications.</ChangeLog>
+  <ChangeLog>- Fix accidental usage of `new BuildingPrefab` instead of new `ScriptableObject` instance.
+- Fix panels overlapping the SIP in non 16:9 screen resolution.</ChangeLog>
   <ExternalLink Type="github" Url="https://github.com/qstar-inc/cities2-AdvancedBuildingControl" />
   <ExternalLink Type="discord" Url="https://discord.gg/U2PSjUzUuF" />
   <ExternalLink Type="buymeacoffee" Url="https://buymeacoffee.com/starq" />

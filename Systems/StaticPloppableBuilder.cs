@@ -171,7 +171,9 @@ namespace AdvancedBuildingControl.Systems
                     return false;
 
                 BuildingPrefab buildingPrefab =
-                    bldgPrefab is BuildingPrefab ? bldgPrefab as BuildingPrefab : new();
+                    bldgPrefab is BuildingPrefab
+                        ? bldgPrefab as BuildingPrefab
+                        : ScriptableObject.CreateInstance<BuildingPrefab>();
 
                 if (bldgPrefab is BuildingExtensionPrefab)
                 {

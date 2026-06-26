@@ -305,10 +305,10 @@ switch (valueType)
 """
     text7_6 = ""
     text8 = """
-using AdvancedBuildingControl.Extensions;
 using AdvancedBuildingControl.Variables;
 using Colossal.Entities;
 using Game.Prefabs;
+using StarQ.Shared.Extensions.UI;
 
 namespace AdvancedBuildingControl.Systems
 {

@@ -6,7 +6,7 @@ Modify buildings to your heart's content (within limits).
 - Visual Randomizer: Randomize building's pseudo-random properties (per building). Let's players randomize the building's seed - reshuffling the colours and props like trees, fences, and billboards.
 - Brand Changer: Change brands on buildings (per building): Access any building with an active business, and instantly switch its brand (including the logo and the name) to any other brand available in the game, including those added by mods. Changes to brand is completely visual and does not affect simulation or products.
 - Property Customizer: Change building properties/component values (per save). This includes but not limited to: spawn level, upkeep, service consumption, service vehicle count, service workplace count, etc. Changes to properties are applied city wide and will affect the simulation.
-- Building Maintenance: Cleanup building's garbage, mails, crimes and damages (per building). This is a manual cleanup for now, but an auto cleanup system based on limits will be added in a future update.
+- Building Maintenance: Cleanup building's garbage, mails, crimes, damages, abandonment and notifications (per building). This is a manual cleanup for now, but an auto cleanup system based on limits will be added in a future update.
 
 ## Requirements:
 - Unified Icon Library (ID: 74417) - Required for the icons used in the mod. Make sure to subscribe to it before using the mod.

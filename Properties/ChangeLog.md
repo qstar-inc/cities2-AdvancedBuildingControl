@@ -1,4 +1,2 @@
-- Fix ABC section missing from BuildingExtension upgrades panel.
-- Refresh cached data when playset data is changed.
-- Cleanup codes related to zone changing option.
-- Add two new cleanup triggers: Clear Abandonment, Clear Notifications.
+- Fix accidental usage of `new BuildingPrefab` instead of new `ScriptableObject` instance.
+- Fix panels overlapping the SIP in non 16:9 screen resolution.

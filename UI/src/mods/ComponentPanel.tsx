@@ -717,7 +717,7 @@ export const ComponentPanel: FC<ComponentPanelProps> = (
                         left={nicifyVariableName(baseX)}
                       />
                     }
-                    initialExpanded={GetSectionOpen(baseX) ?? false}
+                    initialExpanded={GetSectionOpen(baseX, false)}
                     onToggleExpanded={v => SetSectionOpen(baseX, v)}
                     expandFromContent={true}
                     focusKey={FOCUS_AUTO}

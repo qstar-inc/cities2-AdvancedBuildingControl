@@ -1,9 +1,15 @@
 declare module "cs2/ui" {
-import {
-    CSSProperties, HTMLAttributes, PropsWithChildren, ReactElement, ReactNode, Ref, RefObject
-} from "react";
+  import {
+    CSSProperties,
+    HTMLAttributes,
+    PropsWithChildren,
+    ReactElement,
+    ReactNode,
+    Ref,
+    RefObject,
+  } from "react";
 
-    export interface RefReactElement<T = any, P = any> extends ReactElement<P> {
+  export interface RefReactElement<T = any, P = any> extends ReactElement<P> {
     ref?: Ref<T>;
   }
   export interface TransitionStyles {
@@ -337,6 +343,7 @@ import {
     "Economy Panel": Action;
     "City Information Panel": Action;
     "Statistic Panel": Action;
+    "Toggle Global Contour Lines": Action;
     "Transportation Overview Panel": Action;
     "Notification Panel": Action;
     "Chirper Panel": Action;

@@ -1,7 +1,7 @@
 declare module "cs2/bindings" {
-import { ChartDataset } from "chart.js";
+  import { ChartDataset } from "chart.js";
 
-    export interface ServiceBudget {
+  export interface ServiceBudget {
     id: string;
     value: number;
   }
@@ -480,6 +480,7 @@ import { ChartDataset } from "chart.js";
     "Economy Panel": Action;
     "City Information Panel": Action;
     "Statistic Panel": Action;
+    "Toggle Global Contour Lines": Action;
     "Transportation Overview Panel": Action;
     "Notification Panel": Action;
     "Chirper Panel": Action;
@@ -1653,8 +1654,16 @@ import { ChartDataset } from "chart.js";
     color: Color;
     label: LocElement;
   }
+  export interface ZoneInfo {
+    category: string;
+    color: Color;
+    edge: Color;
+    fillAlpha: number;
+    edgeAlpha: number;
+  }
   const infoviews$: ValueBinding<Infoview[]>;
   const activeInfoview$: ValueBinding<ActiveInfoview | null>;
+  const zoneInfos$: ValueBinding<ZoneInfo[]>;
   function closeInfoviewMenu(): void;
   function setActiveInfoview(entity: Entity): void;
   function clearActiveInfoview(): void;
@@ -1662,6 +1671,11 @@ import { ChartDataset } from "chart.js";
     entity: Entity,
     active: boolean,
     priority: number,
+  ): void;
+  function setZoneAlpha(
+    category: string,
+    fillAlpha: number,
+    edgeAlpha: number,
   ): void;
   const electricityConsumption$: ValueBinding<number>;
   const electricityProduction$: ValueBinding<number>;
@@ -2608,6 +2622,10 @@ import { ChartDataset } from "chart.js";
     [SectionType.UpgradeProperties]: UpgradePropertiesSection;
     [SectionType.VisualCustomize]: VisualCustomizeSection;
   }
+  export enum SelectedInfoPanelTab {
+    Default = 0,
+    Customize = 1,
+  }
   export type SelectedInfoSection = TypeFromMap<SelectedInfoSections>;
   export interface SelectedInfoSectionBase {
     group: string;
@@ -3341,6 +3359,7 @@ import { ChartDataset } from "chart.js";
   const parallelModeSupported$: ValueBinding<boolean>;
   const parallelMode$: ValueBinding<boolean>;
   const parallelOffset$: ValueBinding<number>;
+  const contourMode$: ValueBinding<boolean>;
   const undergroundModeSupported$: ValueBinding<boolean>;
   const undergroundMode$: ValueBinding<boolean>;
   const elevationDownDisabled$: ValueBinding<boolean>;
@@ -3363,6 +3382,7 @@ import { ChartDataset } from "chart.js";
   function setSelectedSnapMask(mask: number): void;
   function toggleParallelMode(): void;
   function setParallelOffset(offset: number): void;
+  function setContourMode(enabled: boolean): void;
   function setUndergroundMode(enabled: boolean): void;
   function setDistance(distance: number): void;
   const BULLDOZE_TOOL = "Bulldoze Tool";
@@ -3484,6 +3504,9 @@ import { ChartDataset } from "chart.js";
   const vegetationAges$: ValueBinding<Theme$1[]>;
   const assetPacks$: ValueBinding<AssetPack[]>;
   const selectedAssetPacks$: ValueBinding<Entity[]>;
+  const vanillaSelected$: ValueBinding<boolean>;
+  const modsSelected$: ValueBinding<boolean>;
+  const hasModAssets$: ValueBinding<boolean>;
   const selectedAssetMenu$: ValueBinding<Entity>;
   const selectedAssetCategory$: ValueBinding<Entity>;
   const selectedAsset$: ValueBinding<Entity>;
@@ -3492,6 +3515,8 @@ import { ChartDataset } from "chart.js";
   const setAgeMask: (ageMask: number) => void;
   const setSelectedThemes: (themes: Entity[]) => void;
   const setSelectedAssetPacks: (packs: Entity[]) => void;
+  const setVanillaSelected: (vanillaSelected: boolean) => void;
+  const setModsSelected: (modsSelected: boolean) => void;
   const selectAssetMenu: (assetMenu: Entity) => void;
   const selectAssetCategory: (assetCategory: Entity) => void;
   const selectAsset: (asset: Entity, updateTool: boolean) => void;
@@ -4123,6 +4148,7 @@ import { ChartDataset } from "chart.js";
       residentialLevels$,
       setActiveInfoview,
       setInfomodeActive,
+      setZoneAlpha,
       sewageAvailability$,
       sewageCapacity$,
       sewageConsumption$,
@@ -4157,6 +4183,7 @@ import { ChartDataset } from "chart.js";
       workers$,
       workplacesData$,
       worksplaces$,
+      zoneInfos$,
     };
   }
   export namespace infoviewTypes {
@@ -4166,6 +4193,7 @@ import { ChartDataset } from "chart.js";
       InfomodeColorLegend,
       InfomodeGradientLegend,
       Infoview,
+      ZoneInfo,
     };
   }
   export namespace life {
@@ -4486,6 +4514,7 @@ import { ChartDataset } from "chart.js";
       ScheduleSection,
       SectionType,
       SelectVehiclesSection,
+      SelectedInfoPanelTab,
       SelectedInfoSection,
       SelectedInfoSectionBase,
       SelectedInfoSectionProps,
@@ -4640,6 +4669,7 @@ import { ChartDataset } from "chart.js";
       color$,
       colorSupported$,
       confirmBulldoze,
+      contourMode$,
       distance$,
       distanceScale$,
       elevation$,
@@ -4665,6 +4695,7 @@ import { ChartDataset } from "chart.js";
       setBrushSize,
       setBrushStrength,
       setColor,
+      setContourMode,
       setDistance,
       setElevationStep,
       setParallelOffset,
@@ -4699,6 +4730,8 @@ import { ChartDataset } from "chart.js";
       assets$,
       clearAssetSelection,
       decorationMode$,
+      hasModAssets$,
+      modsSelected$,
       selectAsset,
       selectAssetCategory,
       selectAssetMenu,
@@ -4709,11 +4742,14 @@ import { ChartDataset } from "chart.js";
       selectedThemes$,
       setAgeMask,
       setDecorationMode,
+      setModsSelected,
       setSelectedAssetPacks,
       setSelectedThemes,
+      setVanillaSelected,
       themes$$1 as themes$,
       toggleToolOptions,
       toolbarGroups$,
+      vanillaSelected$,
       vegetationAges$,
     };
   }

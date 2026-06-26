@@ -1,7 +1,7 @@
 declare module "cs2/modding" {
-import { ComponentType } from "react";
+  import { ComponentType } from "react";
 
-    export type ModuleRegistryExtend = <T extends ComponentType<any>>(
+  export type ModuleRegistryExtend = <T extends ComponentType<any>>(
     curr: T,
   ) => (props: any) => JSX.Element;
   export type ModuleRegistryAppend = ComponentType<{}> | (() => JSX.Element);

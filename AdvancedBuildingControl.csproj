@@ -3,7 +3,7 @@
     <Configurations>Debug;Release</Configurations>
     <AssemblyName>AdvancedBuildingControl</AssemblyName>
     <AssemblyTitle>Advanced Building Control</AssemblyTitle>
-    <Version>2.2.1</Version>
+    <Version>2.2.2</Version>
     <GameVersion>$(CS2_GAMEVERSION)</GameVersion>
     <ForumLink>$(CS2_FORUMLINK)</ForumLink>
     <Authors>StarQ</Authors>
