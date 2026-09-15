@@ -7,7 +7,6 @@ import { componentPanelVisibleBinding } from "bindings/frontend";
 import { useValue } from "cs2/api";
 import { Number2 } from "cs2/bindings";
 import { FOCUS_AUTO, FOCUS_DISABLED, FocusDisabled } from "cs2/input";
-import { Unit } from "cs2/l10n";
 import {
   Button,
   Dropdown,
@@ -23,22 +22,19 @@ import { FC, ReactNode, useEffect, useMemo, useState } from "react";
 import { hasFlag, toggleFlag } from "shared/enum";
 import { resetIcon } from "shared/icons";
 import { toolsIcon } from "shared/icons_uil";
+import { NumberInputSnippet, Switch } from "shared/InputSnippets";
 import { FindTranslation, nicifyVariableName } from "shared/lang";
 import { PanelBase } from "shared/PanelBase";
 import { GetSectionOpen, SetSectionOpen } from "shared/section";
 import {
   dropdownModule,
-  infoRowModule,
-  sipTextInputModule,
   styleLevelProgress,
   styleLevelSection,
   styleProgress,
   styleSIP,
-  textElipsisInputModule,
-  textElipsisInputThemeModule,
 } from "shared/style";
 import { CheckBox, Divider, ToolButton } from "shared/vanilla";
-import { DropdownItem, LocalizedNumber } from "shared/vanilla-type-fix";
+import { DropdownItem } from "shared/vanilla-type-fix";
 import commonStyle from "styles/common.module.scss";
 import { BldgComponentInfo } from "types/BldgComponentInfo";
 import { BldgModifiedInfo } from "types/BldgModifiedInfo";
@@ -131,95 +127,6 @@ const MultiSelectDropdownItemSnippet = ({
       />
       {label}
     </DropdownItem>
-  );
-};
-
-const Switch = ({
-  checked = false,
-  onChange,
-  disabled = false,
-}: {
-  checked?: boolean;
-  onChange?: (value: boolean) => void;
-  disabled?: boolean;
-}) => {
-  const toggle = () => {
-    if (disabled) return;
-    onChange?.(!checked);
-  };
-
-  return (
-    <button
-      type="button"
-      className={`${commonStyle.ToggleSwitchCustom} ${checked ? `${commonStyle.on}` : ""} ${disabled ? `${commonStyle.disabled}` : ""}`}
-      onClick={toggle}
-      aria-checked={checked}
-      role="switch"
-    >
-      <span className={`${commonStyle.ToggleSwitchCustomCircle}`} />
-    </button>
-  );
-};
-
-const NumberInputSnippet = ({
-  value,
-  inputPrefix,
-  onCommit,
-}: {
-  value: number;
-  inputPrefix?: string;
-  onCommit: (newValue: number) => void;
-}) => {
-  const [editValue, setEditValue] = useState<string>(`${value}`);
-
-  useEffect(() => {
-    setEditValue(`${value}`);
-  }, [value]);
-
-  const applyIfChanged = () => {
-    const parsed = Number.parseFloat(editValue);
-
-    if (!Number.isNaN(parsed) && Math.abs(parsed - value) > 1e-6) {
-      if (Number.isFinite(parsed)) onCommit(parsed);
-    }
-  };
-  return (
-    <>
-      <div style={{ width: "100rem" }}>
-        <div className={textElipsisInputThemeModule.wrapper}>
-          <div
-            className={`${textElipsisInputModule.container} ${sipTextInputModule.container} ${commonStyle.NoMarginSide} ${commonStyle.InputBoxCustom}`}
-            style={{ height: "32rem" }}
-          >
-            <input
-              className={`${textElipsisInputModule.input} ${sipTextInputModule.input}`}
-              maxLength={10}
-              type="text"
-              value={editValue}
-              style={{ textAlign: "right" }}
-              onChange={e => setEditValue(e.currentTarget.value)}
-              onKeyDown={e => {
-                if (e.key === "Enter") {
-                  e.currentTarget.blur();
-                }
-              }}
-              onBlur={applyIfChanged}
-            />
-            <div
-              className={`${infoRowModule.right} ${textElipsisInputModule.label} ${sipTextInputModule.label} ${commonStyle.InputBoxCustom}`}
-            >
-              {inputPrefix}{" "}
-              {
-                <LocalizedNumber
-                  value={value}
-                  unit={Unit.FloatThreeFractions}
-                />
-              }
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
   );
 };
 

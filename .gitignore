@@ -362,4 +362,6 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
-UI/index_1.*.js
+# Custom
+/Library
+/Resources/Localization
