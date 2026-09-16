@@ -172,17 +172,21 @@ namespace AdvancedBuildingControl.Systems
             )
                 return;
 
+            var brandInData = DataRetriever
+                .brandDataInfos.Where(v => v.Entity == companyData.m_Brand)
+                ?.FirstOrDefault();
+
+            if (brandInData == null)
+                return;
+
             bldgBrandInfo.BrandList = DataRetriever.brandDataInfos.ToArray();
             bldgBrandInfo.BrandName = nameSystem.GetRenderedLabelName(companyData.m_Brand);
             bldgBrandInfo.CompanyName = nameSystem
                 .GetRenderedLabelName(companyEntity)
                 .Replace("Assets.NAME[", "")
                 .Replace("]", "");
-            bldgBrandInfo.HasBrand = true;
-            var brandInData = DataRetriever
-                .brandDataInfos.Where(v => v.Entity == companyData.m_Brand)
-                ?.First();
             bldgBrandInfo.BrandIcon = brandInData?.Icon ?? "";
+            bldgBrandInfo.HasBrand = true;
         }
 
         public void CheckCurrentModifications()

@@ -1,1 +1,2 @@
-- Compatibility update for 1.6.2f1.
+- Fix for uncaught expections related to brandless buildings (compatibility fix for "BankLife" mod)
+- Optimize Static Ploppable Builder loading process for foreign maps.

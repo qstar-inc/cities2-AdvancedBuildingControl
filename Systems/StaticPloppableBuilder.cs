@@ -218,6 +218,8 @@ namespace AdvancedBuildingControl.Systems
                 if (subMeshes.Length <= 0)
                     return false;
 
+                int createdCount = 0;
+
                 for (int i = 0; i < subMeshes.Length; i++)
                 {
                     RenderPrefabBase rpb = subMeshes[i].m_Mesh;
@@ -410,8 +412,8 @@ namespace AdvancedBuildingControl.Systems
                         UIObject uiObject = newBuildingCreated.AddOrGetComponent<UIObject>();
                         //if (tabList.ContainsKey(bldgData.Tab))
 
-                        staticPloppableData.TryGetTab(entity, out UIAssetCategoryPrefab tab);
-                        uiObject.m_Group = tab;
+                        if (staticPloppableData.TryGetTab(entity, out UIAssetCategoryPrefab tab))
+                            uiObject.m_Group = tab;
 
                         if (bldgPrefab.TryGet(out SpawnableBuilding oldSpawnableBuilding))
                             uiObject.m_Icon = ImageSystem.GetIcon(oldSpawnableBuilding.m_ZoneType);
@@ -513,6 +515,7 @@ namespace AdvancedBuildingControl.Systems
                             createdPrefab = newBuildingCreated;
 
                         AddLocale(entity, entityName, nonMeshName);
+                        createdCount++;
 
                         //AssetDataPath adp_main = AssetDataPath.Create(
                         //    $"ImportedData/SP/{folder}/{nonMeshName.Replace(".", "_")}",
@@ -546,6 +549,10 @@ namespace AdvancedBuildingControl.Systems
                     }
                     //}
                 }
+
+                if (createdCount == 0)
+                    return false;
+
                 Colossal.Hash128 guid = bldgPrefab.asset?.id.guid ?? Guid.Empty;
                 staticPloppableData.AddToFile(entityName, guid);
                 CheckUpgrades(entity);
@@ -633,7 +640,10 @@ namespace AdvancedBuildingControl.Systems
             try
             {
                 PrefabSystem prefabSystem = WorldHelper.PrefabSystem;
-                EntityQuery query = SystemAPI.QueryBuilder().WithAll<PrefabRef>().Build();
+                EntityQuery query = SystemAPI
+                    .QueryBuilder()
+                    .WithAll<Game.Buildings.Building, PrefabRef>()
+                    .Build();
                 NativeArray<Entity> entities = query.ToEntityArray(Allocator.Temp);
 
                 if (entities.Length <= 0)
@@ -641,18 +651,25 @@ namespace AdvancedBuildingControl.Systems
 
                 List<(Entity, string)> toCheckRenderPrefabs = new();
 
-                foreach (var entity in entities)
+                List<Entity> checkedEntities = new();
+
+                foreach (Entity entity in entities)
                 {
                     try
                     {
-                        EntityManager.TryGetComponent(entity, out PrefabRef prefabRef);
-                        bool isEnabled = EntityManager.IsComponentEnabled<PrefabData>(
-                            prefabRef.m_Prefab
-                        );
-                        if (isEnabled)
+                        if (
+                            !EntityManager.TryGetComponent(entity, out PrefabRef prefabRef)
+                            || EntityManager.IsComponentEnabled<PrefabData>(prefabRef.m_Prefab)
+                        )
                             continue;
 
+                        if (checkedEntities.Contains(prefabRef.m_Prefab))
+                            continue;
+                        checkedEntities.Add(prefabRef.m_Prefab);
+
                         PrefabID obs = prefabSystem.GetObsoleteID(prefabRef.m_Prefab);
+
+                        LogHelper.SendLog(obs.ToString(), LogLevel.DEVD);
 
                         prefName = obs.ToString();
 
