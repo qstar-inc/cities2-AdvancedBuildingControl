@@ -1,5 +1,5 @@
 import { selectedEntity, SetBrand } from "bindings/backend";
-import { brandPanelVisibleBinding } from "bindings/frontend";
+import { brandPanelVisibleBinding, ClosePanel } from "bindings/frontend";
 import { useValue } from "cs2/api";
 import { AutoNavigationScope, FocusActivation } from "cs2/input";
 import { PanelSection, PanelSectionRow } from "cs2/ui";
@@ -40,7 +40,7 @@ const BrandSection = ({
     (itemIndex: number, indexInRange: number) => {
       if (itemIndex < 0 || itemIndex >= BrandsArrayX.length) return null;
       const brand = BrandsArrayX[itemIndex];
-      const isCurrent = brand.Name === SelectedBrand;
+      const isCurrent = brand.PrefabName === SelectedBrand;
       const brandRowClass = `${isCurrent ? brandStyles.BrandCurrentRow : ""} ${
         brandStyles.BrandRow
       }`;
@@ -103,7 +103,7 @@ export const RenderRow = ({
             {isCurrent && (
               <span className={brandStyles.BrandCurrent}>[Current] </span>
             )}
-            <span className={brandStyles.BrandName}>{brand.Name}</span>
+            <span className={brandStyles.BrandName}>{brand.PrefabName}</span>
           </>
         }
         right={
@@ -159,6 +159,14 @@ export const BrandPanel: FC<BrandPanelProps> = (props: BrandPanelProps) => {
       }
     }
 
+    const sortByName = (a: BrandDataInfo, b: BrandDataInfo) =>
+      FindTranslation(`Asset.NAME[${a.PrefabName}]`).localeCompare(
+        FindTranslation(`Asset.NAME[${b.PrefabName}]`),
+      );
+
+    supported.sort(sortByName);
+    other.sort(sortByName);
+
     return [supported, other];
   }, [bldgBrandInfo.BrandList, bldgBrandInfo.CompanyName]);
 
@@ -187,6 +195,7 @@ export const BrandPanel: FC<BrandPanelProps> = (props: BrandPanelProps) => {
         title={headerText!}
         visible={visible}
         sipAligned={true}
+        onClose={() => ClosePanel()}
         content={
           <>
             <PanelSection>

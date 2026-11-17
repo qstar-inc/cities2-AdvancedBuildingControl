@@ -1,20 +1,27 @@
 import { MakeSP, RandomizeStyle, selectedEntity } from "bindings/backend";
 import {
-    brandPanelVisibleBinding, cleanupPanelVisibleBinding, componentPanelVisibleBinding, PanelIndex,
-    togglePanel
+  brandPanelVisibleBinding,
+  cleanupPanelVisibleBinding,
+  componentPanelVisibleBinding,
+  effectsPanelVisibleBinding,
+  PanelIndex,
+  togglePanel,
 } from "bindings/frontend";
-import { cleanupIcon, spIcon } from "bindings/icons";
+import { cleanupIcon, effectIcon, spIcon } from "bindings/icons";
 import { useValue } from "cs2/api";
 import { SelectedInfoSectionBase } from "cs2/bindings";
 import { FOCUS_AUTO, FocusDisabled } from "cs2/input";
 import * as l10n from "cs2/l10n";
-import { PanelSection, PanelSectionRow } from "cs2/ui";
+import { PanelSection, PanelSectionRow, Tooltip } from "cs2/ui";
 import mod from "mod.json";
-import { diceIcon, toolsIcon } from "shared/icons_uil";
+import { EffectsPanel } from "mods/EffectsPanel";
+import { diceIcon } from "shared/icons";
+import { toolsIcon } from "shared/icons_uil";
 import { FindTranslation, initTranslationService } from "shared/lang";
 import { ToolButton } from "shared/vanilla";
 import { BldgCleanupInfo } from "types/BldgCleanupInfo";
 import { BldgComponentInfo } from "types/BldgComponentInfo";
+import { BldgEffectInfo } from "types/BldgEffectsInfo";
 import { BldgModifiedInfo } from "types/BldgModifiedInfo";
 import { BldgBrandInfo } from "types/BrandDataInfo";
 
@@ -23,19 +30,18 @@ import { CleanupPanel } from "./CleanupPanel";
 // import { StoragePanel } from "./StoragePanel";
 import { ComponentPanel } from "./ComponentPanel";
 
-interface SIP_ABC extends SelectedInfoSectionBase {
+interface SIPSystemProps extends SelectedInfoSectionBase {
   hasSP: boolean;
   hasMesh: boolean;
   bldgBrandInfo: BldgBrandInfo;
   bldgComponentInfo: BldgComponentInfo;
   bldgModifiedInfo: BldgModifiedInfo[];
   bldgCleanupInfo: BldgCleanupInfo;
+  bldgEffectInfo: BldgEffectInfo;
 }
 
-export const SIP_ABC = (componentList: any): any => {
-  componentList["AdvancedBuildingControl.Systems.SIP_ABC"] = (
-    props: SIP_ABC,
-  ) => {
+export const SIPSystem = (componentList: any): any => {
+  componentList[`${mod.id}.Systems.SIPSystem`] = (props: SIPSystemProps) => {
     const { translate } = l10n.useLocalization();
     initTranslationService(translate);
 
@@ -46,10 +52,12 @@ export const SIP_ABC = (componentList: any): any => {
     const bldgComponentInfo = props.bldgComponentInfo;
     const bldgModifiedInfo = props.bldgModifiedInfo;
     const bldgCleanupInfo = props.bldgCleanupInfo;
+    const bldgEffectInfo = props.bldgEffectInfo;
 
     const isBrandPanelOpen = useValue(brandPanelVisibleBinding);
     const isComponentPanelOpen = useValue(componentPanelVisibleBinding);
     const isCleanupPanelOpen = useValue(cleanupPanelVisibleBinding);
+    const isEffectsPanelOpen = useValue(effectsPanelVisibleBinding);
 
     const selectedEntityVal = useValue(selectedEntity);
 
@@ -65,6 +73,16 @@ export const SIP_ABC = (componentList: any): any => {
       : ` (${FindTranslation("SPBuilder.Tooltip.DisabledNoSP")})`;
     const tooltipSPBuilder = `${FindTranslation("SPBuilder.Tooltip")}${tooltipSPSuffix}`;
     const tooltipCleanup = FindTranslation("Cleanup.Header");
+    const tooltipEffects = FindTranslation("Effects.Header");
+
+    const baseCount =
+      3 + (bldgBrandInfo.HasBrand ? 1 : 0) + (bldgCleanupInfo.Enabled ? 1 : 0);
+
+    const canMakeSP = hasSP && hasMesh;
+    const showSPButton = canMakeSP || baseCount != 4;
+
+    const itemCounts = baseCount + (showSPButton ? 1 : 0);
+    const shortenName = itemCounts > 4;
 
     return (
       <>
@@ -72,11 +90,19 @@ export const SIP_ABC = (componentList: any): any => {
           <PanelSectionRow
             uppercase={true}
             disableFocus={true}
-            left={modNameText}
+            left={
+              shortenName ? (
+                <Tooltip tooltip={modNameText}>
+                  <span>{"ABC"}</span>
+                </Tooltip>
+              ) : (
+                modNameText
+              )
+            }
             right={
               <>
                 <FocusDisabled>
-                  {
+                  {showSPButton && (
                     <ToolButton
                       id="starq-abc-sip-sp"
                       focusKey={FOCUS_AUTO}
@@ -85,7 +111,7 @@ export const SIP_ABC = (componentList: any): any => {
                       src={spIcon}
                       onSelect={MakeSP}
                     />
-                  }
+                  )}
                   <ToolButton
                     id="starq-abc-sip-randomize"
                     focusKey={FOCUS_AUTO}
@@ -129,6 +155,22 @@ export const SIP_ABC = (componentList: any): any => {
                       key={selectedEntityVal.index}
                       bldgComponentInfo={bldgComponentInfo}
                       bldgModifiedInfo={bldgModifiedInfo}
+                    />
+                  )}
+                  <ToolButton
+                    id="starq-abc-sip-effects"
+                    focusKey={FOCUS_AUTO}
+                    tooltip={tooltipEffects}
+                    selected={isEffectsPanelOpen}
+                    src={effectIcon}
+                    onSelect={() => {
+                      togglePanel(PanelIndex.Effects);
+                    }}
+                  />
+                  {isEffectsPanelOpen && (
+                    <EffectsPanel
+                      key={selectedEntityVal.index}
+                      bldgEffectInfo={bldgEffectInfo}
                     />
                   )}
                   {bldgCleanupInfo.Enabled && (

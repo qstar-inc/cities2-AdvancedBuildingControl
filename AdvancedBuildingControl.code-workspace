@@ -5,6 +5,7 @@
 		}
 	],
 	"settings": {
-		"js/ts.tsdk.path": "UI\\node_modules\\typescript\\lib"
+		"js/ts.tsdk.path": "UI\\node_modules\\typescript\\lib",
+		"js/ts.experimental.useTsgo": false
 	}
 }

@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using AdvancedBuildingControl.Components;
-using AdvancedBuildingControl.Variables;
+using AdvancedBuildingControl.Enums;
+using AdvancedBuildingControl.Models;
 using Colossal.Entities;
 using Colossal.Serialization.Entities;
 using Game;
@@ -16,29 +17,17 @@ namespace AdvancedBuildingControl.Systems
     {
         public PrefabSystem prefabSystem;
         public SelectedPrefabModifierSystem selectedPrefabModifierSystem;
-        public BufferControlSystem bufferControlSystem;
+        public ModifiedPrefabBufferSystem modifiedPrefabBufferSystem;
         public static readonly HashSet<UpdateValueType> ValidUpdateValueTypes = new(
             Enum.GetValues(typeof(UpdateValueType)).Cast<UpdateValueType>().Select(v => v)
         );
-
-        struct ModKey
-        {
-            public Entity Prefab;
-            public UpdateValueType ValueType;
-
-            public ModKey(Entity prefab, UpdateValueType valueType)
-            {
-                Prefab = prefab;
-                ValueType = valueType;
-            }
-        }
 
         protected override void OnCreate()
         {
             base.OnCreate();
             prefabSystem = WorldHelper.PrefabSystem;
-            bufferControlSystem = WorldHelper.GetSystem<BufferControlSystem>();
             selectedPrefabModifierSystem = WorldHelper.GetSystem<SelectedPrefabModifierSystem>();
+            modifiedPrefabBufferSystem = WorldHelper.GetSystem<ModifiedPrefabBufferSystem>();
             Enabled = true;
         }
 
@@ -57,77 +46,53 @@ namespace AdvancedBuildingControl.Systems
 
         public void LoadAll()
         {
-            var bufferMap = new Dictionary<ModKey, ModifiedPrefab>();
-            var dictMap = new Dictionary<ModKey, ModifiedPrefab>();
+            if (!modifiedPrefabBufferSystem.TryGetBufferCopy(out var array))
+                return;
 
-            if (bufferControlSystem.TryGetBufferCopy(out var array))
+            Dictionary<(Entity prefab, UpdateValueType type), ModifiedPrefab> bufferMap = new();
+            Dictionary<(Entity prefab, UpdateValueType type), ModifiedPrefab> dictMap = new();
+
+            for (int i = 0; i < array.Length; i++)
             {
-                for (int i = 0; i < array.Length; i++)
+                ModifiedPrefab entry = array[i];
+
+                if (
+                    !EntityManager.Exists(entry.ModEntity)
+                    || !EntityManager.TryGetComponent(entry.ModEntity, out PrefabRef prefabRef)
+                )
+                    continue;
+
+                bufferMap[(prefabRef.m_Prefab, entry.ValueType)] = entry;
+            }
+
+            foreach (var (k, v) in selectedPrefabModifierSystem.localEntities)
+            {
+                if (v?.PrefabChanges == null)
+                    continue;
+
+                foreach (PrefabChange change in v.PrefabChanges)
                 {
-                    var entry = array[i];
-
-                    if (!EntityManager.Exists(entry.ModEntity))
-                        continue;
-
-                    if (!EntityManager.TryGetComponent(entry.ModEntity, out PrefabRef prefabRef))
-                        continue;
-
-                    bufferMap[new ModKey(prefabRef.m_Prefab, entry.ValueType)] = entry;
+                    dictMap[(k, change.ValueType)] = change.Modifications;
                 }
+            }
 
-                foreach (var kv in selectedPrefabModifierSystem.localEntities)
+            foreach (var (k, v) in bufferMap)
+            {
+                if (!dictMap.TryGetValue(k, out ModifiedPrefab dictEntry) || !v.Equals(dictEntry))
+                    selectedPrefabModifierSystem.Modify(k.prefab, $"(long){v.Modified}", k.type);
+            }
+
+            foreach (var (k, v) in dictMap)
+            {
+                if (!bufferMap.ContainsKey(k))
                 {
-                    var prefab = kv.Key;
-                    var cd = kv.Value;
-
-                    if (cd == null || cd.PrefabChanges == null)
-                        continue;
-
-                    foreach (var change in cd.PrefabChanges)
-                    {
-                        dictMap[new ModKey(prefab, change.ValueType)] = change.Modifications;
-                    }
-                }
-
-                foreach (var kv in bufferMap)
-                {
-                    var key = kv.Key;
-
-                    if (!dictMap.ContainsKey(key))
-                    {
-                        selectedPrefabModifierSystem.Modify(
-                            key.Prefab,
-                            $"(long){kv.Value.Modified}",
-                            key.ValueType
-                        );
-                    }
-                }
-
-                foreach (var kv in dictMap)
-                {
-                    var key = kv.Key;
-
-                    if (!bufferMap.ContainsKey(key))
-                    {
-                        selectedPrefabModifierSystem.Modify(
-                            key.Prefab,
-                            $"(long){kv.Value.Original}",
-                            key.ValueType,
-                            true
-                        );
-                        continue;
-                    }
-
-                    var bufferEntry = bufferMap[key];
-
-                    if (!bufferEntry.Equals(kv.Value))
-                    {
-                        selectedPrefabModifierSystem.Modify(
-                            key.Prefab,
-                            $"(long){bufferEntry.Modified}",
-                            key.ValueType
-                        );
-                    }
+                    selectedPrefabModifierSystem.Modify(
+                        k.prefab,
+                        $"(long){v.Original}",
+                        k.type,
+                        true
+                    );
+                    continue;
                 }
             }
         }

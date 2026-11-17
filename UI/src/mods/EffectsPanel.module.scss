@@ -1,0 +1,9 @@
+.TabBar {
+  --minTabWidth: 50rem !important;
+  --tabGap: 2rem !important;
+  position: sticky !important;
+
+  > button {
+    font-size: var(--fontSizeS) !important;
+  }
+}

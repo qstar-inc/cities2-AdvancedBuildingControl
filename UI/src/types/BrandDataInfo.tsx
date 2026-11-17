@@ -1,7 +1,7 @@
 import { Entity } from "cs2/bindings";
 
 export interface BrandDataInfo {
-  Name: string;
+  // Name: string;
   PrefabName: string;
   Color1: string;
   Color2: string;

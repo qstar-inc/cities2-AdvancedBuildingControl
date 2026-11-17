@@ -1,34 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using AdvancedBuildingControl.Systems;
 using Colossal.IO.AssetDatabase;
-using Colossal.Logging;
-using Colossal.PSI.Environment;
 using Colossal.UI;
 using Game;
 using Game.Modding;
 using Game.SceneFlow;
 using StarQ.Shared.Extensions;
+using StarQ.Shared.Generators;
 
 namespace AdvancedBuildingControl
 {
-    public class Mod : IMod
+    [GenerateModInfo]
+    public partial class Mod : IMod
     {
-        public static string Id = nameof(AdvancedBuildingControl);
-        public static string Name = Assembly
-            .GetExecutingAssembly()
-            .GetCustomAttribute<AssemblyTitleAttribute>()
-            .Title;
-        public static string Version = Assembly
-            .GetExecutingAssembly()
-            .GetName()
-            .Version.ToString(3);
         public static string uiHostName = "starq-advanced-building-control";
-
-        public static ILog log = LogManager.GetLogger($"{Id}").SetShowsErrorsInUI(false);
-        public static Setting m_Setting;
 
         public void OnLoad(UpdateSystem updateSystem)
         {
@@ -36,23 +22,11 @@ namespace AdvancedBuildingControl
             LocaleHelper.Init(Id, Name, GetReplacements);
             //UIHostHelper.Init(Id, uiHostName);
 
-            try
-            {
-                Directory.CreateDirectory($"{EnvPath.kUserDataPath}/ModsData/{Id}/BackupConfig");
-            }
-            catch (Exception ex)
-            {
-                LogHelper.SendLog(ex, LogLevel.Error);
-            }
+            Directory.CreateDirectory(DataDir);
 
             m_Setting = new Setting(this);
             m_Setting.RegisterInOptionsUI();
-
-            AssetDatabase.global.LoadSettings(
-                nameof(AdvancedBuildingControl),
-                m_Setting,
-                new Setting(this)
-            );
+            AssetDatabase.global.LoadSettings(Id, m_Setting, new Setting(this));
 
             if (GameManager.instance.modManager.TryGetExecutableAsset(this, out var asset))
                 UIManager.defaultUISystem.AddHostLocation(
@@ -64,7 +38,10 @@ namespace AdvancedBuildingControl
             WorldHelper.GetSystem<DataRetriever>();
             WorldHelper.GetSystem<SaveStoreSystem>();
             WorldHelper.GetSystem<StaticPloppableBuilder>();
-            updateSystem.UpdateAfter<SIP_ABC>(SystemUpdatePhase.UIUpdate);
+            WorldHelper.GetSystem<EffectControlSystem>();
+            updateSystem.UpdateAt<EffectOverlaySystem>(SystemUpdatePhase.ToolUpdate);
+            updateSystem.UpdateAt<BuildingEditorUISystem>(SystemUpdatePhase.UIUpdate);
+            updateSystem.UpdateAfter<SIPSystem>(SystemUpdatePhase.UIUpdate);
         }
 
         public void OnDispose()

@@ -24,6 +24,12 @@ declare module "cs2/ui" {
   }
   export type BalloonDirection = "up" | "down" | "left" | "right";
   export type BalloonAlignment = "start" | "center" | "end";
+  export type CornerAlignment =
+    | "none"
+    | "topLeft"
+    | "topRight"
+    | "bottomLeft"
+    | "bottomRight";
   export interface BalloonTheme extends TransitionStyles {
     balloon: string;
     bounds: string;
@@ -39,6 +45,14 @@ declare module "cs2/ui" {
     center: string;
     end: string;
   }
+  export interface BalloonUITarget {
+    uiTag: string;
+    direction: BalloonDirection;
+    alignment: BalloonAlignment;
+    cornerAlignment: CornerAlignment;
+    hideArrow: boolean;
+    highlightUiElement: boolean;
+  }
   export interface TooltipProps extends ClassProps {
     tooltip: ReactNode;
     disabled?: boolean;
@@ -49,6 +63,7 @@ declare module "cs2/ui" {
     direction?: BalloonDirection;
     alignment?: BalloonAlignment;
     children: RefReactElement;
+    balloonUiTarget?: BalloonUITarget;
     anchorElRef?: RefObject<HTMLElement>;
   }
   export const Tooltip: import("react").MemoExoticComponent<

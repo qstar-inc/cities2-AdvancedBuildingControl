@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using AdvancedBuildingControl.Bindings;
+using AdvancedBuildingControl.Models;
 using Colossal.Entities;
 using Colossal.Serialization.Entities;
 using Game;
@@ -13,18 +15,6 @@ using Unity.Entities;
 
 namespace AdvancedBuildingControl.Systems
 {
-    public class BrandDataInfo
-    {
-        public string Name { get; set; } = "UnknownName";
-        public string PrefabName { get; set; } = "UnknownPrefab";
-        public string Color1 { get; set; } = "RGBA(0,0,0)";
-        public string Color2 { get; set; } = "RGBA(0,0,0)";
-        public string Color3 { get; set; } = "RGBA(0,0,0)";
-        public Entity Entity { get; set; } = Entity.Null;
-        public string Icon { get; set; } = "";
-        public string[] Companies { get; set; } = new string[0];
-    }
-
     //public enum ResourceGroup
     //{
     //    None = 0,
@@ -200,7 +190,7 @@ namespace AdvancedBuildingControl.Systems
                         brandDataInfos.Add(
                             new BrandDataInfo
                             {
-                                Name = nameSystem.GetRenderedLabelName(entity),
+                                //Name = nameSystem.GetRenderedLabelName(entity),
                                 PrefabName = brandPrefab.name,
                                 Color1 = brandPrefab.m_BrandColors[0].ToHexCode(),
                                 Color2 = brandPrefab.m_BrandColors[1].ToHexCode(),
@@ -211,9 +201,9 @@ namespace AdvancedBuildingControl.Systems
                             }
                         );
                     }
-                    brandDataInfos.Sort(
-                        (a, b) => string.Compare(a.Name, b.Name, StringComparison.Ordinal)
-                    );
+                    //brandDataInfos.Sort(
+                    //    (a, b) => string.Compare(a.Name, b.Name, StringComparison.Ordinal)
+                    //);
                     hasNewBrandData = true;
                 }
             }

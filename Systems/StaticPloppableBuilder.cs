@@ -128,6 +128,7 @@ namespace AdvancedBuildingControl.Systems
                 if (prefabBase != null)
                     toolSystem.ActivatePrefabTool(prefabBase);
             }
+            staticPloppableData.FlushFile();
             LocaleHelper.OnActiveDictionaryChanged();
         }
 
@@ -156,6 +157,7 @@ namespace AdvancedBuildingControl.Systems
         public bool TryMakeSP(Entity entity, bool log, out PrefabBase createdPrefab)
         {
             createdPrefab = null;
+            PrefabBase mainPrefab = null;
 
             if (!hasSP)
                 return false;
@@ -170,12 +172,17 @@ namespace AdvancedBuildingControl.Systems
                 if (bldgPrefab is not BuildingPrefab && bldgPrefab is not BuildingExtensionPrefab)
                     return false;
 
-                BuildingPrefab buildingPrefab =
-                    bldgPrefab is BuildingPrefab
-                        ? bldgPrefab as BuildingPrefab
-                        : ScriptableObject.CreateInstance<BuildingPrefab>();
+                int lotWidth,
+                    lotDepth;
+                bool circular;
 
-                if (bldgPrefab is BuildingExtensionPrefab)
+                if (bldgPrefab is BuildingPrefab srcBuilding)
+                {
+                    lotWidth = srcBuilding.m_LotWidth;
+                    lotDepth = srcBuilding.m_LotDepth;
+                    circular = srcBuilding.m_Circular;
+                }
+                else
                 {
                     if (
                         !bldgPrefab.TryGet(out ServiceUpgrade sUpgrade)
@@ -184,10 +191,9 @@ namespace AdvancedBuildingControl.Systems
                         return false;
 
                     BuildingPrefab main = sUpgrade.m_Buildings[0];
-
-                    buildingPrefab.m_Circular = main.m_Circular;
-                    buildingPrefab.m_LotDepth = main.m_LotDepth;
-                    buildingPrefab.m_LotWidth = main.m_LotWidth;
+                    lotWidth = main.m_LotWidth;
+                    lotDepth = main.m_LotDepth;
+                    circular = main.m_Circular;
                 }
 
                 //if (bldgPrefab.asset == null)
@@ -199,7 +205,7 @@ namespace AdvancedBuildingControl.Systems
                 if (entityName.StartsWith("StarQ_SP"))
                 {
                     LogHelper.SendLog($"{entityName} is already a Static Ploppable");
-                    createdPrefab = buildingPrefab;
+                    createdPrefab = bldgPrefab;
                     return true;
                 }
 
@@ -215,7 +221,7 @@ namespace AdvancedBuildingControl.Systems
                 ObjectMeshInfo[] subMeshesNew = new ObjectMeshInfo[0];
                 ObjectMeshInfo[] subMeshes = objectGeometryPrefab.m_Meshes;
 
-                if (subMeshes.Length <= 0)
+                if (subMeshes == null || subMeshes.Length <= 0)
                     return false;
 
                 int createdCount = 0;
@@ -223,9 +229,12 @@ namespace AdvancedBuildingControl.Systems
                 for (int i = 0; i < subMeshes.Length; i++)
                 {
                     RenderPrefabBase rpb = subMeshes[i].m_Mesh;
+                    if (rpb == null)
+                        continue;
+
                     prefabSystem.TryGetEntity(rpb, out Entity mesh);
                     var mn = prefabSystem.GetPrefabName(mesh);
-                    var mn_x = mn.Replace(" Mesh", "");
+                    //var mn_x = mn.Replace(" Mesh", "");
 
                     //                    if (!meshList.ContainsKey(mn_x) && !ignoredList.Contains(mn_x))
                     //{
@@ -258,10 +267,12 @@ namespace AdvancedBuildingControl.Systems
                                 nonMeshName,
                                 log,
                                 out Entity existing
-                            ) && prefabSystem.TryGetPrefab(existing, out createdPrefab)
+                            ) && prefabSystem.TryGetPrefab(existing, out PrefabBase existingPrefab)
                         )
                         {
                             LogHelper.SendLog($"Found existing: {nonMeshName}", LogLevel.DEVD);
+                            if (mainPrefab == null)
+                                mainPrefab = existingPrefab;
                             continue;
                         }
                         LogHelper.SendLog(
@@ -377,7 +388,7 @@ namespace AdvancedBuildingControl.Systems
                             //m_Rotation = bldgData.Rotation,
                         };
 
-                        var regexName = Regex.Match(nonMeshName, "/.+_(\\d)x(\\d)$/");
+                        //var regexName = Regex.Match(nonMeshName, "/.+_(\\d)x(\\d)$/");
                         //if (bldgData.Width > 0)
                         //    newBuildingCreated.m_LotWidth = bldgData.Width;
                         //else
@@ -395,9 +406,9 @@ namespace AdvancedBuildingControl.Systems
                         //        newBuildingCreated.m_LotDepth = regexName.Value[1];
                         //}
                         //newBuildingCreated.m_Circular = bldgData.Circle;
-                        newBuildingCreated.m_LotWidth = buildingPrefab.m_LotWidth;
-                        newBuildingCreated.m_LotDepth = buildingPrefab.m_LotDepth;
-                        newBuildingCreated.m_Circular = buildingPrefab.m_Circular;
+                        newBuildingCreated.m_LotWidth = lotWidth;
+                        newBuildingCreated.m_LotDepth = lotDepth;
+                        newBuildingCreated.m_Circular = circular;
 
                         EditorAssetCategoryOverride EditorAssetCategoryOverride =
                             newBuildingCreated.AddOrGetComponent<EditorAssetCategoryOverride>();
@@ -550,6 +561,12 @@ namespace AdvancedBuildingControl.Systems
                     //}
                 }
 
+                if (mainPrefab != null)
+                {
+                    createdPrefab = mainPrefab;
+                    return true;
+                }
+
                 if (createdCount == 0)
                     return false;
 
@@ -560,6 +577,7 @@ namespace AdvancedBuildingControl.Systems
             catch (Exception ex)
             {
                 LogHelper.SendLog(ex, LogLevel.Error);
+                return false;
             }
 
             return true;
@@ -575,9 +593,6 @@ namespace AdvancedBuildingControl.Systems
                 )
             )
             {
-                if (bue.Length < 0)
-                    return;
-
                 for (int i = 0; i < bue.Length; i++)
                 {
                     var upgradePrefab = bue[i].m_Upgrade;
@@ -616,7 +631,7 @@ namespace AdvancedBuildingControl.Systems
                 {
                     var main = sub[0].m_Building;
                     string mainName = prefabSystem.GetPrefabName(main);
-                    if (mainName != null || mainName != string.Empty)
+                    if (!string.IsNullOrEmpty(mainName))
                     {
                         displayName = $"{mainName}: {displayName}";
                     }
@@ -639,7 +654,6 @@ namespace AdvancedBuildingControl.Systems
             int spCount = 0;
             try
             {
-                PrefabSystem prefabSystem = WorldHelper.PrefabSystem;
                 EntityQuery query = SystemAPI
                     .QueryBuilder()
                     .WithAll<Game.Buildings.Building, PrefabRef>()
@@ -649,9 +663,9 @@ namespace AdvancedBuildingControl.Systems
                 if (entities.Length <= 0)
                     return;
 
-                List<(Entity, string)> toCheckRenderPrefabs = new();
+                HashSet<(Entity, string)> toCheckRenderPrefabs = new();
 
-                List<Entity> checkedEntities = new();
+                HashSet<Entity> checkedEntities = new();
 
                 foreach (Entity entity in entities)
                 {
@@ -734,22 +748,22 @@ namespace AdvancedBuildingControl.Systems
 
                 HashSet<Entity> processed = new();
 
+                List<Entity> toMake = new();
                 foreach (Entity entity in bldgEntities)
                 {
-                    DynamicBuffer<SubMesh> subMesh = EntityManager.GetBuffer<SubMesh>(entity);
-
-                    foreach (var sm in subMesh)
+                    foreach (var sm in EntityManager.GetBuffer<SubMesh>(entity))
                     {
                         if (!processed.Add(sm.m_SubMesh))
                             continue;
 
                         if (prefabSet.Contains(sm.m_SubMesh))
-                        {
-                            if (TryMakeSP(entity, false, out PrefabBase _))
-                                spCount++;
-                        }
+                            toMake.Add(entity);
                     }
                 }
+
+                foreach (Entity e in toMake)
+                    if (TryMakeSP(e, false, out _))
+                        spCount++;
             }
             catch (Exception ex)
             {
@@ -761,12 +775,10 @@ namespace AdvancedBuildingControl.Systems
                 if (spCount > 0)
                 {
                     LogHelper.SendLog($"{spCount} SP created/found on startup");
-                    GameManager.instance.userInterface.appBindings.ShowMessageDialog(
-                        new MessageDialog(
-                            Mod.Name,
-                            $"{Mod.Id}.ReloadSave",
-                            $"{Mod.Id}.OpenLoadGameScreen"
-                        ),
+                    DialogHelper.ShowMessageDialog(
+                        Mod.Name,
+                        $"{Mod.Id}.ReloadSave",
+                        $"{Mod.Id}.OpenLoadGameScreen",
                         x =>
                         {
                             WorldHelper.GetSystem<GameScreenUISystem>().activeScreen =
@@ -774,6 +786,7 @@ namespace AdvancedBuildingControl.Systems
                         }
                     );
                 }
+                staticPloppableData.FlushFile();
             }
         }
     }

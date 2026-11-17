@@ -1,5 +1,6 @@
 declare module "cs2/input" {
-  import React$1, { CSSProperties, PropsWithChildren, ReactNode } from "react";
+  import React$1 from "react";
+  import { CSSProperties, PropsWithChildren, ReactNode } from "react";
 
   export class FocusSymbol {
     readonly debugName: string;

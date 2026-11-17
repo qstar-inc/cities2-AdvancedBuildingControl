@@ -6,17 +6,21 @@
 Modify buildings to your heart's content (within limits).
 
 ## Features:
-- Static Ploppable Builder: Create Static Ploppable variants of any buildings in-game. Requires **[Static Ploppables 01: Base Game](https://mods.paradoxplaza.com/mods/128043/Any)**. If the asset pack is missing, the feature will be disabled but the rest of the mod will work fine.
+- Static Ploppable Builder: Create Static Ploppable variants of any buildings in-game. Requires **[Static Ploppables 01: Base Game](https://mods.paradoxplaza.com/mods/128043/Any)** (and its UI Dependency). If those are missing, the feature will be disabled but the rest of the mod will work fine.
 - Visual Randomizer: Randomize building's pseudo-random properties (per building). Let's players randomize the building's seed - reshuffling the colours and props like trees, fences, and billboards.
 - Brand Changer: Change brands on buildings (per building): Access any building with an active business, and instantly switch its brand (including the logo and the name) to any other brand available in the game, including those added by mods. Changes to brand is completely visual and does not affect simulation or products.
 - Property Customizer: Change building properties/component values (per save). This includes but not limited to: spawn level, upkeep, service consumption, service vehicle count, service workplace count, etc. Changes to properties are applied city wide and will affect the simulation.
 - Building Maintenance: Cleanup building's garbage, mails, crimes, damages, abandonment and notifications (per building). This is a manual cleanup for now, but an auto cleanup system based on limits will be added in a future update.
+- [NEW] Effect Customizer: Add, remove, or modify Local and City Effects for any buildings, including Static Ploppables.
+- [WIP] New ABC Panel in UMM: Future ABC features will requires more space than the current narrow panel can provide. A new panel is under construction to accomodate options related to prefab modifications, such as current Property Customizer and Effect Customizer.
 
 ## Requirements:
 - Unified Icon Library (ID: 74417) - Required for the icons used in the mod. Make sure to subscribe to it before using the mod.
 - Static Ploppables 01: Base Game (ID: 128043) - Optionally required to enable Static Ploppable Builder.
 
 ## Planned Features for Future Updates:
+- ABC Panel in UMM: Move Property Customizer and Effect Customizer to a broader panel, along with more planned features such as duplicating and customizing functional buildings.
+- Effect Customizer: Ability to filter all buidlings with selected (or all) effect(s).
 - Property Customizer: Add support for changing resources being sold, consumed, manufactured or stored in the building.
 - Building Maintenance: Set limits for garbage, mails, crimes and damages, and automatically cleanup the building when the limit is reached.
 - Secret Feature: There is a secret feature planned that I will not reveal until it's tested to be possible. But I can give you a hint, it is the feature of a popular Cities Skylines 1 mod.
@@ -46,7 +50,9 @@ The mod is now in a very good state, and I am very happy with it. I have tested 
 
 Last but not least, I also want to thank everyone who helped me with the mod, especially the legend YenYang and Krzychu124 for their help with the UI; BruceyBoy and Mimonsi for the being bros; HarbourMasterJay, River-Mochi, GagaXM, MayorCheeks, elGendo for supporting the mods in various ways. I also want to thank the traslators, contributors and testers for their feedback and support, notably Kyodra, Modus, Sam and more; and all the well wishers of the project, notably Sully, Sunny Scunny, Const, rzzirrah, Shane, Skilz, and everyone who interacted with my silly posts. This mod would not be possible without all of you. Thank you!
 
-Writing this devlog was a very fun experience for me, and I hope you enjoyed reading it as much as I enjoyed writing it. I will try to keep it updated with any future updates or major changes to the mod. If you have any reports, questions or suggestions, feel free to reach out to me on Discord. I am always open to feedback and ideas for improving the mod. Thank you again for your support, and I hope you enjoy the mod!</LongDescription>
+Writing this devlog was a very fun experience for me, and I hope you enjoyed reading it as much as I enjoyed writing it. I will try to keep it updated with any future updates or major changes to the mod. If you have any reports, questions or suggestions, feel free to reach out to me on Discord. I am always open to feedback and ideas for improving the mod. Thank you again for your support, and I hope you enjoy the mod!
+
+November 16, 2026. Been a while since I've added anything new. I've worked a little on the secret feature but I don't think it's time for it yet. But in the meantime, today I'm releasing the much anticipated feature of controlling building effects. Special thanks to 0belix and joergonix.</LongDescription>
   <Thumbnail Value="Properties/Thumbnail.png" />
   <Screenshot Value="Properties/Screenshot01.png" />
   <Screenshot Value="Properties/Screenshot02.png" />
@@ -54,16 +60,18 @@ Writing this devlog was a very fun experience for me, and I hope you enjoyed rea
   <Screenshot Value="Properties/Screenshot04.png" />
   <Screenshot Value="Properties/Screenshot05.png" />
   <Screenshot Value="Properties/Screenshot06.png" />
+  <Screenshot Value="Properties/Screenshot07.jpg" />
   <Tag Value="Code Mod" />
   <ForumLink Value="https://forum.paradoxplaza.com/forum/threads/starq-mods-assets-projects-megathread.1930389/" />
-  <ModVersion Value="2.2.5" />
-  <GameVersion Value="1.6.2*" />
+  <ModVersion Value="2.3.0" />
+  <GameVersion Value="1.6.4*" />
   <Dependency Id="74417" />
-  <ChangeLog>- Fix for uncaught expections related to brandless buildings (compatibility fix for "BankLife" mod)
-- Optimize Static Ploppable Builder loading process for foreign maps.</ChangeLog>
+  <ChangeLog>- [NEW] Effect Customizer: Add, remove, or modify Local and City Effects for any buildings, including Static Ploppables.
+- [WIP] New ABC Panel in UMM: Future ABC features will requires more space than the current narrow panel can provide. A new panel is under construction to accomodate options related to prefab modifications, such as current Property Customizer and Effect Customizer.
+- Major code refactoring.
+- [FIX] Panel button not closing panels.</ChangeLog>
   <ExternalLink Type="github" Url="https://github.com/qstar-inc/cities2-AdvancedBuildingControl" />
   <ExternalLink Type="discord" Url="https://discord.gg/U2PSjUzUuF" />
   <ExternalLink Type="buymeacoffee" Url="https://buymeacoffee.com/starq" />
   <ExternalLink Type="crowdin" Url="https://crowdin.com/project/starq-cities2" />
-  <AccessLevel Value="Public" />
 </Publish>

@@ -1,4 +1,5 @@
-using AdvancedBuildingControl.Variables;
+using AdvancedBuildingControl.Enums;
+using AdvancedBuildingControl.Helpers;
 using Colossal.Entities;
 using Game;
 using Game.Economy;
@@ -229,21 +230,21 @@ namespace AdvancedBuildingControl.Systems
                     int orig_AttractionData_Attractiveness = attractionData.m_Attractiveness;
                     originalValue = UVTHelper.ConvertToLong(orig_AttractionData_Attractiveness);
                     attractionData.m_Attractiveness = UVTHelper.ConvertToInt(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, attractionData);
+                    EntityManager.SetOrAdd(selectedPrefab, attractionData);
                     return true;
 
                 case UpdateValueType.BatteryData_Capacity:
                     int orig_BatteryData_Capacity = batteryData.m_Capacity;
                     originalValue = UVTHelper.ConvertToLong(orig_BatteryData_Capacity);
                     batteryData.m_Capacity = UVTHelper.ConvertToInt(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, batteryData);
+                    EntityManager.SetOrAdd(selectedPrefab, batteryData);
                     return true;
 
                 case UpdateValueType.BatteryData_PowerOutput:
                     int orig_BatteryData_PowerOutput = batteryData.m_PowerOutput;
                     originalValue = UVTHelper.ConvertToLong(orig_BatteryData_PowerOutput);
                     batteryData.m_PowerOutput = UVTHelper.ConvertToInt(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, batteryData);
+                    EntityManager.SetOrAdd(selectedPrefab, batteryData);
                     return true;
 
                 case UpdateValueType.BuildingPropertyData_ResidentialProperties:
@@ -255,7 +256,7 @@ namespace AdvancedBuildingControl.Systems
                     buildingPropertyData.m_ResidentialProperties = UVTHelper.ConvertToInt(
                         modifiedValue
                     );
-                    utils.SetOrAdd(selectedPrefab, buildingPropertyData);
+                    EntityManager.SetOrAdd(selectedPrefab, buildingPropertyData);
                     return true;
 
                 case UpdateValueType.BuildingPropertyData_AllowedSold:
@@ -265,7 +266,7 @@ namespace AdvancedBuildingControl.Systems
                         (ulong)orig_BuildingPropertyData_AllowedSold
                     );
                     buildingPropertyData.m_AllowedSold = (Resource)modifiedValue;
-                    utils.SetOrAdd(selectedPrefab, buildingPropertyData);
+                    EntityManager.SetOrAdd(selectedPrefab, buildingPropertyData);
                     return true;
 
                 case UpdateValueType.BuildingPropertyData_AllowedInput:
@@ -275,7 +276,7 @@ namespace AdvancedBuildingControl.Systems
                         (ulong)orig_BuildingPropertyData_AllowedInput
                     );
                     buildingPropertyData.m_AllowedInput = (Resource)modifiedValue;
-                    utils.SetOrAdd(selectedPrefab, buildingPropertyData);
+                    EntityManager.SetOrAdd(selectedPrefab, buildingPropertyData);
                     return true;
 
                 case UpdateValueType.BuildingPropertyData_AllowedManufactured:
@@ -285,7 +286,7 @@ namespace AdvancedBuildingControl.Systems
                         (ulong)orig_BuildingPropertyData_AllowedManufactured
                     );
                     buildingPropertyData.m_AllowedManufactured = (Resource)modifiedValue;
-                    utils.SetOrAdd(selectedPrefab, buildingPropertyData);
+                    EntityManager.SetOrAdd(selectedPrefab, buildingPropertyData);
                     return true;
 
                 case UpdateValueType.BuildingPropertyData_AllowedStored:
@@ -295,7 +296,7 @@ namespace AdvancedBuildingControl.Systems
                         (ulong)orig_BuildingPropertyData_AllowedStored
                     );
                     buildingPropertyData.m_AllowedStored = (Resource)modifiedValue;
-                    utils.SetOrAdd(selectedPrefab, buildingPropertyData);
+                    EntityManager.SetOrAdd(selectedPrefab, buildingPropertyData);
                     return true;
 
                 case UpdateValueType.BuildingPropertyData_SpaceMultiplier:
@@ -307,21 +308,21 @@ namespace AdvancedBuildingControl.Systems
                     buildingPropertyData.m_SpaceMultiplier = UVTHelper.ConvertToFloat(
                         modifiedValue
                     );
-                    utils.SetOrAdd(selectedPrefab, buildingPropertyData);
+                    EntityManager.SetOrAdd(selectedPrefab, buildingPropertyData);
                     return true;
 
                 case UpdateValueType.BuildingTerraformData_DontRaise:
                     bool orig_BuildingTerraformData_DontRaise = buildingTerraformData.m_DontRaise;
                     originalValue = UVTHelper.ConvertToLong(orig_BuildingTerraformData_DontRaise);
                     buildingTerraformData.m_DontRaise = UVTHelper.ConvertToBool(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, buildingTerraformData);
+                    EntityManager.SetOrAdd(selectedPrefab, buildingTerraformData);
                     return true;
 
                 case UpdateValueType.BuildingTerraformData_DontLower:
                     bool orig_BuildingTerraformData_DontLower = buildingTerraformData.m_DontLower;
                     originalValue = UVTHelper.ConvertToLong(orig_BuildingTerraformData_DontLower);
                     buildingTerraformData.m_DontLower = UVTHelper.ConvertToBool(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, buildingTerraformData);
+                    EntityManager.SetOrAdd(selectedPrefab, buildingTerraformData);
                     return true;
 
                 case UpdateValueType.CargoTransportStationData_WorkMultiplier:
@@ -333,14 +334,14 @@ namespace AdvancedBuildingControl.Systems
                     cargoTransportStationData.m_WorkMultiplier = UVTHelper.ConvertToFloat(
                         modifiedValue
                     );
-                    utils.SetOrAdd(selectedPrefab, cargoTransportStationData);
+                    EntityManager.SetOrAdd(selectedPrefab, cargoTransportStationData);
                     return true;
 
                 case UpdateValueType.ConsumptionData_Upkeep:
                     int orig_ConsumptionData_Upkeep = consumptionData.m_Upkeep;
                     originalValue = UVTHelper.ConvertToLong(orig_ConsumptionData_Upkeep);
                     consumptionData.m_Upkeep = UVTHelper.ConvertToInt(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, consumptionData);
+                    EntityManager.SetOrAdd(selectedPrefab, consumptionData);
                     AdditionalPostApply(selectedPrefab, modifiedValue, valueType);
                     return true;
 
@@ -353,7 +354,7 @@ namespace AdvancedBuildingControl.Systems
                     consumptionData.m_ElectricityConsumption = UVTHelper.ConvertToFloat(
                         modifiedValue
                     );
-                    utils.SetOrAdd(selectedPrefab, consumptionData);
+                    EntityManager.SetOrAdd(selectedPrefab, consumptionData);
                     return true;
 
                 case UpdateValueType.ConsumptionData_WaterConsumption:
@@ -361,7 +362,7 @@ namespace AdvancedBuildingControl.Systems
                         consumptionData.m_WaterConsumption;
                     originalValue = UVTHelper.ConvertToLong(orig_ConsumptionData_WaterConsumption);
                     consumptionData.m_WaterConsumption = UVTHelper.ConvertToFloat(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, consumptionData);
+                    EntityManager.SetOrAdd(selectedPrefab, consumptionData);
                     return true;
 
                 case UpdateValueType.ConsumptionData_GarbageAccumulation:
@@ -371,35 +372,35 @@ namespace AdvancedBuildingControl.Systems
                         orig_ConsumptionData_GarbageAccumulation
                     );
                     consumptionData.m_GarbageAccumulation = UVTHelper.ConvertToFloat(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, consumptionData);
+                    EntityManager.SetOrAdd(selectedPrefab, consumptionData);
                     return true;
 
                 case UpdateValueType.ConsumptionData_TelecomNeed:
                     float orig_ConsumptionData_TelecomNeed = consumptionData.m_TelecomNeed;
                     originalValue = UVTHelper.ConvertToLong(orig_ConsumptionData_TelecomNeed);
                     consumptionData.m_TelecomNeed = UVTHelper.ConvertToFloat(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, consumptionData);
+                    EntityManager.SetOrAdd(selectedPrefab, consumptionData);
                     return true;
 
                 case UpdateValueType.CoverageData_Range:
                     float orig_CoverageData_Range = coverageData.m_Range;
                     originalValue = UVTHelper.ConvertToLong(orig_CoverageData_Range);
                     coverageData.m_Range = UVTHelper.ConvertToFloat(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, coverageData);
+                    EntityManager.SetOrAdd(selectedPrefab, coverageData);
                     return true;
 
                 case UpdateValueType.CoverageData_Capacity:
                     float orig_CoverageData_Capacity = coverageData.m_Capacity;
                     originalValue = UVTHelper.ConvertToLong(orig_CoverageData_Capacity);
                     coverageData.m_Capacity = UVTHelper.ConvertToFloat(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, coverageData);
+                    EntityManager.SetOrAdd(selectedPrefab, coverageData);
                     return true;
 
                 case UpdateValueType.CoverageData_Magnitude:
                     float orig_CoverageData_Magnitude = coverageData.m_Magnitude;
                     originalValue = UVTHelper.ConvertToLong(orig_CoverageData_Magnitude);
                     coverageData.m_Magnitude = UVTHelper.ConvertToFloat(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, coverageData);
+                    EntityManager.SetOrAdd(selectedPrefab, coverageData);
                     return true;
 
                 case UpdateValueType.DeathcareFacilityData_HearseCapacity:
@@ -409,7 +410,7 @@ namespace AdvancedBuildingControl.Systems
                         orig_DeathcareFacilityData_HearseCapacity
                     );
                     deathcareFacilityData.m_HearseCapacity = UVTHelper.ConvertToInt(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, deathcareFacilityData);
+                    EntityManager.SetOrAdd(selectedPrefab, deathcareFacilityData);
                     return true;
 
                 case UpdateValueType.DeathcareFacilityData_StorageCapacity:
@@ -419,7 +420,7 @@ namespace AdvancedBuildingControl.Systems
                         orig_DeathcareFacilityData_StorageCapacity
                     );
                     deathcareFacilityData.m_StorageCapacity = UVTHelper.ConvertToInt(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, deathcareFacilityData);
+                    EntityManager.SetOrAdd(selectedPrefab, deathcareFacilityData);
                     return true;
 
                 case UpdateValueType.DeathcareFacilityData_ProcessingRate:
@@ -431,7 +432,7 @@ namespace AdvancedBuildingControl.Systems
                     deathcareFacilityData.m_ProcessingRate = UVTHelper.ConvertToFloat(
                         modifiedValue
                     );
-                    utils.SetOrAdd(selectedPrefab, deathcareFacilityData);
+                    EntityManager.SetOrAdd(selectedPrefab, deathcareFacilityData);
                     return true;
 
                 case UpdateValueType.DeathcareFacilityData_LongTermStorage:
@@ -443,7 +444,7 @@ namespace AdvancedBuildingControl.Systems
                     deathcareFacilityData.m_LongTermStorage = UVTHelper.ConvertToBool(
                         modifiedValue
                     );
-                    utils.SetOrAdd(selectedPrefab, deathcareFacilityData);
+                    EntityManager.SetOrAdd(selectedPrefab, deathcareFacilityData);
                     return true;
 
                 case UpdateValueType.DestructibleObjectData_FireHazard:
@@ -451,7 +452,7 @@ namespace AdvancedBuildingControl.Systems
                         destructibleObjectData.m_FireHazard;
                     originalValue = UVTHelper.ConvertToLong(orig_DestructibleObjectData_FireHazard);
                     destructibleObjectData.m_FireHazard = UVTHelper.ConvertToFloat(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, destructibleObjectData);
+                    EntityManager.SetOrAdd(selectedPrefab, destructibleObjectData);
                     return true;
 
                 case UpdateValueType.DestructibleObjectData_StructuralIntegrity:
@@ -463,7 +464,7 @@ namespace AdvancedBuildingControl.Systems
                     destructibleObjectData.m_StructuralIntegrity = UVTHelper.ConvertToFloat(
                         modifiedValue
                     );
-                    utils.SetOrAdd(selectedPrefab, destructibleObjectData);
+                    EntityManager.SetOrAdd(selectedPrefab, destructibleObjectData);
                     return true;
 
                 case UpdateValueType.EmergencyGeneratorData_ElectricityProduction:
@@ -475,7 +476,7 @@ namespace AdvancedBuildingControl.Systems
                     emergencyGeneratorData.m_ElectricityProduction = UVTHelper.ConvertToInt(
                         modifiedValue
                     );
-                    utils.SetOrAdd(selectedPrefab, emergencyGeneratorData);
+                    EntityManager.SetOrAdd(selectedPrefab, emergencyGeneratorData);
                     return true;
 
                 case UpdateValueType.EmergencyShelterData_ShelterCapacity:
@@ -485,7 +486,7 @@ namespace AdvancedBuildingControl.Systems
                         orig_EmergencyShelterData_ShelterCapacity
                     );
                     emergencyShelterData.m_ShelterCapacity = UVTHelper.ConvertToInt(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, emergencyShelterData);
+                    EntityManager.SetOrAdd(selectedPrefab, emergencyShelterData);
                     return true;
 
                 case UpdateValueType.EmergencyShelterData_VehicleCapacity:
@@ -495,7 +496,7 @@ namespace AdvancedBuildingControl.Systems
                         orig_EmergencyShelterData_VehicleCapacity
                     );
                     emergencyShelterData.m_VehicleCapacity = UVTHelper.ConvertToInt(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, emergencyShelterData);
+                    EntityManager.SetOrAdd(selectedPrefab, emergencyShelterData);
                     return true;
 
                 case UpdateValueType.FireStationData_FireEngineCapacity:
@@ -505,7 +506,7 @@ namespace AdvancedBuildingControl.Systems
                         orig_FireStationData_FireEngineCapacity
                     );
                     fireStationData.m_FireEngineCapacity = UVTHelper.ConvertToInt(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, fireStationData);
+                    EntityManager.SetOrAdd(selectedPrefab, fireStationData);
                     return true;
 
                 case UpdateValueType.FireStationData_FireHelicopterCapacity:
@@ -517,7 +518,7 @@ namespace AdvancedBuildingControl.Systems
                     fireStationData.m_FireHelicopterCapacity = UVTHelper.ConvertToInt(
                         modifiedValue
                     );
-                    utils.SetOrAdd(selectedPrefab, fireStationData);
+                    EntityManager.SetOrAdd(selectedPrefab, fireStationData);
                     return true;
 
                 case UpdateValueType.FireStationData_DisasterResponseCapacity:
@@ -529,7 +530,7 @@ namespace AdvancedBuildingControl.Systems
                     fireStationData.m_DisasterResponseCapacity = UVTHelper.ConvertToInt(
                         modifiedValue
                     );
-                    utils.SetOrAdd(selectedPrefab, fireStationData);
+                    EntityManager.SetOrAdd(selectedPrefab, fireStationData);
                     return true;
 
                 case UpdateValueType.FireStationData_VehicleEfficiency:
@@ -537,7 +538,7 @@ namespace AdvancedBuildingControl.Systems
                         fireStationData.m_VehicleEfficiency;
                     originalValue = UVTHelper.ConvertToLong(orig_FireStationData_VehicleEfficiency);
                     fireStationData.m_VehicleEfficiency = UVTHelper.ConvertToFloat(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, fireStationData);
+                    EntityManager.SetOrAdd(selectedPrefab, fireStationData);
                     return true;
 
                 case UpdateValueType.GarbageFacilityData_GarbageCapacity:
@@ -547,7 +548,7 @@ namespace AdvancedBuildingControl.Systems
                         orig_GarbageFacilityData_GarbageCapacity
                     );
                     garbageFacilityData.m_GarbageCapacity = UVTHelper.ConvertToInt(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, garbageFacilityData);
+                    EntityManager.SetOrAdd(selectedPrefab, garbageFacilityData);
                     return true;
 
                 case UpdateValueType.GarbageFacilityData_VehicleCapacity:
@@ -557,7 +558,7 @@ namespace AdvancedBuildingControl.Systems
                         orig_GarbageFacilityData_VehicleCapacity
                     );
                     garbageFacilityData.m_VehicleCapacity = UVTHelper.ConvertToInt(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, garbageFacilityData);
+                    EntityManager.SetOrAdd(selectedPrefab, garbageFacilityData);
                     return true;
 
                 case UpdateValueType.GarbageFacilityData_TransportCapacity:
@@ -567,7 +568,7 @@ namespace AdvancedBuildingControl.Systems
                         orig_GarbageFacilityData_TransportCapacity
                     );
                     garbageFacilityData.m_TransportCapacity = UVTHelper.ConvertToInt(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, garbageFacilityData);
+                    EntityManager.SetOrAdd(selectedPrefab, garbageFacilityData);
                     return true;
 
                 case UpdateValueType.GarbageFacilityData_ProcessingSpeed:
@@ -577,7 +578,7 @@ namespace AdvancedBuildingControl.Systems
                         orig_GarbageFacilityData_ProcessingSpeed
                     );
                     garbageFacilityData.m_ProcessingSpeed = UVTHelper.ConvertToInt(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, garbageFacilityData);
+                    EntityManager.SetOrAdd(selectedPrefab, garbageFacilityData);
                     return true;
 
                 case UpdateValueType.GarbageFacilityData_IndustrialWasteOnly:
@@ -589,7 +590,7 @@ namespace AdvancedBuildingControl.Systems
                     garbageFacilityData.m_IndustrialWasteOnly = UVTHelper.ConvertToBool(
                         modifiedValue
                     );
-                    utils.SetOrAdd(selectedPrefab, garbageFacilityData);
+                    EntityManager.SetOrAdd(selectedPrefab, garbageFacilityData);
                     return true;
 
                 case UpdateValueType.GarbageFacilityData_LongTermStorage:
@@ -599,14 +600,14 @@ namespace AdvancedBuildingControl.Systems
                         orig_GarbageFacilityData_LongTermStorage
                     );
                     garbageFacilityData.m_LongTermStorage = UVTHelper.ConvertToBool(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, garbageFacilityData);
+                    EntityManager.SetOrAdd(selectedPrefab, garbageFacilityData);
                     return true;
 
                 case UpdateValueType.GarbagePoweredData_Capacity:
                     int orig_GarbagePoweredData_Capacity = garbagePoweredData.m_Capacity;
                     originalValue = UVTHelper.ConvertToLong(orig_GarbagePoweredData_Capacity);
                     garbagePoweredData.m_Capacity = UVTHelper.ConvertToInt(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, garbagePoweredData);
+                    EntityManager.SetOrAdd(selectedPrefab, garbagePoweredData);
                     return true;
 
                 case UpdateValueType.GarbagePoweredData_ProductionPerUnit:
@@ -618,7 +619,7 @@ namespace AdvancedBuildingControl.Systems
                     garbagePoweredData.m_ProductionPerUnit = UVTHelper.ConvertToFloat(
                         modifiedValue
                     );
-                    utils.SetOrAdd(selectedPrefab, garbagePoweredData);
+                    EntityManager.SetOrAdd(selectedPrefab, garbagePoweredData);
                     return true;
 
                 case UpdateValueType.GroundWaterPoweredData_Production:
@@ -626,7 +627,7 @@ namespace AdvancedBuildingControl.Systems
                         groundWaterPoweredData.m_Production;
                     originalValue = UVTHelper.ConvertToLong(orig_GroundWaterPoweredData_Production);
                     groundWaterPoweredData.m_Production = UVTHelper.ConvertToInt(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, groundWaterPoweredData);
+                    EntityManager.SetOrAdd(selectedPrefab, groundWaterPoweredData);
                     return true;
 
                 case UpdateValueType.GroundWaterPoweredData_MaximumGroundWater:
@@ -638,14 +639,14 @@ namespace AdvancedBuildingControl.Systems
                     groundWaterPoweredData.m_MaximumGroundWater = UVTHelper.ConvertToInt(
                         modifiedValue
                     );
-                    utils.SetOrAdd(selectedPrefab, groundWaterPoweredData);
+                    EntityManager.SetOrAdd(selectedPrefab, groundWaterPoweredData);
                     return true;
 
                 case UpdateValueType.HospitalData_AmbulanceCapacity:
                     int orig_HospitalData_AmbulanceCapacity = hospitalData.m_AmbulanceCapacity;
                     originalValue = UVTHelper.ConvertToLong(orig_HospitalData_AmbulanceCapacity);
                     hospitalData.m_AmbulanceCapacity = UVTHelper.ConvertToInt(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, hospitalData);
+                    EntityManager.SetOrAdd(selectedPrefab, hospitalData);
                     return true;
 
                 case UpdateValueType.HospitalData_MedicalHelicopterCapacity:
@@ -657,42 +658,42 @@ namespace AdvancedBuildingControl.Systems
                     hospitalData.m_MedicalHelicopterCapacity = UVTHelper.ConvertToInt(
                         modifiedValue
                     );
-                    utils.SetOrAdd(selectedPrefab, hospitalData);
+                    EntityManager.SetOrAdd(selectedPrefab, hospitalData);
                     return true;
 
                 case UpdateValueType.HospitalData_PatientCapacity:
                     int orig_HospitalData_PatientCapacity = hospitalData.m_PatientCapacity;
                     originalValue = UVTHelper.ConvertToLong(orig_HospitalData_PatientCapacity);
                     hospitalData.m_PatientCapacity = UVTHelper.ConvertToInt(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, hospitalData);
+                    EntityManager.SetOrAdd(selectedPrefab, hospitalData);
                     return true;
 
                 case UpdateValueType.HospitalData_TreatmentBonus:
                     int orig_HospitalData_TreatmentBonus = hospitalData.m_TreatmentBonus;
                     originalValue = UVTHelper.ConvertToLong(orig_HospitalData_TreatmentBonus);
                     hospitalData.m_TreatmentBonus = UVTHelper.ConvertToInt(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, hospitalData);
+                    EntityManager.SetOrAdd(selectedPrefab, hospitalData);
                     return true;
 
                 case UpdateValueType.HospitalData_HealthRange:
                     int2 orig_HospitalData_HealthRange = hospitalData.m_HealthRange;
                     originalValue = UVTHelper.ConvertToLong(orig_HospitalData_HealthRange);
                     hospitalData.m_HealthRange = UVTHelper.ConvertToInt2(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, hospitalData);
+                    EntityManager.SetOrAdd(selectedPrefab, hospitalData);
                     return true;
 
                 case UpdateValueType.HospitalData_TreatDiseases:
                     bool orig_HospitalData_TreatDiseases = hospitalData.m_TreatDiseases;
                     originalValue = UVTHelper.ConvertToLong(orig_HospitalData_TreatDiseases);
                     hospitalData.m_TreatDiseases = UVTHelper.ConvertToBool(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, hospitalData);
+                    EntityManager.SetOrAdd(selectedPrefab, hospitalData);
                     return true;
 
                 case UpdateValueType.HospitalData_TreatInjuries:
                     bool orig_HospitalData_TreatInjuries = hospitalData.m_TreatInjuries;
                     originalValue = UVTHelper.ConvertToLong(orig_HospitalData_TreatInjuries);
                     hospitalData.m_TreatInjuries = UVTHelper.ConvertToBool(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, hospitalData);
+                    EntityManager.SetOrAdd(selectedPrefab, hospitalData);
                     return true;
 
                 case UpdateValueType.MaintenanceDepotData_MaintenanceType:
@@ -702,7 +703,7 @@ namespace AdvancedBuildingControl.Systems
                         (int)orig_MaintenanceDepotData_MaintenanceType
                     );
                     maintenanceDepotData.m_MaintenanceType = (MaintenanceType)modifiedValue;
-                    utils.SetOrAdd(selectedPrefab, maintenanceDepotData);
+                    EntityManager.SetOrAdd(selectedPrefab, maintenanceDepotData);
                     return true;
 
                 case UpdateValueType.MaintenanceDepotData_VehicleCapacity:
@@ -712,7 +713,7 @@ namespace AdvancedBuildingControl.Systems
                         orig_MaintenanceDepotData_VehicleCapacity
                     );
                     maintenanceDepotData.m_VehicleCapacity = UVTHelper.ConvertToInt(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, maintenanceDepotData);
+                    EntityManager.SetOrAdd(selectedPrefab, maintenanceDepotData);
                     return true;
 
                 case UpdateValueType.MaintenanceDepotData_VehicleEfficiency:
@@ -724,21 +725,21 @@ namespace AdvancedBuildingControl.Systems
                     maintenanceDepotData.m_VehicleEfficiency = UVTHelper.ConvertToFloat(
                         modifiedValue
                     );
-                    utils.SetOrAdd(selectedPrefab, maintenanceDepotData);
+                    EntityManager.SetOrAdd(selectedPrefab, maintenanceDepotData);
                     return true;
 
                 case UpdateValueType.ParkData_MaintenancePool:
                     short orig_ParkData_MaintenancePool = parkData.m_MaintenancePool;
                     originalValue = UVTHelper.ConvertToLong(orig_ParkData_MaintenancePool);
                     parkData.m_MaintenancePool = UVTHelper.ConvertToShort(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, parkData);
+                    EntityManager.SetOrAdd(selectedPrefab, parkData);
                     return true;
 
                 case UpdateValueType.ParkData_AllowHomeless:
                     bool orig_ParkData_AllowHomeless = parkData.m_AllowHomeless;
                     originalValue = UVTHelper.ConvertToLong(orig_ParkData_AllowHomeless);
                     parkData.m_AllowHomeless = UVTHelper.ConvertToBool(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, parkData);
+                    EntityManager.SetOrAdd(selectedPrefab, parkData);
                     AdditionalPostApply(selectedPrefab, modifiedValue, valueType);
                     return true;
 
@@ -748,7 +749,7 @@ namespace AdvancedBuildingControl.Systems
                         (int)orig_ParkingFacilityData_RoadTypes
                     );
                     parkingFacilityData.m_RoadTypes = (RoadTypes)modifiedValue;
-                    utils.SetOrAdd(selectedPrefab, parkingFacilityData);
+                    EntityManager.SetOrAdd(selectedPrefab, parkingFacilityData);
                     return true;
 
                 case UpdateValueType.ParkingFacilityData_ComfortFactor:
@@ -756,7 +757,7 @@ namespace AdvancedBuildingControl.Systems
                         parkingFacilityData.m_ComfortFactor;
                     originalValue = UVTHelper.ConvertToLong(orig_ParkingFacilityData_ComfortFactor);
                     parkingFacilityData.m_ComfortFactor = UVTHelper.ConvertToFloat(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, parkingFacilityData);
+                    EntityManager.SetOrAdd(selectedPrefab, parkingFacilityData);
                     return true;
 
                 case UpdateValueType.ParkingFacilityData_GarageMarkerCapacity:
@@ -768,7 +769,7 @@ namespace AdvancedBuildingControl.Systems
                     parkingFacilityData.m_GarageMarkerCapacity = UVTHelper.ConvertToInt(
                         modifiedValue
                     );
-                    utils.SetOrAdd(selectedPrefab, parkingFacilityData);
+                    EntityManager.SetOrAdd(selectedPrefab, parkingFacilityData);
                     return true;
 
                 case UpdateValueType.PoliceStationData_PatrolCarCapacity:
@@ -778,7 +779,7 @@ namespace AdvancedBuildingControl.Systems
                         orig_PoliceStationData_PatrolCarCapacity
                     );
                     policeStationData.m_PatrolCarCapacity = UVTHelper.ConvertToInt(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, policeStationData);
+                    EntityManager.SetOrAdd(selectedPrefab, policeStationData);
                     return true;
 
                 case UpdateValueType.PoliceStationData_PoliceHelicopterCapacity:
@@ -790,14 +791,14 @@ namespace AdvancedBuildingControl.Systems
                     policeStationData.m_PoliceHelicopterCapacity = UVTHelper.ConvertToInt(
                         modifiedValue
                     );
-                    utils.SetOrAdd(selectedPrefab, policeStationData);
+                    EntityManager.SetOrAdd(selectedPrefab, policeStationData);
                     return true;
 
                 case UpdateValueType.PoliceStationData_JailCapacity:
                     int orig_PoliceStationData_JailCapacity = policeStationData.m_JailCapacity;
                     originalValue = UVTHelper.ConvertToLong(orig_PoliceStationData_JailCapacity);
                     policeStationData.m_JailCapacity = UVTHelper.ConvertToInt(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, policeStationData);
+                    EntityManager.SetOrAdd(selectedPrefab, policeStationData);
                     return true;
 
                 case UpdateValueType.PoliceStationData_PurposeMask:
@@ -807,14 +808,14 @@ namespace AdvancedBuildingControl.Systems
                         (int)orig_PoliceStationData_PurposeMask
                     );
                     policeStationData.m_PurposeMask = (PolicePurpose)modifiedValue;
-                    utils.SetOrAdd(selectedPrefab, policeStationData);
+                    EntityManager.SetOrAdd(selectedPrefab, policeStationData);
                     return true;
 
                 case UpdateValueType.PostFacilityData_PostVanCapacity:
                     int orig_PostFacilityData_PostVanCapacity = postFacilityData.m_PostVanCapacity;
                     originalValue = UVTHelper.ConvertToLong(orig_PostFacilityData_PostVanCapacity);
                     postFacilityData.m_PostVanCapacity = UVTHelper.ConvertToInt(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, postFacilityData);
+                    EntityManager.SetOrAdd(selectedPrefab, postFacilityData);
                     return true;
 
                 case UpdateValueType.PostFacilityData_PostTruckCapacity:
@@ -824,21 +825,21 @@ namespace AdvancedBuildingControl.Systems
                         orig_PostFacilityData_PostTruckCapacity
                     );
                     postFacilityData.m_PostTruckCapacity = UVTHelper.ConvertToInt(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, postFacilityData);
+                    EntityManager.SetOrAdd(selectedPrefab, postFacilityData);
                     return true;
 
                 case UpdateValueType.PostFacilityData_MailCapacity:
                     int orig_PostFacilityData_MailCapacity = postFacilityData.m_MailCapacity;
                     originalValue = UVTHelper.ConvertToLong(orig_PostFacilityData_MailCapacity);
                     postFacilityData.m_MailCapacity = UVTHelper.ConvertToInt(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, postFacilityData);
+                    EntityManager.SetOrAdd(selectedPrefab, postFacilityData);
                     return true;
 
                 case UpdateValueType.PostFacilityData_SortingRate:
                     int orig_PostFacilityData_SortingRate = postFacilityData.m_SortingRate;
                     originalValue = UVTHelper.ConvertToLong(orig_PostFacilityData_SortingRate);
                     postFacilityData.m_SortingRate = UVTHelper.ConvertToInt(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, postFacilityData);
+                    EntityManager.SetOrAdd(selectedPrefab, postFacilityData);
                     return true;
 
                 case UpdateValueType.PowerPlantData_ElectricityProduction:
@@ -848,98 +849,98 @@ namespace AdvancedBuildingControl.Systems
                         orig_PowerPlantData_ElectricityProduction
                     );
                     powerPlantData.m_ElectricityProduction = UVTHelper.ConvertToInt(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, powerPlantData);
+                    EntityManager.SetOrAdd(selectedPrefab, powerPlantData);
                     return true;
 
                 case UpdateValueType.PrisonData_PrisonVanCapacity:
                     int orig_PrisonData_PrisonVanCapacity = prisonData.m_PrisonVanCapacity;
                     originalValue = UVTHelper.ConvertToLong(orig_PrisonData_PrisonVanCapacity);
                     prisonData.m_PrisonVanCapacity = UVTHelper.ConvertToInt(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, prisonData);
+                    EntityManager.SetOrAdd(selectedPrefab, prisonData);
                     return true;
 
                 case UpdateValueType.PrisonData_PrisonerCapacity:
                     int orig_PrisonData_PrisonerCapacity = prisonData.m_PrisonerCapacity;
                     originalValue = UVTHelper.ConvertToLong(orig_PrisonData_PrisonerCapacity);
                     prisonData.m_PrisonerCapacity = UVTHelper.ConvertToInt(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, prisonData);
+                    EntityManager.SetOrAdd(selectedPrefab, prisonData);
                     return true;
 
                 case UpdateValueType.PrisonData_PrisonerWellbeing:
                     sbyte orig_PrisonData_PrisonerWellbeing = prisonData.m_PrisonerWellbeing;
                     originalValue = UVTHelper.ConvertToLong(orig_PrisonData_PrisonerWellbeing);
                     prisonData.m_PrisonerWellbeing = UVTHelper.ConvertToSByte(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, prisonData);
+                    EntityManager.SetOrAdd(selectedPrefab, prisonData);
                     return true;
 
                 case UpdateValueType.PrisonData_PrisonerHealth:
                     sbyte orig_PrisonData_PrisonerHealth = prisonData.m_PrisonerHealth;
                     originalValue = UVTHelper.ConvertToLong(orig_PrisonData_PrisonerHealth);
                     prisonData.m_PrisonerHealth = UVTHelper.ConvertToSByte(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, prisonData);
+                    EntityManager.SetOrAdd(selectedPrefab, prisonData);
                     return true;
 
                 case UpdateValueType.SchoolData_StudentCapacity:
                     int orig_SchoolData_StudentCapacity = schoolData.m_StudentCapacity;
                     originalValue = UVTHelper.ConvertToLong(orig_SchoolData_StudentCapacity);
                     schoolData.m_StudentCapacity = UVTHelper.ConvertToInt(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, schoolData);
+                    EntityManager.SetOrAdd(selectedPrefab, schoolData);
                     return true;
 
                 case UpdateValueType.SchoolData_GraduationModifier:
                     float orig_SchoolData_GraduationModifier = schoolData.m_GraduationModifier;
                     originalValue = UVTHelper.ConvertToLong(orig_SchoolData_GraduationModifier);
                     schoolData.m_GraduationModifier = UVTHelper.ConvertToFloat(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, schoolData);
+                    EntityManager.SetOrAdd(selectedPrefab, schoolData);
                     return true;
 
                 case UpdateValueType.SchoolData_EducationLevel:
                     byte orig_SchoolData_EducationLevel = schoolData.m_EducationLevel;
                     originalValue = UVTHelper.ConvertToLong(orig_SchoolData_EducationLevel);
                     schoolData.m_EducationLevel = UVTHelper.ConvertToByte(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, schoolData);
+                    EntityManager.SetOrAdd(selectedPrefab, schoolData);
                     return true;
 
                 case UpdateValueType.SchoolData_StudentWellbeing:
                     sbyte orig_SchoolData_StudentWellbeing = schoolData.m_StudentWellbeing;
                     originalValue = UVTHelper.ConvertToLong(orig_SchoolData_StudentWellbeing);
                     schoolData.m_StudentWellbeing = UVTHelper.ConvertToSByte(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, schoolData);
+                    EntityManager.SetOrAdd(selectedPrefab, schoolData);
                     return true;
 
                 case UpdateValueType.SchoolData_StudentHealth:
                     sbyte orig_SchoolData_StudentHealth = schoolData.m_StudentHealth;
                     originalValue = UVTHelper.ConvertToLong(orig_SchoolData_StudentHealth);
                     schoolData.m_StudentHealth = UVTHelper.ConvertToSByte(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, schoolData);
+                    EntityManager.SetOrAdd(selectedPrefab, schoolData);
                     return true;
 
                 case UpdateValueType.SewageOutletData_Capacity:
                     int orig_SewageOutletData_Capacity = sewageOutletData.m_Capacity;
                     originalValue = UVTHelper.ConvertToLong(orig_SewageOutletData_Capacity);
                     sewageOutletData.m_Capacity = UVTHelper.ConvertToInt(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, sewageOutletData);
+                    EntityManager.SetOrAdd(selectedPrefab, sewageOutletData);
                     return true;
 
                 case UpdateValueType.SewageOutletData_Purification:
                     float orig_SewageOutletData_Purification = sewageOutletData.m_Purification;
                     originalValue = UVTHelper.ConvertToLong(orig_SewageOutletData_Purification);
                     sewageOutletData.m_Purification = UVTHelper.ConvertToFloat(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, sewageOutletData);
+                    EntityManager.SetOrAdd(selectedPrefab, sewageOutletData);
                     return true;
 
                 case UpdateValueType.SolarPoweredData_Production:
                     int orig_SolarPoweredData_Production = solarPoweredData.m_Production;
                     originalValue = UVTHelper.ConvertToLong(orig_SolarPoweredData_Production);
                     solarPoweredData.m_Production = UVTHelper.ConvertToInt(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, solarPoweredData);
+                    EntityManager.SetOrAdd(selectedPrefab, solarPoweredData);
                     return true;
 
                 case UpdateValueType.SpawnableBuildingData_Level:
                     byte orig_SpawnableBuildingData_Level = spawnableBuildingData.m_Level;
                     originalValue = UVTHelper.ConvertToLong(orig_SpawnableBuildingData_Level);
                     spawnableBuildingData.m_Level = UVTHelper.ConvertToByte(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, spawnableBuildingData);
+                    EntityManager.SetOrAdd(selectedPrefab, spawnableBuildingData);
                     return true;
 
                 case UpdateValueType.StorageCompanyData_StoredResources:
@@ -949,7 +950,7 @@ namespace AdvancedBuildingControl.Systems
                         (ulong)orig_StorageCompanyData_StoredResources
                     );
                     storageCompanyData.m_StoredResources = (Resource)modifiedValue;
-                    utils.SetOrAdd(selectedPrefab, storageCompanyData);
+                    EntityManager.SetOrAdd(selectedPrefab, storageCompanyData);
                     return true;
 
                 case UpdateValueType.StorageCompanyData_TransportInterval:
@@ -959,14 +960,14 @@ namespace AdvancedBuildingControl.Systems
                         orig_StorageCompanyData_TransportInterval
                     );
                     storageCompanyData.m_TransportInterval = UVTHelper.ConvertToInt2(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, storageCompanyData);
+                    EntityManager.SetOrAdd(selectedPrefab, storageCompanyData);
                     return true;
 
                 case UpdateValueType.TelecomFacilityData_Range:
                     float orig_TelecomFacilityData_Range = telecomFacilityData.m_Range;
                     originalValue = UVTHelper.ConvertToLong(orig_TelecomFacilityData_Range);
                     telecomFacilityData.m_Range = UVTHelper.ConvertToFloat(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, telecomFacilityData);
+                    EntityManager.SetOrAdd(selectedPrefab, telecomFacilityData);
                     return true;
 
                 case UpdateValueType.TelecomFacilityData_NetworkCapacity:
@@ -976,7 +977,7 @@ namespace AdvancedBuildingControl.Systems
                         orig_TelecomFacilityData_NetworkCapacity
                     );
                     telecomFacilityData.m_NetworkCapacity = UVTHelper.ConvertToFloat(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, telecomFacilityData);
+                    EntityManager.SetOrAdd(selectedPrefab, telecomFacilityData);
                     return true;
 
                 case UpdateValueType.TelecomFacilityData_PenetrateTerrain:
@@ -986,7 +987,7 @@ namespace AdvancedBuildingControl.Systems
                         orig_TelecomFacilityData_PenetrateTerrain
                     );
                     telecomFacilityData.m_PenetrateTerrain = UVTHelper.ConvertToBool(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, telecomFacilityData);
+                    EntityManager.SetOrAdd(selectedPrefab, telecomFacilityData);
                     return true;
 
                 case UpdateValueType.TransportDepotData_TransportType:
@@ -996,7 +997,7 @@ namespace AdvancedBuildingControl.Systems
                         (int)orig_TransportDepotData_TransportType
                     );
                     transportDepotData.m_TransportType = (TransportType)modifiedValue;
-                    utils.SetOrAdd(selectedPrefab, transportDepotData);
+                    EntityManager.SetOrAdd(selectedPrefab, transportDepotData);
                     return true;
 
                 case UpdateValueType.TransportDepotData_EnergyTypes:
@@ -1006,14 +1007,14 @@ namespace AdvancedBuildingControl.Systems
                         (int)orig_TransportDepotData_EnergyTypes
                     );
                     transportDepotData.m_EnergyTypes = (EnergyTypes)modifiedValue;
-                    utils.SetOrAdd(selectedPrefab, transportDepotData);
+                    EntityManager.SetOrAdd(selectedPrefab, transportDepotData);
                     return true;
 
                 case UpdateValueType.TransportDepotData_SizeClass:
                     SizeClass orig_TransportDepotData_SizeClass = transportDepotData.m_SizeClass;
                     originalValue = UVTHelper.ConvertToLong((int)orig_TransportDepotData_SizeClass);
                     transportDepotData.m_SizeClass = (SizeClass)modifiedValue;
-                    utils.SetOrAdd(selectedPrefab, transportDepotData);
+                    EntityManager.SetOrAdd(selectedPrefab, transportDepotData);
                     return true;
 
                 case UpdateValueType.TransportDepotData_DispatchCenter:
@@ -1021,7 +1022,7 @@ namespace AdvancedBuildingControl.Systems
                         transportDepotData.m_DispatchCenter;
                     originalValue = UVTHelper.ConvertToLong(orig_TransportDepotData_DispatchCenter);
                     transportDepotData.m_DispatchCenter = UVTHelper.ConvertToBool(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, transportDepotData);
+                    EntityManager.SetOrAdd(selectedPrefab, transportDepotData);
                     return true;
 
                 case UpdateValueType.TransportDepotData_VehicleCapacity:
@@ -1031,7 +1032,7 @@ namespace AdvancedBuildingControl.Systems
                         orig_TransportDepotData_VehicleCapacity
                     );
                     transportDepotData.m_VehicleCapacity = UVTHelper.ConvertToInt(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, transportDepotData);
+                    EntityManager.SetOrAdd(selectedPrefab, transportDepotData);
                     return true;
 
                 case UpdateValueType.TransportDepotData_ProductionDuration:
@@ -1043,7 +1044,7 @@ namespace AdvancedBuildingControl.Systems
                     transportDepotData.m_ProductionDuration = UVTHelper.ConvertToFloat(
                         modifiedValue
                     );
-                    utils.SetOrAdd(selectedPrefab, transportDepotData);
+                    EntityManager.SetOrAdd(selectedPrefab, transportDepotData);
                     return true;
 
                 case UpdateValueType.TransportDepotData_MaintenanceDuration:
@@ -1055,7 +1056,7 @@ namespace AdvancedBuildingControl.Systems
                     transportDepotData.m_MaintenanceDuration = UVTHelper.ConvertToFloat(
                         modifiedValue
                     );
-                    utils.SetOrAdd(selectedPrefab, transportDepotData);
+                    EntityManager.SetOrAdd(selectedPrefab, transportDepotData);
                     return true;
 
                 case UpdateValueType.TransportStationData_ComfortFactor:
@@ -1065,7 +1066,7 @@ namespace AdvancedBuildingControl.Systems
                         orig_TransportStationData_ComfortFactor
                     );
                     transportStationData.m_ComfortFactor = UVTHelper.ConvertToFloat(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, transportStationData);
+                    EntityManager.SetOrAdd(selectedPrefab, transportStationData);
                     return true;
 
                 case UpdateValueType.TransportStationData_LoadingFactor:
@@ -1075,7 +1076,7 @@ namespace AdvancedBuildingControl.Systems
                         orig_TransportStationData_LoadingFactor
                     );
                     transportStationData.m_LoadingFactor = UVTHelper.ConvertToFloat(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, transportStationData);
+                    EntityManager.SetOrAdd(selectedPrefab, transportStationData);
                     return true;
 
                 case UpdateValueType.TransportStationData_CarRefuelTypes:
@@ -1085,7 +1086,7 @@ namespace AdvancedBuildingControl.Systems
                         (int)orig_TransportStationData_CarRefuelTypes
                     );
                     transportStationData.m_CarRefuelTypes = (EnergyTypes)modifiedValue;
-                    utils.SetOrAdd(selectedPrefab, transportStationData);
+                    EntityManager.SetOrAdd(selectedPrefab, transportStationData);
                     return true;
 
                 case UpdateValueType.TransportStationData_TrainRefuelTypes:
@@ -1095,7 +1096,7 @@ namespace AdvancedBuildingControl.Systems
                         (int)orig_TransportStationData_TrainRefuelTypes
                     );
                     transportStationData.m_TrainRefuelTypes = (EnergyTypes)modifiedValue;
-                    utils.SetOrAdd(selectedPrefab, transportStationData);
+                    EntityManager.SetOrAdd(selectedPrefab, transportStationData);
                     return true;
 
                 case UpdateValueType.TransportStationData_WatercraftRefuelTypes:
@@ -1105,7 +1106,7 @@ namespace AdvancedBuildingControl.Systems
                         (int)orig_TransportStationData_WatercraftRefuelTypes
                     );
                     transportStationData.m_WatercraftRefuelTypes = (EnergyTypes)modifiedValue;
-                    utils.SetOrAdd(selectedPrefab, transportStationData);
+                    EntityManager.SetOrAdd(selectedPrefab, transportStationData);
                     return true;
 
                 case UpdateValueType.TransportStationData_AircraftRefuelTypes:
@@ -1115,7 +1116,7 @@ namespace AdvancedBuildingControl.Systems
                         (int)orig_TransportStationData_AircraftRefuelTypes
                     );
                     transportStationData.m_AircraftRefuelTypes = (EnergyTypes)modifiedValue;
-                    utils.SetOrAdd(selectedPrefab, transportStationData);
+                    EntityManager.SetOrAdd(selectedPrefab, transportStationData);
                     return true;
 
                 case UpdateValueType.WaterPoweredData_ProductionFactor:
@@ -1123,14 +1124,14 @@ namespace AdvancedBuildingControl.Systems
                         waterPoweredData.m_ProductionFactor;
                     originalValue = UVTHelper.ConvertToLong(orig_WaterPoweredData_ProductionFactor);
                     waterPoweredData.m_ProductionFactor = UVTHelper.ConvertToFloat(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, waterPoweredData);
+                    EntityManager.SetOrAdd(selectedPrefab, waterPoweredData);
                     return true;
 
                 case UpdateValueType.WaterPoweredData_CapacityFactor:
                     float orig_WaterPoweredData_CapacityFactor = waterPoweredData.m_CapacityFactor;
                     originalValue = UVTHelper.ConvertToLong(orig_WaterPoweredData_CapacityFactor);
                     waterPoweredData.m_CapacityFactor = UVTHelper.ConvertToFloat(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, waterPoweredData);
+                    EntityManager.SetOrAdd(selectedPrefab, waterPoweredData);
                     return true;
 
                 case UpdateValueType.WaterPumpingStationData_Types:
@@ -1140,14 +1141,14 @@ namespace AdvancedBuildingControl.Systems
                         (int)orig_WaterPumpingStationData_Types
                     );
                     waterPumpingStationData.m_Types = (AllowedWaterTypes)modifiedValue;
-                    utils.SetOrAdd(selectedPrefab, waterPumpingStationData);
+                    EntityManager.SetOrAdd(selectedPrefab, waterPumpingStationData);
                     return true;
 
                 case UpdateValueType.WaterPumpingStationData_Capacity:
                     int orig_WaterPumpingStationData_Capacity = waterPumpingStationData.m_Capacity;
                     originalValue = UVTHelper.ConvertToLong(orig_WaterPumpingStationData_Capacity);
                     waterPumpingStationData.m_Capacity = UVTHelper.ConvertToInt(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, waterPumpingStationData);
+                    EntityManager.SetOrAdd(selectedPrefab, waterPumpingStationData);
                     return true;
 
                 case UpdateValueType.WaterPumpingStationData_Purification:
@@ -1159,35 +1160,35 @@ namespace AdvancedBuildingControl.Systems
                     waterPumpingStationData.m_Purification = UVTHelper.ConvertToFloat(
                         modifiedValue
                     );
-                    utils.SetOrAdd(selectedPrefab, waterPumpingStationData);
+                    EntityManager.SetOrAdd(selectedPrefab, waterPumpingStationData);
                     return true;
 
                 case UpdateValueType.WindPoweredData_MaximumWind:
                     float orig_WindPoweredData_MaximumWind = windPoweredData.m_MaximumWind;
                     originalValue = UVTHelper.ConvertToLong(orig_WindPoweredData_MaximumWind);
                     windPoweredData.m_MaximumWind = UVTHelper.ConvertToFloat(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, windPoweredData);
+                    EntityManager.SetOrAdd(selectedPrefab, windPoweredData);
                     return true;
 
                 case UpdateValueType.WindPoweredData_Production:
                     int orig_WindPoweredData_Production = windPoweredData.m_Production;
                     originalValue = UVTHelper.ConvertToLong(orig_WindPoweredData_Production);
                     windPoweredData.m_Production = UVTHelper.ConvertToInt(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, windPoweredData);
+                    EntityManager.SetOrAdd(selectedPrefab, windPoweredData);
                     return true;
 
                 case UpdateValueType.WorkplaceData_Complexity:
                     WorkplaceComplexity orig_WorkplaceData_Complexity = workplaceData.m_Complexity;
                     originalValue = UVTHelper.ConvertToLong((int)orig_WorkplaceData_Complexity);
                     workplaceData.m_Complexity = (WorkplaceComplexity)modifiedValue;
-                    utils.SetOrAdd(selectedPrefab, workplaceData);
+                    EntityManager.SetOrAdd(selectedPrefab, workplaceData);
                     return true;
 
                 case UpdateValueType.WorkplaceData_MaxWorkers:
                     int orig_WorkplaceData_MaxWorkers = workplaceData.m_MaxWorkers;
                     originalValue = UVTHelper.ConvertToLong(orig_WorkplaceData_MaxWorkers);
                     workplaceData.m_MaxWorkers = UVTHelper.ConvertToInt(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, workplaceData);
+                    EntityManager.SetOrAdd(selectedPrefab, workplaceData);
                     AdditionalPostApply(selectedPrefab, modifiedValue, valueType);
                     return true;
 
@@ -1200,7 +1201,7 @@ namespace AdvancedBuildingControl.Systems
                     workplaceData.m_EveningShiftProbability = UVTHelper.ConvertToFloat(
                         modifiedValue
                     );
-                    utils.SetOrAdd(selectedPrefab, workplaceData);
+                    EntityManager.SetOrAdd(selectedPrefab, workplaceData);
                     return true;
 
                 case UpdateValueType.WorkplaceData_NightShiftProbability:
@@ -1210,7 +1211,7 @@ namespace AdvancedBuildingControl.Systems
                         orig_WorkplaceData_NightShiftProbability
                     );
                     workplaceData.m_NightShiftProbability = UVTHelper.ConvertToFloat(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, workplaceData);
+                    EntityManager.SetOrAdd(selectedPrefab, workplaceData);
                     return true;
 
                 case UpdateValueType.WorkplaceData_MinimumWorkersLimit:
@@ -1218,14 +1219,14 @@ namespace AdvancedBuildingControl.Systems
                         workplaceData.m_MinimumWorkersLimit;
                     originalValue = UVTHelper.ConvertToLong(orig_WorkplaceData_MinimumWorkersLimit);
                     workplaceData.m_MinimumWorkersLimit = UVTHelper.ConvertToInt(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, workplaceData);
+                    EntityManager.SetOrAdd(selectedPrefab, workplaceData);
                     return true;
 
                 case UpdateValueType.WorkplaceData_WorkConditions:
                     int orig_WorkplaceData_WorkConditions = workplaceData.m_WorkConditions;
                     originalValue = UVTHelper.ConvertToLong(orig_WorkplaceData_WorkConditions);
                     workplaceData.m_WorkConditions = UVTHelper.ConvertToInt(modifiedValue);
-                    utils.SetOrAdd(selectedPrefab, workplaceData);
+                    EntityManager.SetOrAdd(selectedPrefab, workplaceData);
                     return true;
 
                 //end

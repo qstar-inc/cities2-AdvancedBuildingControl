@@ -1,37 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using AdvancedBuildingControl.Systems;
-using Colossal.IO.AssetDatabase;
 using Colossal.Json;
 using Colossal.PSI.Environment;
 using Game.Modding;
 using Game.Settings;
 using Game.UI.Widgets;
 using StarQ.Shared.Extensions;
+using StarQ.Shared.Generators;
+using UnityEngine;
 
 namespace AdvancedBuildingControl
 {
-    [FileLocation("ModsSettings\\StarQ\\" + nameof(AdvancedBuildingControl))]
-    [SettingsUITabOrder(GeneralTab, AboutTab, LogTab)]
     [SettingsUIShowGroupName(CityComponentOverride)]
-    public class Setting : ModSetting
+    [GenerateSettingCommonAttribute]
+    public partial class Setting : ModSetting
     {
-        public Setting(IMod mod)
-            : base(mod) => SetDefaults();
+        public override void SetDefaults()
+        {
+            EffectOverlayR = Color.blue.r;
+            EffectOverlayB = Color.blue.b;
+            EffectOverlayG = Color.blue.g;
+            EffectOverlayA = 0.08f;
+        }
 
-        public const string GeneralTab = "GeneralTab";
-        public const string GeneralGroup = "GeneralGroup";
         public const string CityComponentOverride = "CityComponentOverride";
         public const string StaticPloppableBuilder = "StaticPloppableBuilder";
-
-        public const string AboutTab = "AboutTab";
-        public const string InfoGroup = "InfoGroup";
-
-        public const string LogTab = "LogTab";
+        public const string Effects = "Effects";
 
         [Exclude]
+        [SettingsUIHidden]
         public bool hasBackup = false;
 
         [Exclude]
@@ -123,51 +122,36 @@ namespace AdvancedBuildingControl
             set => WorldHelper.GetSystem<StaticPloppableData>().DeleteFile();
         }
 
-        public override void SetDefaults() { }
-
-        [SettingsUISection(AboutTab, InfoGroup)]
-        public string NameText => Mod.Name;
-
-        [SettingsUISection(AboutTab, InfoGroup)]
-        public string VersionText => VariableHelper.AddDevSuffix(Mod.Version);
-
-        [SettingsUISection(AboutTab, InfoGroup)]
-        public string AuthorText => VariableHelper.StarQ;
-
         [SettingsUIButton]
-        [SettingsUIButtonGroup("Social")]
-        [SettingsUISection(AboutTab, InfoGroup)]
-        public bool BMaCLink
+        [SettingsUISection(GeneralTab, Effects)]
+        public bool ResetEffectColor
         {
-            set => VariableHelper.OpenBMAC();
+            set =>
+                WorldHelper
+                    .GetSystem<EffectOverlaySystem>()
+                    .SetColor(new Color(Color.blue.r, Color.blue.g, Color.blue.b, 0.08f));
         }
 
-        [SettingsUIButton]
-        [SettingsUIButtonGroup("Social")]
-        [SettingsUISection(AboutTab, InfoGroup)]
-        public bool Discord
-        {
-            set => VariableHelper.OpenDiscord("1464858378747645983");
-        }
-
-        [SettingsUIMultilineText]
-        [SettingsUIDisplayName(typeof(LogHelper), nameof(LogHelper.LogText))]
-        [SettingsUISection(LogTab, "")]
-        public string LogText => string.Empty;
-
-        [Exclude]
         [SettingsUIHidden]
-        public bool IsLogMissing
-        {
-            get => VariableHelper.CheckLog(Mod.Id);
-        }
+        public float EffectOverlayR { get; set; } = Color.blue.r;
 
-        [SettingsUIButton]
-        [SettingsUIDisableByCondition(typeof(Setting), nameof(IsLogMissing))]
-        [SettingsUISection(LogTab, "")]
-        public bool OpenLog
-        {
-            set => VariableHelper.OpenLog(Mod.Id);
-        }
+        [SettingsUIHidden]
+        public float EffectOverlayB { get; set; } = Color.blue.b;
+
+        [SettingsUIHidden]
+        public float EffectOverlayG { get; set; } = Color.blue.g;
+
+        [SettingsUIHidden]
+        public float EffectOverlayA { get; set; } = 0.08f;
+
+        //#if DEBUG
+        //        [SettingsUIButton]
+        //        [SettingsUIDisplayName(overrideValue: "Test")]
+        //        [SettingsUISection(GeneralTab, StaticPloppableBuilder)]
+        //        public bool Test
+        //        {
+        //            set => WorldHelper.GetSystem<PrefabFinder>().Test();
+        //        }
+        //#endif
     }
 }

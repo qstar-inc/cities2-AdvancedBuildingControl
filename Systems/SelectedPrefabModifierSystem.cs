@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using AdvancedBuildingControl.Components;
-using AdvancedBuildingControl.Variables;
+using AdvancedBuildingControl.Enums;
+using AdvancedBuildingControl.Helpers;
+using AdvancedBuildingControl.Models;
 using Colossal.Entities;
 using Game;
 using Game.Agents;
@@ -13,30 +15,16 @@ using Unity.Entities;
 
 namespace AdvancedBuildingControl.Systems
 {
-    public class PrefabChange
-    {
-        public UpdateValueType ValueType { get; set; }
-        public ModifiedPrefab Modifications { get; set; }
-    }
-
-    public class CreatedEntitiesData
-    {
-        public Entity CreatedEntity { get; set; }
-        public List<PrefabChange> PrefabChanges { get; set; }
-    }
-
     public partial class SelectedPrefabModifierSystem : GameSystemBase
     {
-        public BufferControlSystem bufferControlSystem;
-        public Utils utils;
+        public ModifiedPrefabBufferSystem modifiedPrefabBufferSystem;
 
         public Dictionary<Entity, CreatedEntitiesData> localEntities;
 
         protected override void OnCreate()
         {
             base.OnCreate();
-            bufferControlSystem = WorldHelper.GetSystem<BufferControlSystem>();
-            utils = WorldHelper.GetSystem<Utils>();
+            modifiedPrefabBufferSystem = WorldHelper.GetSystem<ModifiedPrefabBufferSystem>();
             localEntities = new();
         }
 
@@ -78,7 +66,7 @@ namespace AdvancedBuildingControl.Systems
 
                 ModifiedPrefab entry;
                 if (
-                    bufferControlSystem.TryGetEntryFromBuffer(
+                    modifiedPrefabBufferSystem.TryGetEntryFromBuffer(
                         selectedPrefab,
                         valueType,
                         out var existingEntry
@@ -88,14 +76,16 @@ namespace AdvancedBuildingControl.Systems
                     entry = existingEntry;
                     if (modifiedValue == entry.Original)
                     {
-                        bufferControlSystem.TryRemoveFromBuffer(selectedPrefab, valueType);
+                        modifiedPrefabBufferSystem.TryRemoveFromBuffer(selectedPrefab, valueType);
                         RemoveFromDict(selectedPrefab, valueType);
+                        RemoveAndDestroy(selectedPrefab, entry.ModEntity);
+                        return;
                     }
                     else
                     {
                         entry.Modified = modifiedValue;
                         entry.IsEnabled = true;
-                        bufferControlSystem.TryAddOrReplaceToBuffer(selectedPrefab, entry);
+                        modifiedPrefabBufferSystem.TryAddOrReplaceToBuffer(selectedPrefab, entry);
                         AddChangesToDict(selectedPrefab, entry);
                     }
                 }
@@ -110,9 +100,8 @@ namespace AdvancedBuildingControl.Systems
                         );
                         return;
                     }
-                    Entity newEntity = Entity.Null;
 
-                    if (!TryAddOrCreateEntity(selectedPrefab, out newEntity))
+                    if (!TryAddOrCreateEntity(selectedPrefab, out Entity newEntity))
                         return;
 
                     entry = default;
@@ -121,9 +110,10 @@ namespace AdvancedBuildingControl.Systems
                     entry.Original = originalValue;
                     entry.Modified = modifiedValue;
                     entry.IsEnabled = true;
-                    bufferControlSystem.TryAddOrReplaceToBuffer(selectedPrefab, entry);
+                    modifiedPrefabBufferSystem.TryAddOrReplaceToBuffer(selectedPrefab, entry);
                     AddChangesToDict(selectedPrefab, entry);
                 }
+
                 EntityManager.AddComponent<LocalModified>(selectedPrefab);
                 LogHelper.SendLog(
                     $"Set {valueType} from (long){entry.Original} to (long){modifiedValue} for {PrefabHelper.GetPrefabName(selectedPrefab)}"
@@ -143,11 +133,12 @@ namespace AdvancedBuildingControl.Systems
         public bool TryAddOrCreateEntity(Entity selectedPrefab, out Entity newEntity)
         {
             if (
-                localEntities.TryGetValue(selectedPrefab, out CreatedEntitiesData ced)
-                && ced.CreatedEntity != Entity.Null
+                localEntities.TryGetValue(selectedPrefab, out CreatedEntitiesData ceData)
+                && ceData.CreatedEntity != Entity.Null
+                && EntityManager.Exists(ceData.CreatedEntity)
             )
             {
-                newEntity = ced.CreatedEntity;
+                newEntity = ceData.CreatedEntity;
                 LogHelper.SendLog($"Existing entity found", LogLevel.DEVD);
                 if (!EntityManager.HasComponent<LocalEntities>(newEntity))
                     EntityManager.AddComponent<LocalEntities>(newEntity);
@@ -155,14 +146,14 @@ namespace AdvancedBuildingControl.Systems
                     !EntityManager.TryGetComponent(newEntity, out PrefabRef prefabRef)
                     || prefabRef.m_Prefab != selectedPrefab
                 )
-                    EntityManager.SetComponentData(newEntity, new PrefabRef(selectedPrefab));
+                    EntityManager.SetOrAdd(newEntity, new PrefabRef(selectedPrefab));
                 return true;
             }
 
             newEntity = EntityManager.CreateEntity();
             LogHelper.SendLog($"Creating new entity", LogLevel.DEVD);
-            EntityManager.AddComponentData(newEntity, new PrefabRef(selectedPrefab));
             EntityManager.AddComponent<LocalEntities>(newEntity);
+            EntityManager.SetOrAdd(newEntity, new PrefabRef(selectedPrefab));
             localEntities[selectedPrefab] = new() { CreatedEntity = newEntity };
             return true;
         }
@@ -217,7 +208,7 @@ namespace AdvancedBuildingControl.Systems
                         )
                             continue;
                         workProvider.m_MaxWorkers = UVTHelper.ConvertToInt(modifiedValue);
-                        utils.SetAndUpdate(entity, workProvider);
+                        EntityManager.SetAndUpdate(entity, workProvider);
                     }
 
                     return;
@@ -241,23 +232,28 @@ namespace AdvancedBuildingControl.Systems
                             )
                                 continue;
 
-                            EntityManager.TryGetBuffer(
-                                entity,
-                                false,
-                                out DynamicBuffer<Game.Buildings.Renter> renters
+                            if (
+                                !EntityManager.TryGetBuffer(
+                                    entity,
+                                    false,
+                                    out DynamicBuffer<Game.Buildings.Renter> renters
+                                ) || renters.IsEmpty
+                            )
+                                continue;
+
+                            NativeArray<Game.Buildings.Renter> toEvict = renters.ToNativeArray(
+                                Allocator.Temp
                             );
-                            if (!renters.IsEmpty)
-                            {
-                                for (int i = renters.Length - 1; i >= 0; i--)
-                                {
-                                    MovingAway movingAway = new()
-                                    {
-                                        m_Reason = MoveAwayReason.NoSuitableProperty,
-                                    };
-                                    utils.SetAndUpdate(renters[i].m_Renter, movingAway);
-                                    renters.RemoveAt(i);
-                                }
-                            }
+
+                            foreach (Game.Buildings.Renter renter in toEvict)
+                                EntityManager.SetAndUpdate(
+                                    renter.m_Renter,
+                                    new MovingAway { m_Reason = MoveAwayReason.NoSuitableProperty }
+                                );
+
+                            if (EntityManager.TryGetBuffer(entity, false, out renters))
+                                renters.Clear();
+
                             //EntityManager.RemoveComponent<Game.Buildings.Renter>(entity);
                             EntityManager.RemoveComponent<Game.Buildings.PropertyOnMarket>(entity);
                             EntityManager.AddComponent<Updated>(entity);
@@ -278,33 +274,33 @@ namespace AdvancedBuildingControl.Systems
             if (mods.ModEntity == Entity.Null)
                 return;
 
-            if (
-                !localEntities.TryGetValue(
-                    selectedPrefab,
-                    out CreatedEntitiesData createdEntitiesData
-                )
-            )
+            if (!localEntities.TryGetValue(selectedPrefab, out CreatedEntitiesData ceData))
             {
-                createdEntitiesData = new() { CreatedEntity = mods.ModEntity };
+                ceData = new() { CreatedEntity = mods.ModEntity };
+                localEntities[selectedPrefab] = ceData;
             }
-            createdEntitiesData.PrefabChanges ??= new();
+            ceData.PrefabChanges ??= new();
 
-            List<PrefabChange> list = createdEntitiesData.PrefabChanges;
-
-            for (int i = 0; i < list.Count; i++)
+            foreach (PrefabChange pChange in ceData.PrefabChanges)
             {
-                if (list[i].ValueType == mods.ValueType)
+                if (pChange.ValueType == mods.ValueType)
                 {
-                    list[i].Modifications = mods;
-                    createdEntitiesData.PrefabChanges = list;
-                    localEntities[selectedPrefab] = createdEntitiesData;
+                    pChange.Modifications = mods;
                     return;
                 }
             }
 
-            list.Add(new PrefabChange { ValueType = mods.ValueType, Modifications = mods });
-            createdEntitiesData.PrefabChanges = list;
-            localEntities[selectedPrefab] = createdEntitiesData;
+            ceData.PrefabChanges.Add(
+                new PrefabChange { ValueType = mods.ValueType, Modifications = mods }
+            );
+        }
+
+        public void RemoveAndDestroy(Entity selectedPrefab, Entity createdEntity)
+        {
+            EntityManager.RemoveComponent<LocalModified>(selectedPrefab);
+            if (EntityManager.Exists(createdEntity))
+                EntityManager.DestroyEntity(createdEntity);
+            localEntities.Remove(selectedPrefab);
         }
 
         public void RemoveFromDict(Entity selectedPrefab, UpdateValueType updateValueType)
@@ -314,46 +310,43 @@ namespace AdvancedBuildingControl.Systems
                 LogLevel.DEVD
             );
 
-            if (
-                !localEntities.TryGetValue(
-                    selectedPrefab,
-                    out CreatedEntitiesData createdEntitiesData
-                )
-            )
-                return;
-
-            if (createdEntitiesData?.PrefabChanges == null)
+            if (!localEntities.TryGetValue(selectedPrefab, out CreatedEntitiesData ceData))
             {
-                localEntities.Remove(selectedPrefab);
+                EntityManager.RemoveComponent<LocalModified>(selectedPrefab);
                 return;
             }
 
-            createdEntitiesData.PrefabChanges ??= new();
-            List<PrefabChange> list = createdEntitiesData.PrefabChanges;
-            var list2 = list;
-
-            for (int i = list2.Count - 1; i >= 0; i--)
+            if (ceData?.PrefabChanges == null)
             {
-                if (list2[i].ValueType == updateValueType)
+                RemoveAndDestroy(selectedPrefab, ceData.CreatedEntity);
+                LogHelper.SendLog(
+                    $"Removing {updateValueType} data from localEntities because ceData or PrefabChanges is null"
+                );
+                return;
+            }
+
+            List<PrefabChange> list = ceData.PrefabChanges;
+
+            for (int i = list.Count - 1; i >= 0; i--)
+            {
+                if (list[i].ValueType != updateValueType)
+                    continue;
+
+                if (list.Count == 1)
                 {
-                    if (list2.Count == 1)
-                    {
-                        EntityManager.RemoveComponent<LocalModified>(selectedPrefab);
-                        EntityManager.DestroyEntity(createdEntitiesData.CreatedEntity);
-                        localEntities.Remove(selectedPrefab);
-
-                        LogHelper.SendLog($"Removing data from localEntities", LogLevel.DEVD);
-                        return;
-                    }
-
-                    list.RemoveAt(i);
+                    RemoveAndDestroy(selectedPrefab, ceData.CreatedEntity);
                     LogHelper.SendLog(
-                        $"Removing component data from localEntities.PrefabChanges",
+                        $"Removing {updateValueType} data from localEntities",
                         LogLevel.DEVD
                     );
-                    createdEntitiesData.PrefabChanges = list;
-                    localEntities[selectedPrefab] = createdEntitiesData;
+                    return;
                 }
+
+                list.RemoveAt(i);
+                LogHelper.SendLog(
+                    $"Removing {updateValueType} component data from localEntities",
+                    LogLevel.DEVD
+                );
             }
         }
 
@@ -366,7 +359,7 @@ namespace AdvancedBuildingControl.Systems
         public void ResetAllFromBuffer(Entity selectedPrefab)
         {
             if (
-                !bufferControlSystem.TryGetAllEntityEntriesFromBuffer(
+                !modifiedPrefabBufferSystem.TryGetAllEntityEntriesFromBuffer(
                     selectedPrefab,
                     out List<ModifiedPrefab> entries
                 )
@@ -395,33 +388,6 @@ namespace AdvancedBuildingControl.Systems
             foreach (var item in entities)
             {
                 ResetAll(item);
-            }
-        }
-
-        public void ResetFromDict()
-        {
-            var list = localEntities;
-            localEntities.Clear();
-            foreach (var item in list)
-            {
-                var entity = item.Key;
-                var cd = item.Value;
-
-                if (cd == null || cd.PrefabChanges == null || cd.PrefabChanges.Count <= 0)
-                    continue;
-
-                if (EntityManager.Exists(cd.CreatedEntity))
-                    EntityManager.DestroyEntity(cd.CreatedEntity);
-
-                foreach (var change in cd.PrefabChanges)
-                {
-                    Modify(
-                        entity,
-                        $"(long){change.Modifications.Original}",
-                        change.ValueType,
-                        true
-                    );
-                }
             }
         }
     }

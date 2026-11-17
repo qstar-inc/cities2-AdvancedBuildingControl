@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using AdvancedBuildingControl.Variables;
+using AdvancedBuildingControl.Enums;
 using Colossal.Entities;
 using Game;
 using Game.Buildings;
@@ -22,11 +22,8 @@ namespace AdvancedBuildingControl.Systems
         public IconCommandSystem iconCommandSystem;
         public IconCommandBuffer iconCommandBuffer;
 
-        public Utils utils;
-
         protected override void OnCreate()
         {
-            utils = WorldHelper.GetSystem<Utils>();
             iconCommandSystem = WorldHelper.IconCommandSystem;
         }
 
@@ -43,7 +40,7 @@ namespace AdvancedBuildingControl.Systems
                 ushort randomUShort = (ushort)random.Next(0, 65536);
                 pseudoRandomSeed.m_Seed = randomUShort;
 
-                utils.AddAndUpdate(entity, pseudoRandomSeed);
+                EntityManager.AddAndUpdate(entity, pseudoRandomSeed);
             }
             catch (Exception ex)
             {
@@ -76,7 +73,7 @@ namespace AdvancedBuildingControl.Systems
 
                     companyData.m_Brand = match.Entity;
 
-                    utils.SetAndUpdate(renterEntity, entity, companyData);
+                    EntityManager.SetAndUpdate(renterEntity, entity, companyData);
                 }
             }
             catch (Exception ex)
@@ -117,7 +114,7 @@ namespace AdvancedBuildingControl.Systems
                     }
                     WorldHelper.GetSystem<GarbageAccumulationSystem>().Update();
 
-                    utils.SetAndUpdate(entity, garbageProducer);
+                    EntityManager.SetAndUpdate(entity, garbageProducer);
 
                     break;
 
@@ -153,7 +150,7 @@ namespace AdvancedBuildingControl.Systems
                         }
                     }
 
-                    utils.SetAndUpdate(entity, crimeProducer);
+                    EntityManager.SetAndUpdate(entity, crimeProducer);
                     break;
 
                 case BldgCleanupType.OutgoingMail:
@@ -165,7 +162,7 @@ namespace AdvancedBuildingControl.Systems
 
                     mailProducer.m_SendingMail = Math.Max(mailValue, (ushort)0);
 
-                    utils.SetAndUpdate(entity, mailProducer);
+                    EntityManager.SetAndUpdate(entity, mailProducer);
                     break;
 
                 case BldgCleanupType.PhysicalDamage:
@@ -243,7 +240,7 @@ namespace AdvancedBuildingControl.Systems
                         }
                     }
 
-                    utils.SetAndUpdate(entity, damaged);
+                    EntityManager.SetAndUpdate(entity, damaged);
                     break;
 
                 default:

@@ -1,4 +1,4 @@
-﻿using AdvancedBuildingControl.Variables;
+﻿using AdvancedBuildingControl.Enums;
 using Colossal.Serialization.Entities;
 using Unity.Entities;
 

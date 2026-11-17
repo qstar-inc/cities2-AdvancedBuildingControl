@@ -3,7 +3,7 @@ import {
   ChangeUVTValueString,
   ResetUVTValue,
 } from "bindings/backend";
-import { componentPanelVisibleBinding } from "bindings/frontend";
+import { ClosePanel, componentPanelVisibleBinding } from "bindings/frontend";
 import { useValue } from "cs2/api";
 import { Number2 } from "cs2/bindings";
 import { FOCUS_AUTO, FOCUS_DISABLED, FocusDisabled } from "cs2/input";
@@ -36,9 +36,10 @@ import {
 import { CheckBox, Divider, ToolButton } from "shared/vanilla";
 import { DropdownItem } from "shared/vanilla-type-fix";
 import commonStyle from "styles/common.module.scss";
-import { BldgComponentInfo } from "types/BldgComponentInfo";
+import { BldgComponentInfo, getValueType } from "types/BldgComponentInfo";
 import { BldgModifiedInfo } from "types/BldgModifiedInfo";
 import { UpdateValueType } from "types/UpdateValueType";
+import { ValueFormat } from "types/ValueFormat";
 
 import levelStyle from "./style_level.module.scss";
 
@@ -159,11 +160,13 @@ const Int2Editor: FC<{
             value={value2.x}
             onCommit={x => commit({ x, y: value2.y })}
             inputPrefix={FindTranslation("PhotoMode.PROPERTY_LIMIT_MIN", true)}
+            integer={getValueType(valueType) == ValueFormat.Int2}
           />
           <NumberInputSnippet
             value={value2.y}
             onCommit={y => commit({ x: value2.x, y })}
             inputPrefix={FindTranslation("PhotoMode.PROPERTY_LIMIT_MAX", true)}
+            integer={getValueType(valueType) == ValueFormat.Int2}
           />
           <ResetButtonSnippet
             valueType={valueType}
@@ -453,6 +456,7 @@ const Section = ({
             <NumberInputSnippet
               value={value}
               onCommit={newValue => ChangeUVTValue(newValue, valueType)}
+              integer={getValueType(valueType) == ValueFormat.Int}
             />
             <ResetButtonSnippet
               valueType={valueType}
@@ -534,7 +538,7 @@ export const ComponentPanel: FC<ComponentPanelProps> = (
   const visibleBindingValue = useValue(componentPanelVisibleBinding);
 
   const headerText = FindTranslation(`Component.Header`);
-  const infoText = FindTranslation(`Component.AppliesAll`);
+  const infoText = FindTranslation(`AppliesAll`);
   const bldgComponentInfo = props.bldgComponentInfo;
   const bldgModifiedInfo = props.bldgModifiedInfo;
 
@@ -599,6 +603,7 @@ export const ComponentPanel: FC<ComponentPanelProps> = (
         visible={visibleBindingValue}
         icon={toolsIcon}
         sipAligned={true}
+        onClose={() => ClosePanel()}
         content={
           <>
             <Scrollable

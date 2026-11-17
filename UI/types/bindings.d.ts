@@ -738,6 +738,7 @@ declare module "cs2/bindings" {
   export interface ColorField extends Field<Color> {
     hdr?: boolean;
     showAlpha: boolean;
+    locked?: boolean;
   }
   export interface DropdownField<T> extends Field<T>, WarningSign {
     items: DropdownItem<T>[];
@@ -3385,6 +3386,20 @@ declare module "cs2/bindings" {
   function setContourMode(enabled: boolean): void;
   function setUndergroundMode(enabled: boolean): void;
   function setDistance(distance: number): void;
+  const parentMeshOverrideSupported$: ValueBinding<boolean>;
+  const objectOverrideSupported$: ValueBinding<boolean>;
+  const parentMeshOverrideEnabled$: ValueBinding<boolean>;
+  const parentMeshStagedValue$: ValueBinding<number>;
+  const groupIndexOverrideEnabled$: ValueBinding<boolean>;
+  const groupIndexStagedValue$: ValueBinding<number>;
+  const probabilityOverrideEnabled$: ValueBinding<boolean>;
+  const probabilityStagedValue$: ValueBinding<number>;
+  function setParentMeshOverrideEnabled(enabled: boolean): void;
+  function setParentMeshStagedValue(value: number): void;
+  function setGroupIndexOverrideEnabled(enabled: boolean): void;
+  function setGroupIndexStagedValue(value: number): void;
+  function setProbabilityOverrideEnabled(enabled: boolean): void;
+  function setProbabilityStagedValue(value: number): void;
   const BULLDOZE_TOOL = "Bulldoze Tool";
   const DEFAULT_TOOL = "Default Tool";
   const ZONE_TOOL = "Zone Tool";
@@ -3497,6 +3512,8 @@ declare module "cs2/bindings" {
     Elderly = 8,
   }
   const toolbarGroups$: ValueBinding<ToolbarGroup[]>;
+  const consoleToolbarGroups$: ValueBinding<ToolbarGroup[]>;
+  const bulldozeTool$: ValueBinding<ToolbarItem>;
   const assetCategories$: MapBinding<Entity, AssetCategory[]>;
   const assets$: MapBinding<Entity, Asset$1[]>;
   const themes$$1: ValueBinding<Theme$1[]>;
@@ -4680,10 +4697,18 @@ declare module "cs2/bindings" {
       elevationStep$,
       elevationUp,
       elevationUpDisabled$,
+      groupIndexOverrideEnabled$,
+      groupIndexStagedValue$,
       isEditor$,
+      objectOverrideSupported$,
       parallelMode$,
       parallelModeSupported$,
       parallelOffset$,
+      parentMeshOverrideEnabled$,
+      parentMeshOverrideSupported$,
+      parentMeshStagedValue$,
+      probabilityOverrideEnabled$,
+      probabilityStagedValue$,
       replacingTrees$,
       selectBrush,
       selectTool,
@@ -4698,7 +4723,13 @@ declare module "cs2/bindings" {
       setContourMode,
       setDistance,
       setElevationStep,
+      setGroupIndexOverrideEnabled,
+      setGroupIndexStagedValue,
       setParallelOffset,
+      setParentMeshOverrideEnabled,
+      setParentMeshStagedValue,
+      setProbabilityOverrideEnabled,
+      setProbabilityStagedValue,
       setSelectedSnapMask,
       setShowWaterSourceNames,
       setSimulateBackdropWater,
@@ -4728,7 +4759,9 @@ declare module "cs2/bindings" {
       assetCategories$,
       assetPacks$,
       assets$,
+      bulldozeTool$,
       clearAssetSelection,
+      consoleToolbarGroups$,
       decorationMode$,
       hasModAssets$,
       modsSelected$,

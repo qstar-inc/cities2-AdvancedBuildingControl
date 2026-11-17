@@ -4,27 +4,32 @@ INPUT_FILE = Path(__file__).parent / "comp.txt"
 
 CURRENT_FOLDER = Path(__file__).parent
 
-VARIABLES_FOLDER = CURRENT_FOLDER.parent.parent / "Variables"
-VARIABLES_FOLDER.mkdir(exist_ok=True)
+ENUMS_FOLDER = CURRENT_FOLDER.parent.parent / "Enums"
+ENUMS_FOLDER.mkdir(exist_ok=True)
+
+BINDINGS_FOLDER = CURRENT_FOLDER.parent.parent / "Bindings"
+BINDINGS_FOLDER.mkdir(exist_ok=True)
+
+HELPERS_FOLDER = CURRENT_FOLDER.parent.parent / "Helpers"
+HELPERS_FOLDER.mkdir(exist_ok=True)
 
 SYSTEMS_FOLDER = CURRENT_FOLDER.parent.parent / "Systems"
 SYSTEMS_FOLDER.mkdir(exist_ok=True)
 
-EXTENSIONS_FOLDER = CURRENT_FOLDER.parent.parent / "Extensions"
-EXTENSIONS_FOLDER.mkdir(exist_ok=True)
+# EXTENSIONS_FOLDER = CURRENT_FOLDER.parent.parent / "Extensions"
+# EXTENSIONS_FOLDER.mkdir(exist_ok=True)
 
 UI_WRITER_FOLDER = CURRENT_FOLDER.parent / "src" / "types"
 UI_WRITER_FOLDER.mkdir(exist_ok=True)
 
-UpdateValueType_FILE = VARIABLES_FOLDER / "UpdateValueType.cs"
-ComponentName_FILE = VARIABLES_FOLDER / "ComponentName.cs"
-ComponentName_Get_FILE = VARIABLES_FOLDER / "ComponentName_Get.cs"
-Helper_TryLimit_FILE = VARIABLES_FOLDER / "UVTHelper_TryLimit.cs"
-ValueFormat_Get_FILE = VARIABLES_FOLDER / "ValueFormat_Get.cs"
-BldgComponentInfo_FILE = VARIABLES_FOLDER / "BldgComponentInfo.cs"
+UpdateValueType_FILE = ENUMS_FOLDER / "UpdateValueType.cs"
+ComponentName_FILE = ENUMS_FOLDER / "ComponentName.cs"
+BldgComponentInfo_FILE = BINDINGS_FOLDER / "BldgComponentInfo.cs"
+ComponentName_Get_FILE = HELPERS_FOLDER / "ComponentName_Get.cs"
+Helper_TryLimit_FILE = HELPERS_FOLDER / "UVTHelper_TryLimit.cs"
+ValueFormat_Get_FILE = HELPERS_FOLDER / "ValueFormat_Get.cs"
 TryApply_FILE = SYSTEMS_FOLDER / "SelectedPrefabModifierSystem_TryApply.cs"
-SIP_abc2_FILE = SYSTEMS_FOLDER / "SIP_ABC2.cs"
-Writer_FILE = EXTENSIONS_FOLDER / "BldgComponentInfoWriterExtensions.cs"
+SIP_Comp_FILE = SYSTEMS_FOLDER / "SIPSystem_Component.cs"
 UI_Writer_FILE = UI_WRITER_FOLDER / "BldgComponentInfo.tsx"
 UI_UVT_Type_FILE = UI_WRITER_FOLDER / "UpdateValueType.tsx"
 
@@ -182,7 +187,7 @@ if __name__ == "__main__":
     grouped_by_type = group_fields_by_type(data)
 
     text1 = """
-namespace AdvancedBuildingControl.Variables
+namespace AdvancedBuildingControl.Enums
 {
     public enum UpdateValueType : ushort
     {
@@ -191,7 +196,7 @@ namespace AdvancedBuildingControl.Variables
         _All = 1,
 """
     text2 = """
-namespace AdvancedBuildingControl.Variables
+namespace AdvancedBuildingControl.Enums
 {
     public enum ComponentName
     {
@@ -200,7 +205,9 @@ namespace AdvancedBuildingControl.Variables
         //start
 """
     text3 = """
-namespace AdvancedBuildingControl.Variables
+using AdvancedBuildingControl.Enums;
+
+namespace AdvancedBuildingControl.Helpers
     {
         public partial class UVTHelper
         {
@@ -215,42 +222,66 @@ namespace AdvancedBuildingControl.Variables
                     // start
 """
     text4 = """using System;
+using AdvancedBuildingControl.Enums;
 
-namespace AdvancedBuildingControl.Variables
+namespace AdvancedBuildingControl.Helpers
 {
     public partial class UVTHelper
     {
 """
-    text5 = """
-namespace AdvancedBuildingControl.Variables
-    {
+
+    def text5_f(v1: str):
+        return f"""
+using AdvancedBuildingControl.Enums;
+
+namespace AdvancedBuildingControl.Helpers
+    {{
         public partial class UVTHelper
-        {
+        {{
             public static ValueFormat GetValueFormat(UpdateValueType updateValueType)
-            {
+            {{
                 switch (updateValueType)
-                {
+                {{
                     case UpdateValueType._None:
                     case UpdateValueType._All:
                         break;
 
                     // start
-                    """
-    text6 = """
+                    {v1}
+                    //end
+                }}
+    
+                return ValueFormat.Unknown;
+            }}
+        }}
+    }}
+"""
+
+    text5 = ""
+
+    text6 = """using Colossal.UI.Binding;
 using Game.Economy;
 using Game.Net;
 using Game.Prefabs;
 using Game.Simulation;
 using Game.Vehicles;
 using Unity.Mathematics;
+using StarQ.Shared.Extensions;
 
-namespace AdvancedBuildingControl.Variables
+namespace AdvancedBuildingControl.Bindings
 {
-    public class BldgComponentInfo
+    public class BldgComponentInfo : IJsonWritable
     {
 """
-    text7_1 = """
-using AdvancedBuildingControl.Variables;
+    text6_1 = """
+        public void Write(IJsonWriter writer)
+        {
+            writer.TypeBegin(GetType().FullName);
+
+            //start
+"""
+    text7_1 = """using AdvancedBuildingControl.Enums;
+using AdvancedBuildingControl.Helpers;
 using Colossal.Entities;
 using Game;
 using Game.Economy;
@@ -305,40 +336,43 @@ switch (valueType)
 """
     text7_6 = ""
     text8 = """
-using AdvancedBuildingControl.Variables;
+using AdvancedBuildingControl.Bindings;
 using Colossal.Entities;
 using Game.Prefabs;
 using StarQ.Shared.Extensions.UI;
 
 namespace AdvancedBuildingControl.Systems
 {
-    public partial class SIP_ABC : ExtendedInfoSectionBase
+    public partial class SIPSystem : ExtendedInfoSectionBase
     {
         public void CheckComponents()
         {
             BldgComponentInfo c = new();
             //start
 """
-    text9 = """
-using AdvancedBuildingControl.Variables;
-using Colossal.UI.Binding;
 
-namespace AdvancedBuildingControl.Extensions
-{
-    public static class BldgComponentInfoWriterExtensions
-    {
-        public static void Write(this IJsonWriter writer, BldgComponentInfo value)
-        {
-            writer.TypeBegin(value.GetType().FullName);
+    def text9_f(v1: str, v2: str):
+        return f"""
+import {{ Number2 }} from "cs2/bindings";
+import {{ UpdateValueType }} from "types/UpdateValueType";
+import {{ ValueFormat }} from "types/ValueFormat";
 
-            //start
+export interface BldgComponentInfo {{
+    {v1}
+}}
+
+export const getValueType = (v: UpdateValueType) => {{
+    switch (v) {{
+        {v2}
+    }}
+}}
+
 """
+
+    text9_1 = ""
+    text9_2 = ""
+
     text10 = """
-import { Number2 } from "cs2/bindings";
-
-export interface BldgComponentInfo {
-"""
-    text11 = """
 export enum UpdateValueType {
   _None = 0,
   _All = 1,
@@ -352,10 +386,8 @@ export enum UpdateValueType {
         text7_2 += f"{comp} {lower} = default;"
         text7_4 += f"case ComponentName.{comp}: if (!EntityManager.TryGetComponent(selectedPrefab, out {lower})) return false; break;"
         xpl = ""
-        text9 += (
-            f"writer.PropertyName(nameof(value.{comp}));writer.Write(value.{comp});"
-        )
-        text10 += f"{comp}: boolean;"
+        text6_1 += f"writer.PropertyName(nameof({comp}));writer.Write({comp});"
+        text9_1 += f"  {comp}: boolean;\n"
 
         # print(comp)
         for field in info["fields"]:
@@ -374,7 +406,7 @@ export enum UpdateValueType {
                 else ""
             )
             enum_base = ""
-            writer_write = f"value.{full}"
+            writer_write = f"{full}"
             if field["enum_base"] != "":
                 if field["enum_base"] != "ulong" and f_type != "Resource":
                     enum_base = "(int)"
@@ -387,13 +419,18 @@ export enum UpdateValueType {
                     {f_type} orig_{full} = {lower}.{name};
                     originalValue = UVTHelper.ConvertToLong({enum_base}orig_{full});                    
                     {info["lower"]}.{name} = {utv_conv(f_type)};
-                    utils.SetOrAdd(selectedPrefab, {lower});{apl}
+                    EntityManager.SetOrAdd(selectedPrefab, {lower});{apl}
                     return true;
 """
             xpl += f"c.{full} = {lower}.{name};"
-            text9 += f"writer.PropertyName(nameof(value.{full}));writer.Write({writer_write});"
-            text10 += f"{full}: {valueFormatJS(f_type)};"
-            text11 += f"{full} = {id},"
+            if f_type == "float":
+                writer_write = f"MathHelper.Float2Double({writer_write})"
+            text6_1 += (
+                f"writer.PropertyName(nameof({full}));writer.Write({writer_write});"
+            )
+            text9_1 += f"  {full}: {valueFormatJS(f_type)};"
+            # text9_2 += f"  {full}: ValueFormat.{valueFormatCS(f_type)};"
+            text10 += f"{full} = {id},"
             # print(field)
         text3 += f"{text3_1} return ComponentName.{comp};"
         text8 += f"""if (EntityManager.TryGetComponent(selectedPrefab, out {comp} {lower}))
@@ -466,17 +503,13 @@ export enum UpdateValueType {
     }
 }
 """
-    text5 += """
-                //end
-            }
-
-            return ValueFormat.Unknown;
-        }
-    }
-}
-"""
     text6 += """
         //end
+"""
+    text6_1 += """
+            //end
+            writer.TypeEnd();
+        }
     }
 }
 """
@@ -496,15 +529,7 @@ export enum UpdateValueType {
         }
     }
 }"""
-    text9 += """
-            //end
-            writer.TypeEnd();
-        }
-    }
-}
-"""
     text10 += "}"
-    text11 += "}"
 
     with UpdateValueType_FILE.open("w", encoding="utf-8") as f:
         f.write(text1)
@@ -519,23 +544,20 @@ export enum UpdateValueType {
         f.write(text4)
     print(f"{Helper_TryLimit_FILE} created")
     with ValueFormat_Get_FILE.open("w", encoding="utf-8") as f:
-        f.write(text5)
+        f.write(text5_f(text5))
     print(f"{ValueFormat_Get_FILE} created")
     with BldgComponentInfo_FILE.open("w", encoding="utf-8") as f:
-        f.write(text6)
+        f.write(text6 + text6_1)
     print(f"{BldgComponentInfo_FILE} created")
     with TryApply_FILE.open("w", encoding="utf-8") as f:
         f.write(text7)
     print(f"{TryApply_FILE} created")
-    with SIP_abc2_FILE.open("w", encoding="utf-8") as f:
+    with SIP_Comp_FILE.open("w", encoding="utf-8") as f:
         f.write(text8)
-    print(f"{SIP_abc2_FILE} created")
-    with Writer_FILE.open("w", encoding="utf-8") as f:
-        f.write(text9)
-    print(f"{Writer_FILE} created")
+    print(f"{SIP_Comp_FILE} created")
     with UI_Writer_FILE.open("w", encoding="utf-8") as f:
-        f.write(text10)
+        f.write(text9_f(text9_1, text5))
     print(f"{UI_Writer_FILE} created")
     with UI_UVT_Type_FILE.open("w", encoding="utf-8") as f:
-        f.write(text11)
+        f.write(text10)
     print(f"{UI_UVT_Type_FILE} created")

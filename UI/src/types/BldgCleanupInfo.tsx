@@ -26,7 +26,6 @@ export interface BldgCleanupTypeInfo {
   Enabled: boolean;
   CleanupType: BldgCleanupType;
   CurrentValueNumber: number;
-  // CurrentValueString: string;
 }
 
 export const GetCleanupMetadata = (cleanupType: BldgCleanupType) => {

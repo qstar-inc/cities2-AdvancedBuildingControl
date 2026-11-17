@@ -1,5 +1,5 @@
 import { ChangeBCTValue, TriggerBCT } from "bindings/backend";
-import { cleanupPanelVisibleBinding } from "bindings/frontend";
+import { cleanupPanelVisibleBinding, ClosePanel } from "bindings/frontend";
 import { cleanupIcon } from "bindings/icons";
 import { useValue } from "cs2/api";
 import { FOCUS_DISABLED } from "cs2/input";
@@ -10,7 +10,7 @@ import { FindTranslation, nicifyVariableName } from "shared/lang";
 import { PanelBase } from "shared/PanelBase";
 import { styleSIP } from "shared/style";
 import { Divider, InfoButton, ToolButton } from "shared/vanilla";
-import commonStyles from "styles/common.module.scss";
+import commonStyle from "styles/common.module.scss";
 import {
   BldgCleanupInfo,
   BldgCleanupType,
@@ -35,7 +35,7 @@ const ZeroButtonSnippet = ({
   return (
     <>
       <div
-        className={`${false ? "" : commonStyles.MarginLeft3r} ${commonStyles.AlignCenter}`}
+        className={`${false ? "" : commonStyle.MarginLeft3r} ${commonStyle.AlignCenter}`}
       >
         <ToolButton
           id={`starq-abc-resetPanel-${valueType}-reset`}
@@ -69,7 +69,7 @@ const Section = ({
   if (valueType === CleanupValueType.Number)
     return (
       <PanelSectionRow
-        className={commonStyles.NoMarginVertical}
+        className={commonStyle.NoMarginVertical}
         disableFocus={true}
         left={title}
         right={
@@ -94,7 +94,7 @@ const Section = ({
 
     return (
       <PanelSectionRow
-        className={commonStyles.NoMargin}
+        className={commonStyle.NoMargin}
         disableFocus={true}
         center={
           <InfoButton
@@ -131,7 +131,7 @@ export const CleanupPanel: FC<CleanupPanelProps> = (
   const visibleBindingValue = useValue(cleanupPanelVisibleBinding);
 
   const headerText = FindTranslation(`Cleanup.Header`);
-  const infoText = FindTranslation(`Cleanup.AppliesOne`);
+  const infoText = FindTranslation(`AppliesOne`);
   const bldgCleanupInfo = props.bldgCleanupInfo;
 
   const dict = bldgCleanupInfo.Array;
@@ -143,6 +143,7 @@ export const CleanupPanel: FC<CleanupPanelProps> = (
         visible={visibleBindingValue}
         icon={cleanupIcon}
         sipAligned={true}
+        onClose={() => ClosePanel()}
         content={
           <>
             <Scrollable

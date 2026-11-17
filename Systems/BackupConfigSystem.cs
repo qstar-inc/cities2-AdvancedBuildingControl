@@ -4,10 +4,11 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using AdvancedBuildingControl.Components;
-using AdvancedBuildingControl.Variables;
+using AdvancedBuildingControl.Enums;
 using Colossal.PSI.Environment;
 using Game;
 using Game.City;
+using Game.UI.Localization;
 using Newtonsoft.Json;
 using StarQ.Shared.Extensions;
 using Unity.Collections;
@@ -17,12 +18,12 @@ namespace AdvancedBuildingControl.Systems
 {
     public partial class BackupConfigSystem : GameSystemBase
     {
-        BufferControlSystem bufferControlSystem;
+        ModifiedPrefabBufferSystem modifiedPrefabBufferSystem;
         SelectedPrefabModifierSystem selectedPrefabModifierSystem;
 
         protected override void OnCreate()
         {
-            bufferControlSystem = WorldHelper.GetSystem<BufferControlSystem>();
+            modifiedPrefabBufferSystem = WorldHelper.GetSystem<ModifiedPrefabBufferSystem>();
             selectedPrefabModifierSystem = WorldHelper.GetSystem<SelectedPrefabModifierSystem>();
         }
 
@@ -45,12 +46,18 @@ namespace AdvancedBuildingControl.Systems
 
         public void BackupConfig()
         {
-            if (!bufferControlSystem.TryGetBufferCopy(out NativeArray<ModifiedPrefab> array))
+            if (!modifiedPrefabBufferSystem.TryGetBufferCopy(out NativeArray<ModifiedPrefab> array))
                 return;
 
             if (array.Length == 0)
             {
-                LogHelper.SendLog("Nothing to Backup...");
+                string message = $"This save contains no configuration. Nothing to backup.";
+                DialogHelper.ShowMessageDialog(
+                    Mod.Name,
+                    LocalizedString.Value(message),
+                    LocalizationHelper.GetLocaleId(LocalizationHelper.LocaleIdGettable.OK),
+                    null
+                );
                 return;
             }
 
@@ -61,10 +68,10 @@ namespace AdvancedBuildingControl.Systems
             {
                 ModifiedPrefab entry = array[i];
 
-                if (!PrefabHelper.TryFindPrefabRef(entry.ModEntity, out Entity m_Prefab))
+                if (!entry.IsEnabled)
                     continue;
 
-                if (!entry.IsEnabled)
+                if (!PrefabHelper.TryFindPrefabRef(entry.ModEntity, out Entity m_Prefab))
                     continue;
 
                 string prefabName = WorldHelper.PrefabSystem.GetPrefabName(m_Prefab);
@@ -85,6 +92,18 @@ namespace AdvancedBuildingControl.Systems
                 );
             }
 
+            if (dict.Count == 0)
+            {
+                string message = $"This save contains no configuration. Nothing to backup.";
+                DialogHelper.ShowMessageDialog(
+                    Mod.Name,
+                    LocalizedString.Value(message),
+                    LocalizationHelper.GetLocaleId(LocalizationHelper.LocaleIdGettable.OK),
+                    null
+                );
+                return;
+            }
+
             string cityName = WorldHelper.GetSystem<CityConfigurationSystem>().cityName;
 
             var backup = new BackupFile
@@ -98,28 +117,48 @@ namespace AdvancedBuildingControl.Systems
                 mod_version = Mod.Version,
             };
 
-            var directory = $"{EnvPath.kUserDataPath}/ModsData/{Mod.Id}/BackupConfig";
-            Directory.CreateDirectory(directory);
-
-            string fileTime = time.ToString("yyyy-MM-dd_HH-mm-ss", CultureInfo.InvariantCulture);
-            string fileName = $"ABC_Backup_{fileTime}_{cityName}.json";
-
-            string fullPath = Path.Combine(directory, fileName);
-
-            var options = new JsonSerializerSettings
+            try
             {
-                Formatting = Formatting.Indented,
-                Error = (sender, args) =>
-                {
-                    LogHelper.SendLog(
-                        $"Serialization error on property '{args.ErrorContext.Member}': {args.ErrorContext.Error.Message}"
-                    );
-                    args.ErrorContext.Handled = true;
-                },
-            };
+                var directory = $"{EnvPath.kUserDataPath}/ModsData/{Mod.Id}/BackupConfig";
+                Directory.CreateDirectory(directory);
 
-            string json = JsonConvert.SerializeObject(backup, options);
-            File.WriteAllText(fullPath, json);
+                string fileTime = time.ToString(
+                    "yyyy-MM-dd_HH-mm-ss",
+                    CultureInfo.InvariantCulture
+                );
+                string fileName = StringHelper.SanitizeTextForPath(
+                    $"ABC_Backup_{fileTime}_{cityName}.json"
+                );
+
+                string fullPath = Path.Combine(directory, fileName);
+
+                var options = new JsonSerializerSettings
+                {
+                    Formatting = Formatting.Indented,
+                    Error = (sender, args) =>
+                    {
+                        LogHelper.SendLog(
+                            $"Serialization error on property '{args.ErrorContext.Member}': {args.ErrorContext.Error.Message}"
+                        );
+                        args.ErrorContext.Handled = true;
+                    },
+                };
+
+                string json = JsonConvert.SerializeObject(backup, options);
+                File.WriteAllText(fullPath, json);
+            }
+            catch (Exception ex)
+            {
+                string message = $"Restore failed: Error backing up config.\n{ex.Message}";
+                DialogHelper.ShowMessageDialog(
+                    Mod.Name,
+                    LocalizedString.Value(message),
+                    LocalizationHelper.GetLocaleId(LocalizationHelper.LocaleIdGettable.OK),
+                    null
+                );
+                return;
+            }
+
             Mod.m_Setting.DropdownVersion++;
         }
 
@@ -154,26 +193,29 @@ namespace AdvancedBuildingControl.Systems
 
         private void RestoreInternal(BackupFile backup)
         {
+            PrefabFinder pf = WorldHelper.GetSystem<PrefabFinder>();
             int restored = 0;
             int skipped = 0;
 
             foreach (var prefabPair in backup.data)
             {
+                if (string.IsNullOrEmpty(prefabPair.Key) || prefabPair.Value == null)
+                    continue;
+
                 string prefabName = prefabPair.Key;
 
-                if (
-                    !WorldHelper
-                        .GetSystem<PrefabFinder>()
-                        .TryFindBuildingPrefab(prefabName, out Entity prefab)
-                )
+                if (!pf.TryFindBuildingPrefab(prefabName, out Entity prefab))
                 {
                     skipped++;
                     LogHelper.SendLog($"Restore skipped: prefab '{prefabName}' not found");
                     continue;
                 }
 
-                foreach (var entry in prefabPair.Value)
+                foreach (BackupFormat entry in prefabPair.Value)
                 {
+                    if (!Enum.IsDefined(typeof(UpdateValueType), entry.typeName))
+                        continue;
+
                     UpdateValueType valueType = (UpdateValueType)entry.typeName;
 
                     selectedPrefabModifierSystem.Modify(
