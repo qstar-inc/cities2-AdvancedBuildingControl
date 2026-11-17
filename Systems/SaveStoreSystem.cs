@@ -79,8 +79,19 @@ namespace AdvancedBuildingControl.Systems
             foreach (var (k, v) in bufferMap)
             {
                 if (!dictMap.TryGetValue(k, out ModifiedPrefab dictEntry) || !v.Equals(dictEntry))
-                    selectedPrefabModifierSystem.Modify(k.prefab, $"(long){v.Modified}", k.type);
+                    selectedPrefabModifierSystem.Modify(
+                        k.prefab,
+                        $"(long){v.Modified}",
+                        k.type,
+                        useLogger: true
+                    );
             }
+            if (selectedPrefabModifierSystem.loggerLines.Count > 0)
+                LogHelper.SendLog(
+                    "Save load apply:\n"
+                        + string.Join("\n", selectedPrefabModifierSystem.loggerLines)
+                );
+            selectedPrefabModifierSystem.loggerLines.Clear();
 
             foreach (var (k, v) in dictMap)
             {
@@ -90,11 +101,18 @@ namespace AdvancedBuildingControl.Systems
                         k.prefab,
                         $"(long){v.Original}",
                         k.type,
+                        true,
                         true
                     );
                     continue;
                 }
             }
+            if (selectedPrefabModifierSystem.loggerLines.Count > 0)
+                LogHelper.SendLog(
+                    "Save load reset:\n"
+                        + string.Join("\n", selectedPrefabModifierSystem.loggerLines)
+                );
+            selectedPrefabModifierSystem.loggerLines.Clear();
         }
     }
 }

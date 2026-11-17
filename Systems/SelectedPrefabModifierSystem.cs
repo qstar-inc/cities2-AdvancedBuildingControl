@@ -20,6 +20,7 @@ namespace AdvancedBuildingControl.Systems
         public ModifiedPrefabBufferSystem modifiedPrefabBufferSystem;
 
         public Dictionary<Entity, CreatedEntitiesData> localEntities;
+        public HashSet<string> loggerLines = new();
 
         protected override void OnCreate()
         {
@@ -34,13 +35,15 @@ namespace AdvancedBuildingControl.Systems
             Entity selectedPrefab,
             string value,
             UpdateValueType valueType,
-            bool isReset = false
+            bool isReset = false,
+            bool useLogger = false
         )
         {
             try
             {
+                string pName = PrefabHelper.GetPrefabName(selectedPrefab);
                 LogHelper.SendLog(
-                    $"Starting modify for {PrefabHelper.GetPrefabName(selectedPrefab)}: {valueType}, {value}",
+                    $"Starting modify for {pName}: {valueType}, {value}",
                     LogLevel.DEVD
                 );
 
@@ -52,7 +55,9 @@ namespace AdvancedBuildingControl.Systems
 
                 if (!UVTHelper.TryConvertValue(value, valueType, out long modifiedValue))
                 {
-                    LogHelper.SendLog($"Failed to convert `{value}` to long for {valueType}");
+                    LogHelper.SendLog(
+                        $"Failed to convert `{value}` to long for {valueType} in {pName}"
+                    );
                     return;
                 }
 
@@ -95,7 +100,7 @@ namespace AdvancedBuildingControl.Systems
                     {
                         RemoveFromDict(selectedPrefab, valueType);
                         LogHelper.SendLog(
-                            $"Resetting dict for {PrefabHelper.GetPrefabName(selectedPrefab)}: {valueType}, {value}",
+                            $"Resetting dict for {pName}: {valueType}, {value}",
                             LogLevel.DEVD
                         );
                         return;
@@ -115,12 +120,16 @@ namespace AdvancedBuildingControl.Systems
                 }
 
                 EntityManager.AddComponent<LocalModified>(selectedPrefab);
-                LogHelper.SendLog(
-                    $"Set {valueType} from (long){entry.Original} to (long){modifiedValue} for {PrefabHelper.GetPrefabName(selectedPrefab)}"
-                );
+
+                string logLine =
+                    $"Set {valueType} from {entry.Original} to {modifiedValue} for {pName}";
+                if (useLogger)
+                    loggerLines.Add(logLine);
+                else
+                    LogHelper.SendLog(logLine);
 
                 LogHelper.SendLog(
-                    $"Ending modify for {PrefabHelper.GetPrefabName(selectedPrefab)}: {valueType}, {value}",
+                    $"Ending modify for {pName}: {valueType}, {value}",
                     LogLevel.DEVD
                 );
             }

@@ -68,45 +68,34 @@ namespace AdvancedBuildingControl.Systems
                 return;
 
             if (
-                !prefabSystem.TryGetPrefab(
-                    new PrefabID(
-                        nameof(AssetPackPrefab),
-                        "StarQ SP01-BaseGame Pack",
-                        Colossal.Hash128.Parse("34790457835307a80af82aa68c67a333")
-                    ),
+                !PrefabHelper.TryGetPrefab(
+                    nameof(AssetPackPrefab),
+                    "StarQ SP01-BaseGame Pack",
+                    Colossal.Hash128.Parse("34790457835307a80af82aa68c67a333"),
                     out PrefabBase _
                 )
             )
-            {
-                LogHelper.SendLog("Static Ploppables UI not found.");
                 return;
-            }
 
             if (
-                !prefabSystem.TryGetPrefab(
-                    new PrefabID(nameof(RenderPrefab), "WindowBoardsSmall01 Mesh"),
+                !PrefabHelper.TryGetPrefab(
+                    nameof(RenderPrefab),
+                    "WindowBoardsSmall01 Mesh",
                     out PrefabBase basePropRP
                 )
             )
-            {
-                LogHelper.SendLog("Failed to find a required vanilla asset");
                 return;
-            }
 
             if (
-                !prefabSystem.TryGetPrefab(
-                    new PrefabID(
-                        nameof(AssetPackPrefab),
-                        "StarQ SP00-ABC Pack",
-                        Colossal.Hash128.Parse("b013d44fa0b11e4c2da89043f3a7aaae")
-                    ),
+                !PrefabHelper.TryGetPrefab(
+                    nameof(AssetPackPrefab),
+                    "StarQ SP00-ABC Pack",
+                    Colossal.Hash128.Parse("b013d44fa0b11e4c2da89043f3a7aaae"),
                     out PrefabBase ap
                 )
             )
-            {
-                LogHelper.SendLog("Failed to find prefab: StarQ SP00-ABC Pack");
                 return;
-            }
+
             baseProp = basePropRP as RenderPrefab;
             assetPackPrefab = ap as AssetPackPrefab;
             hasSP = true;

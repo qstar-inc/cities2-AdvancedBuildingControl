@@ -1,4 +1,2 @@
-- [NEW] Effect Customizer: Add, remove, or modify Local and City Effects for any buildings, including Static Ploppables.
-- [WIP] New ABC Panel in UMM: Future ABC features will requires more space than the current narrow panel can provide. A new panel is under construction to accomodate options related to prefab modifications, such as current Property Customizer and Effect Customizer.
-- Major code refactoring.
-- [FIX] Panel button not closing panels.
+- [FIX] Static Ploppable Builder failing to initialize in certain cases.
+- [FIX] Reduced per line logging on save load.
