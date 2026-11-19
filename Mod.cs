@@ -15,6 +15,7 @@ namespace AdvancedBuildingControl
     public partial class Mod : IMod
     {
         public static string uiHostName = "starq-advanced-building-control";
+        public static string BackupDir = "";
 
         public void OnLoad(UpdateSystem updateSystem)
         {
@@ -23,6 +24,7 @@ namespace AdvancedBuildingControl
             //UIHostHelper.Init(Id, uiHostName);
 
             Directory.CreateDirectory(DataDir);
+            BackupDir = Path.Combine(DataDir, "BackupConfig");
 
             m_Setting = new Setting(this);
             m_Setting.RegisterInOptionsUI();
@@ -37,6 +39,7 @@ namespace AdvancedBuildingControl
 
             WorldHelper.GetSystem<DataRetriever>();
             WorldHelper.GetSystem<SaveStoreSystem>();
+            WorldHelper.GetSystem<StaticPloppableData>();
             WorldHelper.GetSystem<StaticPloppableBuilder>();
             WorldHelper.GetSystem<EffectControlSystem>();
             updateSystem.UpdateAt<EffectOverlaySystem>(SystemUpdatePhase.ToolUpdate);

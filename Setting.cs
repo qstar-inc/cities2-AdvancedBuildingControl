@@ -56,8 +56,11 @@ namespace AdvancedBuildingControl
         {
             List<DropdownItem<string>> list = new();
 
+            if (!Directory.Exists(Mod.BackupDir))
+                return list.ToArray();
+
             string[] files = Directory.GetFiles(
-                $"{EnvPath.kUserDataPath}/ModsData/{Mod.Id}/BackupConfig",
+                Mod.BackupDir,
                 "*.json",
                 SearchOption.TopDirectoryOnly
             );
@@ -115,7 +118,7 @@ namespace AdvancedBuildingControl
         }
 
         [SettingsUIButton]
-        [SettingsUIDisableByCondition(typeof(Setting), nameof(NoSPCache))]
+        [SettingsUIDisableByCondition(typeof(Setting), nameof(NoSPCache), true)]
         [SettingsUISection(GeneralTab, StaticPloppableBuilder)]
         public bool DeleteLocalSPCache
         {

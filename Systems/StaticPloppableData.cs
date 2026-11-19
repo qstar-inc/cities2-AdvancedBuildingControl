@@ -74,9 +74,8 @@ namespace AdvancedBuildingControl.Systems
             ["Landscaping"] = "Service_Landscaping",
         };
 
-        internal static string fileFolder = $"{EnvPath.kUserDataPath}/ModsData/{Mod.Id}/";
         internal static string fileName = "StaticPloppableBuilder.json";
-        internal static string fullPath = Path.Combine(fileFolder, fileName);
+        internal static string fullPath = "";
         static SPDataFile spDataFile;
 
         private bool createdFromFileThisSession = false;
@@ -92,8 +91,9 @@ namespace AdvancedBuildingControl.Systems
             prefabSystem = WorldHelper.PrefabSystem;
 
             staticPloppableBuilder = WorldHelper.GetSystem<StaticPloppableBuilder>();
-
-            Directory.CreateDirectory(fileFolder);
+            fullPath = Path.Combine(Mod.DataDir, fileName);
+            if (File.Exists(fullPath))
+                Mod.m_Setting.NoSPCache = false;
         }
 
         protected override void OnUpdate() { }

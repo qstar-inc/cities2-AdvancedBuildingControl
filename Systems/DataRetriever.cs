@@ -37,11 +37,12 @@ namespace AdvancedBuildingControl.Systems
     {
 #nullable disable
         public PrefabSystem prefabSystem;
-        public PrefabUISystem prefabUISystem;
-        public NameSystem nameSystem;
+
+        //public PrefabUISystem prefabUISystem;
+        //public NameSystem nameSystem;
         public ImageSystem imageSystem;
 
-        public static Entity integratedHelipad = Entity.Null;
+        //public static Entity integratedHelipad = Entity.Null;
 #nullable enable
         public bool NeedUpdate = true;
 
@@ -56,22 +57,22 @@ namespace AdvancedBuildingControl.Systems
         //public static bool dataRetrieved = false;
         public static bool firstTime = true;
 
-        private static readonly object _lock1 = new();
-        private static readonly object _lock2 = new();
+        private static readonly object lock0 = new();
 
         //private static readonly object _lock3 = new();
-        public Dictionary<Entity, CreatedEntitiesData> localEntities = new();
+        //public Dictionary<Entity, CreatedEntitiesData> localEntities = new();
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
             prefabSystem = WorldHelper.PrefabSystem;
-            prefabUISystem = WorldHelper.PrefabUISystem;
-            nameSystem = WorldHelper.NameSystem;
+            //prefabUISystem = WorldHelper.PrefabUISystem;
+            //nameSystem = WorldHelper.NameSystem;
             imageSystem = WorldHelper.ImageSystem;
-            localEntities = new();
+            //localEntities = new();
             //Mod.m_Setting.onSettingsApplied += OnSettingsChanged;
+            GameManager.instance.localizationManager.onActiveDictionaryChanged += CleanAndGetData;
             ModHelper.AddAfterActivePlaysetOrModStatusChanged(() =>
             {
                 NeedUpdate = true;
@@ -86,24 +87,17 @@ namespace AdvancedBuildingControl.Systems
             base.OnGameLoadingComplete(purpose, mode);
             if (firstTime)
             {
-                GameManager.instance.localizationManager.onActiveDictionaryChanged +=
-                    CleanAndGetData;
                 CleanAndGetData();
                 firstTime = false;
             }
-
-            lock (_lock1)
-                CleanAndGetData();
         }
-
-        //private void OnSettingsChanged(Game.Settings.Setting setting) => NeedUpdate = true;
 
         void CleanAndGetData()
         {
             if (!NeedUpdate)
                 return;
 
-            lock (_lock2)
+            lock (lock0)
             {
                 brandDataInfos.Clear();
                 prevBrandEntityCount = 0;
@@ -121,19 +115,20 @@ namespace AdvancedBuildingControl.Systems
                 GetBrandData();
                 //GetResourceData();
 
-                if (
-                    prefabSystem.TryGetPrefab(
-                        new PrefabID("MarkerObjectPrefab", "Integrated Helipad"),
-                        out PrefabBase intHeli
-                    )
-                )
-                    prefabSystem.TryGetEntity(intHeli, out integratedHelipad);
+                //if (
+                //    prefabSystem.TryGetPrefab(
+                //        new PrefabID("MarkerObjectPrefab", "Integrated Helipad"),
+                //        out PrefabBase intHeli
+                //    )
+                //)
+                //    prefabSystem.TryGetEntity(intHeli, out integratedHelipad);
 
                 //dataRetrieved = true;
-                LogHelper.SendLog(
-                    $"Data retrieved:\nBrandDataInfos: {brandDataInfos.Count}", //, ResourceDataInfos: {resourceDataInfos.Count}",
-                    LogLevel.DEV
-                );
+                if (hasNewBrandData)
+                    LogHelper.SendLog(
+                        $"BrandDataInfos retrieved: {brandDataInfos.Count}",
+                        LogLevel.DEV
+                    );
                 NeedUpdate = false;
             }
         }
@@ -155,18 +150,16 @@ namespace AdvancedBuildingControl.Systems
                 {
                     brandDataInfos.Clear();
                     prevBrandEntityCount = bCount;
-                    foreach (var entity in brandEntitiesFromQuery)
+                    foreach (Entity entity in brandEntitiesFromQuery)
                     {
                         prefabSystem.TryGetPrefab(entity, out BrandPrefab brandPrefab);
 
                         if (brandPrefab == null)
                         {
                             EntityManager.TryGetComponent(entity, out PrefabData pd);
-                            string missingName = EntityManager.GetName(entity);
 
                             LogHelper.SendLog(
-                                $"Brand '{missingName}' ({entity} is missing",
-                                LogLevel.DEVD
+                                $"Brand '{EntityManager.GetName(entity)}' ({entity} is missing"
                             );
                             continue;
                         }
@@ -183,9 +176,7 @@ namespace AdvancedBuildingControl.Systems
                         CompanyPrefab[] companyPrefabs = brandPrefab.m_Companies;
                         string[] companies = new string[companyPrefabs.Length];
                         for (int i = 0; i < companyPrefabs.Length; i++)
-                        {
                             companies[i] = companyPrefabs[i].name;
-                        }
 
                         brandDataInfos.Add(
                             new BrandDataInfo
@@ -209,7 +200,7 @@ namespace AdvancedBuildingControl.Systems
             }
             catch (Exception ex)
             {
-                Mod.log.Error(ex);
+                LogHelper.SendLog(ex);
             }
         }
 

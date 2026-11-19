@@ -25,7 +25,7 @@ Modify buildings to your heart's content (within limits).
 - Building Maintenance: Set limits for garbage, mails, crimes and damages, and automatically cleanup the building when the limit is reached.
 - Secret Feature: There is a secret feature planned that I will not reveal until it's tested to be possible. But I can give you a hint, it is the feature of a popular Cities Skylines 1 mod.
 
-Read the DEVLOG for this project here: https://github.com/qstar-inc/cities2-AdvancedBuildingControl/Devlog.md
+Read the DEVLOG for this project here: https://github.com/qstar-inc/cities2-AdvancedBuildingControl/blob/master/Devlog.md
 
 # Socials
 In addition to the links attached on the sidebar, I'm available to contact in all of the following platforms.
@@ -33,7 +33,7 @@ In addition to the links attached on the sidebar, I'm available to contact in al
 - Cities: Skylines Official Discord: [Thread](https://discord.com/channels/263634513861541888/1572158236788924446) | [Invitation](https://discord.com/citiesskylines)
 - Cities: Skylines Modding Discord: [Thread](https://discord.com/channels/1024242828114673724/1464858378747645983) | [Invitation](https://discord.gg/q3dzd4p5Hx)
 
-Built and published on 2026-11-17 11:03 UTC.</LongDescription>
+Built and published on 2026-11-19 10:59 UTC.</LongDescription>
   <Thumbnail Value="Properties/Thumbnail.png" />
   <Screenshot Value="Properties/Screenshot01.png" />
   <Screenshot Value="Properties/Screenshot02.png" />
@@ -44,11 +44,11 @@ Built and published on 2026-11-17 11:03 UTC.</LongDescription>
   <Screenshot Value="Properties/Screenshot07.jpg" />
   <Tag Value="Code Mod" />
   <ForumLink Value="" />
-  <ModVersion Value="2.3.1" />
+  <ModVersion Value="2.3.2" />
   <GameVersion Value="1.6.4*" />
   <Dependency Id="74417" />
-  <ChangeLog>- [FIX] Static Ploppable Builder failing to initialize in certain cases.
-- [FIX] Reduced per line logging on save load.</ChangeLog>
+  <ChangeLog>- [FIX] Mod not loading on startup on new installs.
+- [FIX] Static Ploppable Builder not handled.</ChangeLog>
   <ExternalLink Type="github" Url="https://github.com/qstar-inc/cities2-AdvancedBuildingControl" />
   <ExternalLink Type="discord" Url="https://discord.gg/U2PSjUzUuF" />
   <ExternalLink Type="buymeacoffee" Url="https://buymeacoffee.com/starq" />

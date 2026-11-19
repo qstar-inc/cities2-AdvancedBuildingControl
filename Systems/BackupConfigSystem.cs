@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using AdvancedBuildingControl.Components;
 using AdvancedBuildingControl.Enums;
-using Colossal.PSI.Environment;
 using Game;
 using Game.City;
 using Game.UI.Localization;
@@ -119,8 +118,7 @@ namespace AdvancedBuildingControl.Systems
 
             try
             {
-                var directory = $"{EnvPath.kUserDataPath}/ModsData/{Mod.Id}/BackupConfig";
-                Directory.CreateDirectory(directory);
+                Directory.CreateDirectory(Mod.BackupDir);
 
                 string fileTime = time.ToString(
                     "yyyy-MM-dd_HH-mm-ss",
@@ -130,7 +128,7 @@ namespace AdvancedBuildingControl.Systems
                     $"ABC_Backup_{fileTime}_{cityName}.json"
                 );
 
-                string fullPath = Path.Combine(directory, fileName);
+                string fullPath = Path.Combine(Mod.BackupDir, fileName);
 
                 var options = new JsonSerializerSettings
                 {

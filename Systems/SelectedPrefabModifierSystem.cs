@@ -122,16 +122,11 @@ namespace AdvancedBuildingControl.Systems
                 EntityManager.AddComponent<LocalModified>(selectedPrefab);
 
                 string logLine =
-                    $"Set {valueType} from {entry.Original} to {modifiedValue} for {pName}";
+                    $"{pName} ({valueType}) = {originalValue} => {modifiedValue} (default {entry.Original})";
                 if (useLogger)
                     loggerLines.Add(logLine);
                 else
                     LogHelper.SendLog(logLine);
-
-                LogHelper.SendLog(
-                    $"Ending modify for {pName}: {valueType}, {value}",
-                    LogLevel.DEVD
-                );
             }
             catch (Exception ex)
             {

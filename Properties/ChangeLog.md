@@ -1,2 +1,2 @@
-- [FIX] Static Ploppable Builder failing to initialize in certain cases.
-- [FIX] Reduced per line logging on save load.
+- [FIX] Mod not loading on startup on new installs.
+- [FIX] Static Ploppable Builder not handled.
